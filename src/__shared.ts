@@ -60,10 +60,10 @@ export const SimpleVideoSchema = SimpleAudioSchema.extend({
 
 export const TranscriptSchema = z
 	.object({
-		endTime: NonEmpStrSchema,
-		lineText: NonEmpStrSchema,
-		speaker: NonEmpStrSchema,
 		startTime: NonEmpStrSchema,
+		endTime: NonEmpStrSchema,
+		speaker: NonEmpStrSchema.default('Speaker'),
+		sentenceText: NonEmpStrSchema,
 	})
 	.array();
 
