@@ -8,12 +8,8 @@ export default defineConfig([
 		minify: false,
 		sourcemap: true,
 		splitting: true,
-		dts: {
-			compilerOptions: {
-				ignoreDeprecations: '6.0',
-			},
-		},
+		dts: false,
 		target: 'node22',
-		entry: ['index.ts'],
+		entry: ['src/index.ts'],
 	},
 ]);
