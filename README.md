@@ -1,6 +1,6 @@
 # Theta Format (`.theta`)
 
-通用、开放的题库内容数据格式和传输规范
+通用开放的题库内容数据格式和传输规范
 
 [English](./docs/README_en.md)
 
