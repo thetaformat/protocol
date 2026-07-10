@@ -1,3 +1,4 @@
+export * from '#/__shared';
 export {
 	examDefs,
 	ExamCodeSchema,
