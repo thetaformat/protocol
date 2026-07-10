@@ -6,8 +6,8 @@ export default defineConfig([
 		clean: false,
 		format: ['esm'],
 		minify: false,
-		sourcemap: false,
-		splitting: false,
+		sourcemap: true,
+		splitting: true,
 		dts: {
 			compilerOptions: {
 				ignoreDeprecations: '6.0',
