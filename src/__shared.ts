@@ -128,7 +128,7 @@ export const NarratedInstructionSchema = z.object({
 
 export const StemSchema = NonEmpMdSchema;
 
-export const OptionsSchema = NonEmpStrSchema;
+export const OptionsSchema = NonEmpStrSchema.array().min(1);
 
 export const ResponseCodeSchema = z.enum([
 	'cloze',
