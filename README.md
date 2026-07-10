@@ -190,7 +190,7 @@ git clone https://github.com/thetaformat/protocol.git
 pnpm install
 
 # 运行 TypeScript 类型检查（确保你修改的格式符合 Schema 约束）
-pnpm tc
+pnpm typecheck
 
 # 编译生成打包资产
 pnpm build

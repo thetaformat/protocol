@@ -194,7 +194,7 @@ Recommended commands for local development:
 pnpm install
 
 # Run TypeScript typecheck (to ensure changes match schema constraints)
-pnpm tc
+pnpm typecheck
 
 # Build and bundle assets
 pnpm build
