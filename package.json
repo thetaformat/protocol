@@ -9,7 +9,9 @@
 	"exports": {
 		".": {
 			"types": "./src/index.ts",
-			"import": "./src/index.ts"
+			"import": "./src/index.ts",
+			"require": "./src/index.ts",
+			"default": "./src/index.ts"
 		}
 	},
 	"files": [
@@ -38,7 +40,9 @@
 		"exports": {
 			".": {
 				"types": "./dist/index.d.ts",
-				"import": "./dist/index.js"
+				"import": "./dist/index.js",
+				"require": "./dist/index.js",
+				"default": "./dist/index.js"
 			}
 		}
 	},

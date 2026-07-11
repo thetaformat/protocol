@@ -90,5 +90,3 @@ export function getResponseContentSchema<T extends ItemCode>(
 	}
 	return schema as any;
 }
-
-console.log(ResponseContentSchema.toJSONSchema())
