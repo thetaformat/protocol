@@ -195,52 +195,56 @@ export function defineExam<
 
 		const sectionTyped = sectionVal as any;
 
-		for (const [taskKey, taskVal] of Object.entries(sectionTyped.tasks)) {
+		for (const [taskKey, taskVal] of Object.entries(sectionTyped.__tasks)) {
 			const taskTyped = taskVal as any;
 			const taskCode = `${sectionCode}_${taskKey}`;
 			taskCodes.push(taskCode);
 
-			const taskKeys = Object.keys(taskTyped.contentSchema.shape || {});
+			const taskKeys = Object.keys(
+				taskTyped.__questionContentSchema.shape || {},
+			);
 			for (const key of taskKeys) {
 				const parseResult = AllowedQuestionContentKeySchema.safeParse(key);
 				if (!parseResult.success) {
 					throw new Error(
-						`[Validation fail] Task "${taskCode}" contentSchema contains unauthorized key "${key}". ` +
+						`[Validation fail] Task "${taskCode}" __questionContentSchema contains unauthorized key "${key}". ` +
 							`Allowed keys: [${AllowedQuestionContentKeySchema.options.join(', ')}]`,
 					);
 				}
 			}
 
 			taskSchemas.push(
-				taskTyped.contentSchema.extend({
+				taskTyped.__questionContentSchema.extend({
 					taskCode: z.enum([taskCode]),
 				}),
 			);
 
-			for (const [itemKey, itemVal] of Object.entries(taskTyped.items)) {
+			for (const [itemKey, itemVal] of Object.entries(taskTyped.__items)) {
 				const itemTyped = itemVal as any;
 				const itemCode = `${taskCode}_${itemKey}`;
 				itemCodes.push(itemCode);
 
-				const itemKeys = Object.keys(itemTyped.contentSchema.shape || {});
+				const itemKeys = Object.keys(
+					itemTyped.__questionContentSchema.shape || {},
+				);
 				for (const key of itemKeys) {
 					const parseResult = AllowedQuestionContentKeySchema.safeParse(key);
 					if (!parseResult.success) {
 						throw new Error(
-							`[Validation fail] Item "${itemCode}" contentSchema contains unauthorized key "${key}". ` +
+							`[Validation fail] Item "${itemCode}" __questionContentSchema contains unauthorized key "${key}". ` +
 								`Allowed keys: [${AllowedQuestionContentKeySchema.options.join(', ')}]`,
 						);
 					}
 				}
 
 				itemSchemas.push(
-					itemTyped.contentSchema.extend({
+					itemTyped.__questionContentSchema.extend({
 						itemCode: z.enum([itemCode]),
 					}),
 				);
 
 				responseSchemas.push(
-					itemTyped.responseSchema.extend({
+					itemTyped.__responseContentSchema.extend({
 						itemCode: z.enum([itemCode]),
 					}),
 				);
