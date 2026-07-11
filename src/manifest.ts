@@ -47,6 +47,7 @@ export const ManifestPaperSchema = z.object({
 		})
 		.array(),
 });
+export type ManifestPaper = z.infer<typeof ManifestPaperSchema>;
 
 /**
  * manifest.json schema
@@ -60,3 +61,4 @@ export const ManifestSchema = z.object({
 	}),
 	paper: ManifestPaperSchema,
 });
+export type Manifest = z.infer<typeof ManifestSchema>;

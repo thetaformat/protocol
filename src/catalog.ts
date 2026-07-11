@@ -1,4 +1,5 @@
 import z from 'zod';
+
 import {
 	NonEmpStrSchema,
 	OffsetDatetimeStrSchema,
@@ -18,6 +19,7 @@ export const CatalogPaperSchema = ManifestPaperSchema.pick({
 	downloadUrl: z.url(),
 	fileSizeInBytes: PosIntSchema,
 });
+export type CatalogPaper = z.infer<typeof CatalogPaperSchema>;
 
 /**
  * catalog.json schema
@@ -28,3 +30,4 @@ export const CatalogSchema = z.object({
 	updatedAt: OffsetDatetimeStrSchema,
 	papers: CatalogPaperSchema.array(),
 });
+export type Catalog = z.infer<typeof CatalogSchema>;

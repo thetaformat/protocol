@@ -1,11 +1,14 @@
-import * as __shared from './__shared';
-import * as exams from './exams';
-import * as manifest from './manifest';
-import * as catalog from './catalog';
-
-export const protocol = {
-	...__shared,
-	...exams,
-	...manifest,
-	...catalog,
-} as typeof __shared & typeof exams & typeof manifest & typeof catalog;
+export * from './__shared';
+export {
+	type Catalog,
+	type CatalogPaper,
+	CatalogPaperSchema,
+	CatalogSchema,
+} from './catalog';
+export * from './exams';
+export {
+	type Manifest,
+	type ManifestPaper,
+	ManifestPaperSchema,
+	ManifestSchema,
+} from './manifest';

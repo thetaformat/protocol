@@ -3,7 +3,7 @@ import z from 'zod';
 import {
 	type AllowedQuestionContentKey,
 	AllowedQuestionContentKeySchema,
-} from './__shared';
+} from '../__shared';
 
 type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
 	k: infer I,
