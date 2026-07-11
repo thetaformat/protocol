@@ -15,7 +15,7 @@ import {
 	SectionCodeSchema,
 	TaskCodeSchema,
 	TaskContentSchema,
-} from './exams';
+} from './exam';
 
 export const ManifestPaperSchema = z.object({
 	fileKey: FileKeySchema,
