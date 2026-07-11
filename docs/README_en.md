@@ -205,3 +205,9 @@ pnpm build
 ## 7. Open Source License
 
 This project is open-sourced under the **Apache-2.0** license. See the [LICENSE](LICENSE) file for more details.
+
+---
+
+## 8. Trademark & Compatibility Disclaimer
+
+_All trademarks, exam names, and logos referenced in this file are the property of their respective owners. This file, the Theta Format protocol, and its maintainers are not affiliated with, sponsored, or authorized by any third-party test administrators. These trademarked terms are used solely for nominative, technical compatibility description, and functional purposes._
