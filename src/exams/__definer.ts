@@ -118,40 +118,61 @@ type GetResponseSchemaUnion<
 	}[keyof TSections[S]['__tasks'] & string];
 }[keyof TSections & string];
 
+// 1. 校验 Item 层级：只允许 __questionContentSchema 和 __responseContentSchema
+type ValidateItem<TItem> = TItem extends {
+	__questionContentSchema: z.ZodObject<infer ItemShape>;
+	__responseContentSchema: z.ZodObject<infer ResponseShape>;
+}
+	? {
+			__questionContentSchema: z.ZodObject<{
+				[K in keyof ItemShape]: K extends AllowedQuestionContentKey
+					? ItemShape[K] // 🌟 修正：将 TaskShape[K] 改为 ItemShape[K]
+					: never;
+			}>;
+			__responseContentSchema: z.ZodObject<ResponseShape>;
+		} & {
+			[K in Exclude<
+				keyof TItem,
+				'__questionContentSchema' | '__responseContentSchema'
+			>]: never;
+		}
+	: never;
+
+// 2. 校验 Task 层级：只允许 __questionContentSchema 和 __items
+type ValidateTask<TTask> = TTask extends {
+	__questionContentSchema: z.ZodObject<infer TaskShape>;
+	__items: infer Items;
+}
+	? {
+			__questionContentSchema: z.ZodObject<{
+				[K in keyof TaskShape]: K extends AllowedQuestionContentKey
+					? TaskShape[K]
+					: never;
+			}>;
+			__items: {
+				[Item in keyof Items]: ValidateItem<Items[Item]>;
+			};
+		} & {
+			// 强约束：多余字段映射为 never
+			[K in Exclude<keyof TTask, '__questionContentSchema' | '__items'>]: never;
+		}
+	: never;
+
+// 3. 校验 Section 层级：只允许 __tasks
+type ValidateSection<TSection> = TSection extends { __tasks: infer Tasks }
+	? {
+			__tasks: {
+				[Task in keyof Tasks]: ValidateTask<Tasks[Task]>;
+			};
+		} & {
+			// 强约束：多余字段映射为 never
+			[K in Exclude<keyof TSection, '__tasks'>]: never;
+		}
+	: never;
+
+// 4. 汇总入口
 type ValidateNestedSections<TSections> = {
-	[S in keyof TSections]: TSections[S] extends { __tasks: infer Tasks }
-		? {
-				__tasks: {
-					[Task in keyof Tasks]: Tasks[Task] extends {
-						__questionContentSchema: z.ZodObject<infer TaskShape>;
-						__items: infer Items;
-					}
-						? {
-								__questionContentSchema: z.ZodObject<{
-									[K in keyof TaskShape]: K extends AllowedQuestionContentKey
-										? TaskShape[K]
-										: never;
-								}>;
-								__items: {
-									[Item in keyof Items]: Items[Item] extends {
-										__questionContentSchema: z.ZodObject<infer ItemShape>;
-										__responseContentSchema: z.ZodObject<infer ResponseShape>;
-									}
-										? {
-												__questionContentSchema: z.ZodObject<{
-													[K in keyof ItemShape]: K extends AllowedQuestionContentKey
-														? ItemShape[K]
-														: never;
-												}>;
-												__responseContentSchema: z.ZodObject<ResponseShape>;
-											}
-										: never;
-								};
-							}
-						: never;
-				};
-			}
-		: never;
+	[S in keyof TSections]: ValidateSection<TSections[S]>;
 };
 
 export function defineExam<

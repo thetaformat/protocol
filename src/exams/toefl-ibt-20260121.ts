@@ -27,7 +27,6 @@ export default defineExam({
 	code: 'toefl_ibt_20260121',
 	__sections: {
 		reading: {
-			s:1,
 			__tasks: {
 				complete_the_words: {
 					__questionContentSchema: z.object({
@@ -40,7 +39,6 @@ export default defineExam({
 							),
 						}),
 					}),
-					s:2,
 					__items: {
 						default: {
 							__questionContentSchema: z.object({
