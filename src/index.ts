@@ -5,7 +5,7 @@ export {
 	CatalogPaperSchema,
 	CatalogSchema,
 } from './catalog';
-export * from './exams';
+export * from './exam';
 export {
 	type Manifest,
 	type ManifestPaper,
