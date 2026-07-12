@@ -207,9 +207,13 @@ export type SegmentedPassage = z.infer<typeof SegmentedPassageSchema>;
 export const NarratedInstructionSchema = z.object({
 	formatCode: z.enum(['narrated_instruction']),
 	text: NonEmpMdSchema,
-	audio: SimpleAudioSchema.describe(
-		'Audio narration of the text. Usually generated from AI TTS.',
-	),
+	audio: z
+		.object({
+			fileKey: FileKeySchema,
+			durationSeconds: z.number().min(0),
+			fileSizeInBytes: PosIntSchema,
+		})
+		.describe('Audio narration of the text. Generated from AI TTS.'),
 });
 export type NarratedInstruction = z.infer<typeof NarratedInstructionSchema>;
 
