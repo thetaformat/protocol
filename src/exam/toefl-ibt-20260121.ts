@@ -192,6 +192,22 @@ export default defineExam({
 						default: {
 							__questionContentSchema: z.object({
 								prompt: z.object({
+									speaker1: z
+										.object({
+											name: NonEmpStrSchema.describe(
+												'发言人 A 的名字（如 Kelly）',
+											),
+											avatar: SimpleImageSchema,
+										})
+										.describe('发言人 A 的元信息'),
+									speaker2: z
+										.object({
+											name: NonEmpStrSchema.describe(
+												'发言人 B 的名字（如 Andrew）',
+											),
+											avatar: SimpleImageSchema,
+										})
+										.describe('发言人 B 的元信息'),
 									chunks: z
 										.object({
 											id: SeqIdSchema,
@@ -203,11 +219,13 @@ export default defineExam({
 										),
 									conversation: z
 										.object({
-											avatar: SimpleImageSchema,
+											id: SeqIdSchema.describe('单条对话的唯一标识'),
+											speakerKey: z
+												.enum(['speaker1', 'speaker2'])
+												.describe('标识当前气泡由谁发言'),
 											content: NonEmpStrSchema.describe(
 												`对话内容。普通上下文直接写纯文本；如果是需要拼接的目标句，则在句中包含占位符。例如："Yes! The {{id1}} {{id2}} {{id3}} fantastic. How about you?" 站位id必须为：${SeqIdSchema.description}`,
 											),
-											id: SeqIdSchema.describe('单条对话的唯一标识'),
 											isTarget: z
 												.boolean()
 												.describe(
@@ -247,15 +265,26 @@ export default defineExam({
 						default: {
 							__questionContentSchema: z.object({
 								instruction: NonEmpMdSchema,
-								prompt: z
-									.object({
+								prompt: z.object({
+									professor: z.object({
+										name: NonEmpStrSchema.describe(
+											'教授的名字（如 Dr. Gupta）',
+										),
 										avatar: SimpleImageSchema,
-										content: NonEmpStrSchema,
-										name: NonEmpStrSchema,
-										role: z.enum(['professor', 'student']),
-									})
-									.array()
-									.length(3),
+										content:
+											NonEmpStrSchema.describe('教授发表的讨论引导语/问题'),
+									}),
+									student1: z.object({
+										name: NonEmpStrSchema.describe('学生甲的名字（如 Kelly）'),
+										avatar: SimpleImageSchema,
+										content: NonEmpStrSchema.describe('学生甲发表的观点文本'),
+									}),
+									student2: z.object({
+										name: NonEmpStrSchema.describe('学生乙的名字（如 Andrew）'),
+										avatar: SimpleImageSchema,
+										content: NonEmpStrSchema.describe('学生乙发表的观点文本'),
+									}),
+								}),
 							}),
 							__responseContentSchema: ResponseContentEssaySchema,
 						},
