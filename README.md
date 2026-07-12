@@ -2,7 +2,7 @@
 
 通用开放的题库内容数据格式和传输规范
 
-[English](./docs/README_en.md)
+[English](./docs/README.en.md)
 
 ---
 
