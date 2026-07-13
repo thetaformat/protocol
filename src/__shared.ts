@@ -208,11 +208,7 @@ export const NarratedInstructionSchema = z.object({
 	formatCode: z.enum(['narrated_instruction']),
 	text: NonEmpMdSchema,
 	audio: z
-		.object({
-			fileKey: FileKeySchema,
-			durationSeconds: z.number().min(0),
-			fileSizeInBytes: PosIntSchema,
-		})
+		.object({ fileKey: FileKeySchema })
 		.describe('Audio narration of the text. Generated from AI TTS.'),
 });
 export type NarratedInstruction = z.infer<typeof NarratedInstructionSchema>;
