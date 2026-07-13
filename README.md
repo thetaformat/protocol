@@ -126,7 +126,7 @@ if (!result.success) {
 				"zh": "摸底测试试卷-1",
 				"en": "Placement Exam Paper 1 "
 			},
-			"issueDate": "2026-07-26T08:00:00Z",
+			"issuedAt": "2026-07-26T08:00:00Z",
 			"downloadUrl": "https://cdn.example-community.org/75f4005b-c343-4d2e-8188-998d60dc4ca6.theta",
 			"fileSizeInBytes": 10485760
 		}

@@ -24,7 +24,7 @@ export const ManifestPaperSchema = z.object({
 	examCode: ExamCodeSchema,
 	collectionName: TransDictSchema,
 	paperName: TransDictSchema,
-	issueDate: OffsetDatetimeStrSchema,
+	issuedAt: OffsetDatetimeStrSchema,
 	sections: z
 		.object({
 			code: SectionCodeSchema,

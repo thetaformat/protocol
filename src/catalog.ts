@@ -14,7 +14,7 @@ export const CatalogPaperSchema = ManifestPaperSchema.pick({
 	examCode: true,
 	collectionName: true,
 	paperName: true,
-	issueDate: true,
+	issuedAt: true,
 }).extend({
 	downloadUrl: z.url(),
 	fileSizeInBytes: PosIntSchema,
