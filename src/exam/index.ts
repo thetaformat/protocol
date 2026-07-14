@@ -38,55 +38,68 @@ export type TaskContent = z.infer<typeof TaskContentSchema>;
 export type ItemContent = z.infer<typeof ItemContentSchema>;
 export type ResponseContent = z.infer<typeof ResponseContentSchema>;
 
-export type ExtractTaskContentSchema<T extends TaskCode> = Extract<
-	(typeof TaskContentSchema)['options'][number],
-	z.ZodObject<{ taskCode: z.ZodEnum<Record<T, T>> }>
->;
+/**
+ * 从zod discriminatedUnion里面提取出对应的schema
+ * e.g. const schema = extractDiscriminatedUnionMember(union,'type','A')
+ * 支持 z.enum 作为识别字段
+ *
+ * 用于获取特定code下的taskContentSchema, itemContentSchema or responseContentSchema
+ */
+export function extractDiscriminatedUnionMember<
+	T extends Record<string, any>,
+	D extends keyof T & string,
+	V extends T[D] & string,
+>(
+	unionSchema: z.ZodType<T>, // 接收原有的 ZodType<Union>
+	_discriminatorKey: D, // 显式传入识别字段 key (在 optionsMap 匹配失败时兜底使用)
+	discriminatorValue: V, // 显式传入识别字段 value
+): z.ZodType<Extract<T, Record<D, V>>> {
+	const union = unionSchema as any;
 
-export type ExtractItemContentSchema<T extends ItemCode> = Extract<
-	(typeof ItemContentSchema)['options'][number],
-	z.ZodObject<{ itemCode: z.ZodEnum<Record<T, T>> }>
->;
-
-export type ExtractResponseContentSchema<T extends ItemCode> = Extract<
-	(typeof ResponseContentSchema)['options'][number],
-	z.ZodObject<{ itemCode: z.ZodEnum<Record<T, T>> }>
->;
-
-export function getTaskContentSchema<T extends TaskCode>(
-	taskCode: T,
-): ExtractTaskContentSchema<T> {
-	const schema = TaskContentSchema.options.find((opt) =>
-		(opt.shape as any).taskCode.options.includes(taskCode),
-	);
-	if (!schema) {
-		throw new Error(`TaskContentSchema not found for taskCode: ${taskCode}`);
+	// 1. 优先使用 Zod 内置的高性能 optionsMap，直接获取 O(1) 匹配结果（同时兼容 v3 和 v4）
+	if (union.optionsMap instanceof Map) {
+		const memberSchema = union.optionsMap.get(discriminatorValue);
+		if (memberSchema) {
+			return memberSchema as z.ZodType<Extract<T, Record<D, V>>>;
+		}
 	}
-	return schema as any;
-}
 
-export function getItemContentSchema<T extends ItemCode>(
-	itemCode: T,
-): ExtractItemContentSchema<T> {
-	const schema = ItemContentSchema.options.find((opt) =>
-		(opt.shape as any).itemCode.options.includes(itemCode),
-	);
-	if (!schema) {
-		throw new Error(`ItemContentSchema not found for itemCode: ${itemCode}`);
-	}
-	return schema as any;
-}
-
-export function getResponseContentSchema<T extends ItemCode>(
-	itemCode: T,
-): ExtractResponseContentSchema<T> {
-	const schema = ResponseContentSchema.options.find((opt) =>
-		(opt.shape as any).itemCode.options.includes(itemCode),
-	);
-	if (!schema) {
+	// 2. 兜底方案：如果 optionsMap 不存在，安全遍历 options 数组
+	if (!union.options || !Array.isArray(union.options)) {
 		throw new Error(
-			`ResponseContentSchema not found for itemCode: ${itemCode}`,
+			`[extractDiscriminatedUnionMember] The provided schema does not appear to be a valid union or discriminated union schema.`,
 		);
 	}
-	return schema as any;
+
+	const memberSchema = union.options.find((option: any) => {
+		const field = option.shape?.[_discriminatorKey];
+		if (!field) return false;
+
+		// z.enum
+		if ('options' in field && Array.isArray(field.options)) {
+			return field.options.includes(discriminatorValue);
+		}
+		// 极端情况下的 Zod 内部 _def 属性判定兜底
+		if (field._def) {
+			if (field._def.value === discriminatorValue) {
+				return true;
+			}
+			if (
+				Array.isArray(field._def.values) &&
+				field._def.values.includes(discriminatorValue)
+			) {
+				return true;
+			}
+		}
+
+		return false;
+	});
+
+	if (!memberSchema) {
+		throw new Error(
+			`[extractDiscriminatedUnionMember] Failed to find a matching union member for discriminator key "${_discriminatorKey}" with value "${discriminatorValue}".`,
+		);
+	}
+
+	return memberSchema as z.ZodType<Extract<T, Record<D, V>>>;
 }
