@@ -30,7 +30,6 @@ export default defineExam({
 			__tasks: {
 				complete_the_words: {
 					__questionContentSchema: z.object({
-						instruction: NonEmpStrSchema,
 						prompt: z.object({
 							paragraphs: SimpleParagraphsSchema.describe(
 								`${SimpleParagraphsSchema.description}` +
@@ -42,6 +41,7 @@ export default defineExam({
 					__items: {
 						default: {
 							__questionContentSchema: z.object({
+								instruction: NonEmpStrSchema,
 								prompt: z.object({
 									gaps: z
 										.object({
@@ -95,7 +95,9 @@ export default defineExam({
 				read_in_daily_life: {
 					__questionContentSchema: z.object({
 						instruction: NonEmpStrSchema,
-						stimulus: NonEmpMdSchema,
+						stimulus: SimpleImageSchema.describe(
+							'The image crop of the stimulus materials.',
+						),
 					}),
 					__items: {
 						default: {
@@ -112,12 +114,11 @@ export default defineExam({
 		listening: {
 			__tasks: {
 				listen_and_choose_a_response: {
-					__questionContentSchema: z.object({
-						instruction: NonEmpStrSchema,
-					}),
+					__questionContentSchema: EmptyObjectSchema,
 					__items: {
 						default: {
 							__questionContentSchema: z.object({
+								instruction: NonEmpStrSchema,
 								audio: TranscriptedAudioSchema,
 								image: SimpleImageSchema.describe('Illustration of the item.'),
 								options: OptionsSchema,
@@ -128,11 +129,11 @@ export default defineExam({
 				},
 				listen_to_a_conversation: {
 					__questionContentSchema: z.object({
+						instruction: NarratedInstructionSchema,
 						audio: TranscriptedAudioSchema,
 						image: SimpleImageSchema.describe(
 							'The illustration for the conversation.',
 						),
-						instruction: NarratedInstructionSchema,
 					}),
 					__items: {
 						default: {
@@ -146,11 +147,11 @@ export default defineExam({
 				},
 				listen_to_an_academic_talk: {
 					__questionContentSchema: z.object({
+						instruction: NarratedInstructionSchema,
 						audio: TranscriptedAudioSchema,
 						image: SimpleImageSchema.describe(
 							'The illustration of the academic talk.',
 						),
-						instruction: NarratedInstructionSchema,
 					}),
 					__items: {
 						default: {
@@ -164,11 +165,11 @@ export default defineExam({
 				},
 				listen_to_an_announcement: {
 					__questionContentSchema: z.object({
+						instruction: NarratedInstructionSchema,
 						audio: TranscriptedAudioSchema,
 						image: SimpleImageSchema.describe(
 							'The illustration of the Announcement.',
 						),
-						instruction: NarratedInstructionSchema,
 					}),
 					__items: {
 						default: {
@@ -185,12 +186,11 @@ export default defineExam({
 		writing: {
 			__tasks: {
 				build_a_sentence: {
-					__questionContentSchema: z.object({
-						instruction: NonEmpStrSchema,
-					}),
+					__questionContentSchema: EmptyObjectSchema,
 					__items: {
 						default: {
 							__questionContentSchema: z.object({
+								instruction: NonEmpStrSchema,
 								prompt: z.object({
 									speaker1: z
 										.object({
@@ -248,10 +248,11 @@ export default defineExam({
 					__items: {
 						default: {
 							__questionContentSchema: z.object({
-								instruction: NonEmpMdSchema,
 								prompt: z.object({
+									main: NonEmpMdSchema.describe(
+										`${NonEmpMdSchema.description}\nThe prompt main body, which includes scenario description and requirements.`,
+									),
 									subject: NonEmpStrSchema,
-									text: NonEmpMdSchema,
 									to: NonEmpStrSchema,
 								}),
 							}),
@@ -264,8 +265,10 @@ export default defineExam({
 					__items: {
 						default: {
 							__questionContentSchema: z.object({
-								instruction: NonEmpMdSchema,
 								prompt: z.object({
+									main: NonEmpMdSchema.describe(
+										`${NonEmpMdSchema.description}\nThe prompt main body, which includes scenario description and requirements.`,
+									),
 									professor: z.object({
 										name: NonEmpStrSchema.describe(
 											'教授的名字（如 Dr. Gupta）',
@@ -296,10 +299,10 @@ export default defineExam({
 			__tasks: {
 				listen_and_repeat: {
 					__questionContentSchema: z.object({
+						instruction: NarratedInstructionSchema,
 						image: SimpleImageSchema.describe(
 							'Illustration without any highlighted area. (unlike later illustration for each item, which has highlighted area.)',
 						),
-						instruction: NarratedInstructionSchema,
 					}),
 					__items: {
 						default: {
