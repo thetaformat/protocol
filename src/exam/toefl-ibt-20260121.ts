@@ -30,35 +30,38 @@ export default defineExam({
 			__tasks: {
 				complete_the_words: {
 					__questionContentSchema: z.object({
+						instruction: NonEmpStrSchema,
 						prompt: z.object({
 							paragraphs: SimpleParagraphsSchema.describe(
 								`${SimpleParagraphsSchema.description}` +
 									'完整段落文本。挖空处用占位符表示。' +
-									'例如："We might think th{{g1}} prehistoric peo{{g2}} concentrated on{{g3}} on ba{{g4}} survival."',
+									'例如："We might think th{{g1}} preh{{g2}}stori{{g3}} peo{{g4}} concentrated on{{g5}} on ba{{g6}} survival."',
 							),
 						}),
 					}),
 					__items: {
 						default: {
 							__questionContentSchema: z.object({
-								instruction: NonEmpStrSchema,
-								prompt: z.object({
-									gaps: z
-										.object({
-											fullWord: NonEmpStrSchema.optional().describe(
-												'该空位对应的完整单词（例如 "these"）。' +
-													'用于 AI 分析时的上下文理解。',
+								prompt: z
+									.object({
+										fullWord: NonEmpStrSchema.describe(
+											'该空位对应的完整单词（例如 "prehistoric"）。',
+										),
+										gaps: z
+											.object({
+												id: SeqIdSchema.describe(
+													'占位符ID，与 textTemplate 中的占位符对应',
+												),
+												gapLength: PosIntSchema.describe(
+													'该空位缺失的字符数量。极其重要：前端需要根据这个数字渲染出正确宽度（或对应数量）的灰色输入框。',
+												),
+											})
+											.array()
+											.describe(
+												'该单词中所有的挖空配置，比如preh{{g2}}stori{{g3}}，就是两处挖空。',
 											),
-											gapLength: PosIntSchema.describe(
-												'该空位缺失的字符数量。极其重要：前端需要根据这个数字渲染出正确宽度（或对应数量）的灰色输入框。',
-											),
-											id: SeqIdSchema.describe(
-												'占位符ID，与 textTemplate 中的占位符对应',
-											),
-										})
-										.array()
-										.describe('段落中所有的挖空配置'),
-								}),
+									})
+									.describe('一个单词对应一个题目（item）'),
 							}),
 							__responseContentSchema: ResponseContentClozeSchema,
 						},

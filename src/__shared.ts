@@ -248,7 +248,7 @@ export const ResponseContentClozeSchema = z.object({
 	values: z
 		.record(SeqIdSchema, z.string().trim().array())
 		.describe(
-			'1. Key 为 gapId。Value 为该片段的可接受答案数组（例如 ["ese"]）。通常只有一个正确答案，但使用数组可以兼容极少数的拼写变体情况。2. 对于包含多个空的一个 Item（如 con__atu__tions），一次性提交该 Item 下所有 gap 的解答。例如: {"1": "gr", "2": "la"}',
+			'1. Key 为 gapId。Value 为该片段的可接受答案数组（例如 ["ese"]）。通常只有一个正确答案，但使用数组可以兼容极少数的拼写变体情况。2. 对于包含多个空的一个 Item（如 con__atu__tions），一次性提交该 Item 下所有 gap 的解答。例如: {"1": ["gr"], "2": ["la"]}',
 		),
 });
 
