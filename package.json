@@ -59,10 +59,19 @@
 	"devDependencies": {
 		"@types/semver": "^7.7.1",
 		"tsup": "^8.5.1",
-		"typescript": "^6.0.3"
+		"typescript": "^6.0.3",
+		"@types/node": "^22.19.0"
 	},
-	"packageManager": "pnpm@10.22.0",
-	"engines": {
-		"node": "=25.7.0"
+	"devEngines": {
+		"runtime": {
+			"name": "node",
+			"version": ">=22.19.0",
+			"onFail": "error"
+		},
+		"packageManager": {
+			"name": "pnpm",
+			"version": ">=10.22.0",
+			"onFail": "error"
+		}
 	}
 }
