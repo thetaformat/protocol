@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 import {
 	EmptyObjectSchema,
+	InformativeImageSchema,
 	NarratedInstructionSchema,
 	NonEmpMdSchema,
 	NonEmpStrSchema,
@@ -98,8 +99,8 @@ export default defineExam({
 				read_in_daily_life: {
 					__questionContentSchema: z.object({
 						instruction: NonEmpStrSchema,
-						stimulus: SimpleImageSchema.describe(
-							'The image crop of the stimulus materials.',
+						stimulus: InformativeImageSchema.describe(
+							`${InformativeImageSchema.description}\nThe image crop of the stimulus materials.`,
 						),
 					}),
 					__items: {
