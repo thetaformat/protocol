@@ -90,6 +90,14 @@ export const SimpleImageSchema = z.object({
 });
 export type SimpleImage = z.infer<typeof SimpleImageSchema>;
 
+export const InformativeImageSchema = SimpleImageSchema.extend({
+	formatCode: z.enum(['informative_image']),
+}).describe(
+	'Image that bears essential question information rather than pure illustration.',
+);
+
+export type InformativeImage = z.infer<typeof InformativeImageSchema>;
+
 export const SimpleAudioSchema = z.object({
 	formatCode: z.enum(['simple_audio']),
 	fileKey: FileKeySchema,
