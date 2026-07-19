@@ -338,7 +338,7 @@ export const ResponseContentSlotMappingSchema = z.object({
 	placements: z
 		.record(SeqIdSchema, SeqIdSchema)
 		.describe(
-			'Key 为 gapId (插槽ID)，Value 为 chunkId (词块ID)。O(1) 匹配判分，且完美处理干扰项被剩下的情况。',
+			'Key 为 targetId/gapId/slotId (插槽ID)，Value 为 candidateId/chunkId (候选选项ID)。将正确的候选选项Id填入对应的插槽。兼容干扰项被剩下的情况。',
 		),
 });
 
