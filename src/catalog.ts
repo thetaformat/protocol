@@ -1,10 +1,6 @@
 import z from 'zod';
 
-import {
-	NonEmpStrSchema,
-	OffsetDatetimeStrSchema,
-	PosIntSchema,
-} from './__shared';
+import { OffsetDatetimeStrSchema, PosIntSchema } from './__shared';
 import { ManifestPaperSchema } from './manifest';
 
 export const CatalogPaperSchema = ManifestPaperSchema.pick({
@@ -25,7 +21,6 @@ export type CatalogPaper = z.infer<typeof CatalogPaperSchema>;
  * catalog.json schema
  */
 export const CatalogSchema = z.object({
-	publisherName: NonEmpStrSchema,
 	createdAt: OffsetDatetimeStrSchema,
 	updatedAt: OffsetDatetimeStrSchema,
 	papers: CatalogPaperSchema.array(),
