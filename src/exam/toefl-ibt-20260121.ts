@@ -29,8 +29,10 @@ export default defineExam({
 	displayName: { en: 'TOEFL iBT 2026', zh: '托福 iBT 2026' },
 	__sections: {
 		reading: {
+			__displayName: { en: 'Reading', zh: '阅读' },
 			__tasks: {
 				complete_the_words: {
+					__displayName: { en: 'Complete the Words', zh: '完形填空题' },
 					__questionContentSchema: z.object({
 						instruction: NonEmpStrSchema,
 						prompt: z.object({
@@ -43,6 +45,7 @@ export default defineExam({
 					}),
 					__items: {
 						default: {
+							__displayName: { en: 'Default', zh: '唯一子题型' },
 							__questionContentSchema: z.object({
 								prompt: z
 									.object({
@@ -70,6 +73,10 @@ export default defineExam({
 					},
 				},
 				read_an_academic_passage: {
+					__displayName: {
+						en: 'Read an Academic Passage',
+						zh: '学术文章阅读题',
+					},
 					__questionContentSchema: z.object({
 						passage: SimplePassageSchema.describe(
 							"高亮规范：如果段落内有需要配合题目高亮的单词或句子，必须使用包裹型标签，例如：'This is a <mark id='id'>highlighted word</mark>.'",
@@ -77,6 +84,7 @@ export default defineExam({
 					}),
 					__items: {
 						default: {
+							__displayName: { en: 'Default', zh: '唯一子题型' },
 							__questionContentSchema: z.object({
 								options: OptionsSchema,
 								prompt: z.object({
@@ -98,6 +106,10 @@ export default defineExam({
 					},
 				},
 				read_in_daily_life: {
+					__displayName: {
+						en: 'Read in Daily Life',
+						zh: '日常生活阅读题',
+					},
 					__questionContentSchema: z.object({
 						instruction: NonEmpStrSchema,
 						stimulus: InformativeImageSchema.describe(
@@ -106,6 +118,7 @@ export default defineExam({
 					}),
 					__items: {
 						default: {
+							__displayName: { en: 'Default', zh: '唯一子题型' },
 							__questionContentSchema: z.object({
 								options: OptionsSchema,
 								stem: StemSchema,
@@ -117,11 +130,17 @@ export default defineExam({
 			},
 		},
 		listening: {
+			__displayName: { en: 'Listening', zh: '听力' },
 			__tasks: {
 				listen_and_choose_a_response: {
+					__displayName: {
+						en: 'Listen and Choose a Response',
+						zh: '短音频听力题',
+					},
 					__questionContentSchema: EmptyObjectSchema,
 					__items: {
 						default: {
+							__displayName: { en: 'Default', zh: '唯一子题型' },
 							__questionContentSchema: z.object({
 								instruction: NonEmpStrSchema,
 								audio: TranscriptedAudioSchema,
@@ -133,6 +152,10 @@ export default defineExam({
 					},
 				},
 				listen_to_a_conversation: {
+					__displayName: {
+						en: 'Listen to a Conversation',
+						zh: '对话听力题',
+					},
 					__questionContentSchema: z.object({
 						instruction: NarratedInstructionSchema,
 						audio: TranscriptedAudioSchema,
@@ -142,6 +165,7 @@ export default defineExam({
 					}),
 					__items: {
 						default: {
+							__displayName: { en: 'Default', zh: '唯一子题型' },
 							__questionContentSchema: z.object({
 								options: OptionsSchema,
 								stem: StemSchema,
@@ -151,6 +175,10 @@ export default defineExam({
 					},
 				},
 				listen_to_an_academic_talk: {
+					__displayName: {
+						en: 'Listen to an Academic Talk',
+						zh: '学术听力题',
+					},
 					__questionContentSchema: z.object({
 						instruction: NarratedInstructionSchema,
 						audio: TranscriptedAudioSchema,
@@ -160,6 +188,7 @@ export default defineExam({
 					}),
 					__items: {
 						default: {
+							__displayName: { en: 'Default', zh: '唯一子题型' },
 							__questionContentSchema: z.object({
 								options: OptionsSchema,
 								stem: StemSchema,
@@ -169,6 +198,10 @@ export default defineExam({
 					},
 				},
 				listen_to_an_announcement: {
+					__displayName: {
+						en: 'Listen to an Announcement',
+						zh: '公告听力题',
+					},
 					__questionContentSchema: z.object({
 						instruction: NarratedInstructionSchema,
 						audio: TranscriptedAudioSchema,
@@ -178,6 +211,7 @@ export default defineExam({
 					}),
 					__items: {
 						default: {
+							__displayName: { en: 'Default', zh: '唯一子题型' },
 							__questionContentSchema: z.object({
 								options: OptionsSchema,
 								stem: StemSchema,
@@ -189,11 +223,17 @@ export default defineExam({
 			},
 		},
 		writing: {
+			__displayName: { en: 'Writing', zh: '写作' },
 			__tasks: {
 				build_a_sentence: {
+					__displayName: {
+						en: 'Build a Sentence',
+						zh: '句子构建题',
+					},
 					__questionContentSchema: EmptyObjectSchema,
 					__items: {
 						default: {
+							__displayName: { en: 'Default', zh: '唯一子题型' },
 							__questionContentSchema: z.object({
 								instruction: NonEmpStrSchema,
 								prompt: z.object({
@@ -249,9 +289,11 @@ export default defineExam({
 					},
 				},
 				write_an_email: {
+					__displayName: { en: 'Write an Email', zh: '撰写电子邮件' },
 					__questionContentSchema: EmptyObjectSchema,
 					__items: {
 						default: {
+							__displayName: { en: 'Default', zh: '唯一子题型' },
 							__questionContentSchema: z.object({
 								prompt: z.object({
 									main: NonEmpMdSchema.describe(
@@ -266,9 +308,14 @@ export default defineExam({
 					},
 				},
 				write_for_an_academic_discussion: {
+					__displayName: {
+						en: 'Write for an Academic Discussion',
+						zh: '学术讨论写作',
+					},
 					__questionContentSchema: EmptyObjectSchema,
 					__items: {
 						default: {
+							__displayName: { en: 'Default', zh: '唯一子题型' },
 							__questionContentSchema: z.object({
 								prompt: z.object({
 									main: NonEmpMdSchema.describe(
@@ -301,8 +348,10 @@ export default defineExam({
 			},
 		},
 		speaking: {
+			__displayName: { en: 'Speaking', zh: '口语' },
 			__tasks: {
 				listen_and_repeat: {
+					__displayName: { en: 'Default', zh: '唯一子题型' },
 					__questionContentSchema: z.object({
 						instruction: NarratedInstructionSchema,
 						image: SimpleImageSchema.describe(
@@ -311,6 +360,7 @@ export default defineExam({
 					}),
 					__items: {
 						default: {
+							__displayName: { en: 'Default', zh: '唯一子题型' },
 							__questionContentSchema: z.object({
 								instruction: NonEmpStrSchema,
 								audio: TranscriptedAudioSchema,
@@ -323,6 +373,7 @@ export default defineExam({
 					},
 				},
 				take_an_interview: {
+					__displayName: { en: 'Take an Interview', zh: '面试口语问答' },
 					__questionContentSchema: z.object({
 						instruction: NarratedInstructionSchema,
 						video: SilentNoddingVideoSchema.describe(
@@ -331,6 +382,7 @@ export default defineExam({
 					}),
 					__items: {
 						default: {
+							__displayName: { en: 'Default', zh: '唯一子题型' },
 							__questionContentSchema: z.object({
 								instruction: NonEmpStrSchema,
 								video: TranscriptedVideoSchema.describe(

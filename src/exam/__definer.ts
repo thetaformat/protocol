@@ -28,11 +28,14 @@ type ToEnumLike<T extends string> = { [K in T]: K };
 
 interface LooseNestedSections {
 	[S: string]: {
+		__displayName: TransDict;
 		__tasks: {
 			[Task: string]: {
+				__displayName: TransDict;
 				__questionContentSchema: z.ZodObject<any>;
 				__items: {
 					[Item: string]: {
+						__displayName: TransDict;
 						__questionContentSchema: z.ZodObject<any>;
 						__responseContentSchema: z.ZodObject<any>;
 					};
@@ -123,12 +126,14 @@ type GetResponseSchemaUnion<
 	}[keyof TSections[S]['__tasks'] & string];
 }[keyof TSections & string];
 
-// 1. 校验 Item 层级：只允许 __questionContentSchema 和 __responseContentSchema
+// 1. 校验 Item 层级：只允许 __displayName, __questionContentSchema 和 __responseContentSchema
 type ValidateItem<TItem> = TItem extends {
+	__displayName: TransDict;
 	__questionContentSchema: z.ZodObject<infer ItemShape>;
 	__responseContentSchema: z.ZodObject<infer ResponseShape>;
 }
 	? {
+			__displayName: TransDict;
 			__questionContentSchema: z.ZodObject<{
 				[K in keyof ItemShape]: K extends AllowedQuestionContentKey
 					? ItemShape[K] // 🌟 修正：将 TaskShape[K] 改为 ItemShape[K]
@@ -139,18 +144,20 @@ type ValidateItem<TItem> = TItem extends {
 			[
 				K in Exclude<
 					keyof TItem,
-					'__questionContentSchema' | '__responseContentSchema'
+					'__displayName' | '__questionContentSchema' | '__responseContentSchema'
 				>
 			]: never;
 		}
 	: never;
 
-// 2. 校验 Task 层级：只允许 __questionContentSchema 和 __items
+// 2. 校验 Task 层级：只允许 __displayName, __questionContentSchema 和 __items
 type ValidateTask<TTask> = TTask extends {
+	__displayName: TransDict;
 	__questionContentSchema: z.ZodObject<infer TaskShape>;
 	__items: infer Items;
 }
 	? {
+			__displayName: TransDict;
 			__questionContentSchema: z.ZodObject<{
 				[K in keyof TaskShape]: K extends AllowedQuestionContentKey
 					? TaskShape[K]
@@ -161,19 +168,28 @@ type ValidateTask<TTask> = TTask extends {
 			};
 		} & {
 			// 强约束：多余字段映射为 never
-			[K in Exclude<keyof TTask, '__questionContentSchema' | '__items'>]: never;
+			[
+				K in Exclude<
+					keyof TTask,
+					'__displayName' | '__questionContentSchema' | '__items'
+				>
+			]: never;
 		}
 	: never;
 
-// 3. 校验 Section 层级：只允许 __tasks
-type ValidateSection<TSection> = TSection extends { __tasks: infer Tasks }
+// 3. 校验 Section 层级：只允许 __displayName 和 __tasks
+type ValidateSection<TSection> = TSection extends {
+	__displayName: TransDict;
+	__tasks: infer Tasks;
+}
 	? {
+			__displayName: TransDict;
 			__tasks: {
 				[Task in keyof Tasks]: ValidateTask<Tasks[Task]>;
 			};
 		} & {
 			// 强约束：多余字段映射为 never
-			[K in Exclude<keyof TSection, '__tasks'>]: never;
+			[K in Exclude<keyof TSection, '__displayName' | '__tasks'>]: never;
 		}
 	: never;
 
@@ -213,10 +229,32 @@ export function defineExam<
 
 		const sectionTyped = sectionVal as any;
 
+		// 运行时校验 Section 层的 __displayName
+		const sectionDisplayName = sectionTyped.__displayName;
+		const sectionDisplayNameParseResult =
+			TransDictSchema.safeParse(sectionDisplayName);
+		if (!sectionDisplayNameParseResult.success) {
+			throw new Error(
+				`[Validation fail] Section "${sectionCode}" has an invalid displayName. ` +
+					`Error: ${sectionDisplayNameParseResult.error.message}`,
+			);
+		}
+
 		for (const [taskKey, taskVal] of Object.entries(sectionTyped.__tasks)) {
 			const taskTyped = taskVal as any;
 			const taskCode = `${sectionCode}_${taskKey}`;
 			taskCodes.push(taskCode);
+
+			// 运行时校验 Task 层的 __displayName
+			const taskDisplayName = taskTyped.__displayName;
+			const taskDisplayNameParseResult =
+				TransDictSchema.safeParse(taskDisplayName);
+			if (!taskDisplayNameParseResult.success) {
+				throw new Error(
+					`[Validation fail] Task "${taskCode}" has an invalid displayName. ` +
+						`Error: ${taskDisplayNameParseResult.error.message}`,
+				);
+			}
 
 			const taskKeys = Object.keys(
 				taskTyped.__questionContentSchema.shape || {},
@@ -241,6 +279,17 @@ export function defineExam<
 				const itemTyped = itemVal as any;
 				const itemCode = `${taskCode}_${itemKey}`;
 				itemCodes.push(itemCode);
+
+				// 运行时校验 Item 层的 __displayName
+				const itemDisplayName = itemTyped.__displayName;
+				const itemDisplayNameParseResult =
+					TransDictSchema.safeParse(itemDisplayName);
+				if (!itemDisplayNameParseResult.success) {
+					throw new Error(
+						`[Validation fail] Item "${itemCode}" has an invalid displayName. ` +
+							`Error: ${itemDisplayNameParseResult.error.message}`,
+					);
+				}
 
 				const itemKeys = Object.keys(
 					itemTyped.__questionContentSchema.shape || {},
