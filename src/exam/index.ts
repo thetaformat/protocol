@@ -2,6 +2,8 @@ import z from 'zod';
 
 import toefl_ibt_20260121 from './toefl-ibt-20260121';
 
+export const examDefs = { toefl_ibt_20260121 } satisfies Record<ExamCode, any>;
+
 export const ExamCodeSchema = z.enum([
 	...toefl_ibt_20260121.ExamCodeSchema.options,
 ]);
