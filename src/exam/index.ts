@@ -107,6 +107,36 @@ export function extractDiscriminatedUnionMember<
 	return memberSchema as z.ZodType<Extract<T, Record<D, V>>>;
 }
 
+export function getTaskContentSchema<V extends TaskCode>(
+	taskCode: V,
+): z.ZodType<Extract<TaskContent, { taskCode: V }>> {
+	return extractDiscriminatedUnionMember(
+		TaskContentSchema,
+		'taskCode',
+		taskCode,
+	);
+}
+
+export function getItemContentSchema<V extends ItemCode>(
+	itemCode: V,
+): z.ZodType<Extract<ItemContent, { itemCode: V }>> {
+	return extractDiscriminatedUnionMember(
+		ItemContentSchema,
+		'itemCode',
+		itemCode,
+	);
+}
+
+export function getResponseContentSchema<V extends ItemCode>(
+	itemCode: V,
+): z.ZodType<Extract<ResponseContent, { itemCode: V }>> {
+	return extractDiscriminatedUnionMember(
+		ResponseContentSchema,
+		'itemCode',
+		itemCode,
+	);
+}
+
 // 1. 在模块加载时，一次性扁平化聚合所有静态定义的 displayNames
 const globalDisplayNames = Object.values(examDefs).reduce(
 	(acc, exam) => {
