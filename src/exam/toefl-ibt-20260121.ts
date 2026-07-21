@@ -26,6 +26,7 @@ import { defineExam } from './__definer';
 
 export default defineExam({
 	code: 'toefl_ibt_20260121',
+	displayName: { en: 'TOEFL iBT 2026', zh: '托福 iBT 2026' },
 	__sections: {
 		reading: {
 			__tasks: {

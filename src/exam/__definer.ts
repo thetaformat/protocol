@@ -3,6 +3,8 @@ import z from 'zod';
 import {
 	type AllowedQuestionContentKey,
 	AllowedQuestionContentKeySchema,
+	type TransDict,
+	TransDictSchema,
 } from '../__shared';
 
 type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
@@ -52,8 +54,9 @@ type GetTaskKeys<TSections extends LooseNestedSections> = {
 type GetItemKeys<TSections extends LooseNestedSections> = {
 	[S in keyof TSections & string]: {
 		[Task in keyof TSections[S]['__tasks'] & string]: {
-			[Item in keyof TSections[S]['__tasks'][Task]['__items'] &
-				string]: `${S}_${Task}_${Item}`;
+			[
+				Item in keyof TSections[S]['__tasks'][Task]['__items'] & string
+			]: `${S}_${Task}_${Item}`;
 		}[keyof TSections[S]['__tasks'][Task]['__items'] & string];
 	}[keyof TSections[S]['__tasks'] & string];
 }[keyof TSections & string];
@@ -92,8 +95,9 @@ type GetItemSchemaUnion<
 > = {
 	[S in keyof TSections & string]: {
 		[Task in keyof TSections[S]['__tasks'] & string]: {
-			[Item in keyof TSections[S]['__tasks'][Task]['__items'] &
-				string]: z.ZodObject<
+			[
+				Item in keyof TSections[S]['__tasks'][Task]['__items'] & string
+			]: z.ZodObject<
 				TSections[S]['__tasks'][Task]['__items'][Item]['__questionContentSchema']['shape'] & {
 					itemCode: z.ZodEnum<ToEnumLike<`${TCode}_${S}_${Task}_${Item}`>>;
 				}
@@ -108,8 +112,9 @@ type GetResponseSchemaUnion<
 > = {
 	[S in keyof TSections & string]: {
 		[Task in keyof TSections[S]['__tasks'] & string]: {
-			[Item in keyof TSections[S]['__tasks'][Task]['__items'] &
-				string]: z.ZodObject<
+			[
+				Item in keyof TSections[S]['__tasks'][Task]['__items'] & string
+			]: z.ZodObject<
 				TSections[S]['__tasks'][Task]['__items'][Item]['__responseContentSchema']['shape'] & {
 					itemCode: z.ZodEnum<ToEnumLike<`${TCode}_${S}_${Task}_${Item}`>>;
 				}
@@ -131,10 +136,12 @@ type ValidateItem<TItem> = TItem extends {
 			}>;
 			__responseContentSchema: z.ZodObject<ResponseShape>;
 		} & {
-			[K in Exclude<
-				keyof TItem,
-				'__questionContentSchema' | '__responseContentSchema'
-			>]: never;
+			[
+				K in Exclude<
+					keyof TItem,
+					'__questionContentSchema' | '__responseContentSchema'
+				>
+			]: never;
 		}
 	: never;
 
@@ -177,10 +184,21 @@ type ValidateNestedSections<TSections> = {
 
 export function defineExam<
 	const TCode extends string,
+	const TDisplayName extends TransDict,
 	const TSections extends LooseNestedSections &
 		ValidateNestedSections<TSections>,
->(input: { code: TCode; __sections: TSections }) {
+>(input: { code: TCode; displayName: TDisplayName; __sections: TSections }) {
 	const examCode = input.code;
+	const displayName = input.displayName;
+
+	const displayNameParseResult = TransDictSchema.safeParse(displayName);
+	if (!displayNameParseResult.success) {
+		throw new Error(
+			`[Validation fail] Exam "${examCode}" has an invalid displayName. ` +
+				`Error: ${displayNameParseResult.error.message}`,
+		);
+	}
+
 	const sectionCodes: string[] = [];
 	const taskCodes: string[] = [];
 	const itemCodes: string[] = [];
@@ -260,6 +278,7 @@ export function defineExam<
 	};
 
 	return {
+		displayName,
 		ExamCodeSchema: z.enum([examCode]) as unknown as z.ZodEnum<
 			ToEnumLike<TCode>
 		>,
