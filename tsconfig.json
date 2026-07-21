@@ -18,10 +18,7 @@
 		"emitDeclarationOnly": true,
 		"esModuleInterop": true,
 		"noFallthroughCasesInSwitch": true,
-		"rootDir": "./src",
-		"paths": {
-			"#/*": ["./src/*"]
-		}
+		"rootDir": "./src"
 	},
 	"include": ["**/*"],
 	"exclude": ["node_modules", "dist", "**/*.test.ts", "tsup.config.ts"]

@@ -1,7 +1,6 @@
 import z from 'zod';
 
-import type { LangCode, TransDict } from '#/__shared';
-
+import type { LangCode, TransDict } from '../__shared';
 import toefl_ibt_20260121 from './toefl-ibt-20260121';
 
 export const examDefs = { toefl_ibt_20260121 } satisfies Record<ExamCode, any>;
