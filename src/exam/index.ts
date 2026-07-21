@@ -1,5 +1,7 @@
 import z from 'zod';
 
+import type { LangCode, TransDict } from '#/__shared';
+
 import toefl_ibt_20260121 from './toefl-ibt-20260121';
 
 export const examDefs = { toefl_ibt_20260121 } satisfies Record<ExamCode, any>;
@@ -103,4 +105,23 @@ export function extractDiscriminatedUnionMember<
 	}
 
 	return memberSchema as z.ZodType<Extract<T, Record<D, V>>>;
+}
+
+// 1. 在模块加载时，一次性扁平化聚合所有静态定义的 displayNames
+const globalDisplayNames = Object.values(examDefs).reduce(
+	(acc, exam) => {
+		return Object.assign(acc, exam.displayNames);
+	},
+	{} as Record<ExamCode | SectionCode | TaskCode | ItemCode, TransDict>,
+);
+
+/**
+ * 🌟 全局、强类型安全的多语言 displayName 解析函数
+ */
+export function getDisplayName(
+	code: ExamCode | SectionCode | TaskCode | ItemCode,
+	lang: LangCode,
+): string {
+	// 强类型与 Schema 约束保障：code 必定存在，且其下的 lang 必定有值
+	return globalDisplayNames[code][lang];
 }

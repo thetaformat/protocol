@@ -126,6 +126,15 @@ type GetResponseSchemaUnion<
 	}[keyof TSections[S]['__tasks'] & string];
 }[keyof TSections & string];
 
+type GetDisplayNamesKeys<
+	TCode extends string,
+	TSections extends LooseNestedSections,
+> =
+	| TCode
+	| GetSectionCodes<TCode, TSections>
+	| GetTaskCodes<TCode, TSections>
+	| GetItemCodes<TCode, TSections>;
+
 // 1. 校验 Item 层级：只允许 __displayName, __questionContentSchema 和 __responseContentSchema
 type ValidateItem<TItem> = TItem extends {
 	__displayName: TransDict;
@@ -136,7 +145,7 @@ type ValidateItem<TItem> = TItem extends {
 			__displayName: TransDict;
 			__questionContentSchema: z.ZodObject<{
 				[K in keyof ItemShape]: K extends AllowedQuestionContentKey
-					? ItemShape[K] // 🌟 修正：将 TaskShape[K] 改为 ItemShape[K]
+					? ItemShape[K]
 					: never;
 			}>;
 			__responseContentSchema: z.ZodObject<ResponseShape>;
@@ -144,7 +153,9 @@ type ValidateItem<TItem> = TItem extends {
 			[
 				K in Exclude<
 					keyof TItem,
-					'__displayName' | '__questionContentSchema' | '__responseContentSchema'
+					| '__displayName'
+					| '__questionContentSchema'
+					| '__responseContentSchema'
 				>
 			]: never;
 		}
@@ -205,9 +216,9 @@ export function defineExam<
 		ValidateNestedSections<TSections>,
 >(input: { code: TCode; displayName: TDisplayName; __sections: TSections }) {
 	const examCode = input.code;
-	const displayName = input.displayName;
+	const examDisplayName = input.displayName;
 
-	const displayNameParseResult = TransDictSchema.safeParse(displayName);
+	const displayNameParseResult = TransDictSchema.safeParse(examDisplayName);
 	if (!displayNameParseResult.success) {
 		throw new Error(
 			`[Validation fail] Exam "${examCode}" has an invalid displayName. ` +
@@ -222,6 +233,11 @@ export function defineExam<
 	const taskSchemas: any[] = [];
 	const itemSchemas: any[] = [];
 	const responseSchemas: any[] = [];
+
+	// 🌟 声明扁平化 displayNames 键值账本
+	const displayNames: Record<string, TransDict> = {
+		[examCode]: examDisplayName,
+	};
 
 	for (const [sectionKey, sectionVal] of Object.entries(input.__sections)) {
 		const sectionCode = `${examCode}_${sectionKey}`;
@@ -240,6 +256,9 @@ export function defineExam<
 			);
 		}
 
+		// 🌟 收集 Section 的 displayName
+		displayNames[sectionCode] = sectionDisplayName;
+
 		for (const [taskKey, taskVal] of Object.entries(sectionTyped.__tasks)) {
 			const taskTyped = taskVal as any;
 			const taskCode = `${sectionCode}_${taskKey}`;
@@ -255,6 +274,9 @@ export function defineExam<
 						`Error: ${taskDisplayNameParseResult.error.message}`,
 				);
 			}
+
+			// 🌟 收集 Task 的 displayName
+			displayNames[taskCode] = taskDisplayName;
 
 			const taskKeys = Object.keys(
 				taskTyped.__questionContentSchema.shape || {},
@@ -290,6 +312,9 @@ export function defineExam<
 							`Error: ${itemDisplayNameParseResult.error.message}`,
 					);
 				}
+
+				// 🌟 收集 Item 的 displayName
+				displayNames[itemCode] = itemDisplayName;
 
 				const itemKeys = Object.keys(
 					itemTyped.__questionContentSchema.shape || {},
@@ -327,7 +352,10 @@ export function defineExam<
 	};
 
 	return {
-		displayName,
+		displayNames: displayNames as unknown as Record<
+			GetDisplayNamesKeys<TCode, TSections>,
+			TransDict
+		>,
 		ExamCodeSchema: z.enum([examCode]) as unknown as z.ZodEnum<
 			ToEnumLike<TCode>
 		>,
