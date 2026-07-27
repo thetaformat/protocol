@@ -351,7 +351,7 @@ export default defineExam({
 			__displayName: { en: 'Speaking', zh: '口语' },
 			__tasks: {
 				listen_and_repeat: {
-					__displayName: { en: 'Default', zh: '唯一子题型' },
+					__displayName: { en: 'Listen and Repeat', zh: '听句子复述' },
 					__questionContentSchema: z.object({
 						instruction: NarratedInstructionSchema,
 						image: SimpleImageSchema.describe(
