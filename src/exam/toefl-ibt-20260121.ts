@@ -38,8 +38,8 @@ export default defineExam({
 						prompt: z.object({
 							paragraphs: SimpleParagraphsSchema.describe(
 								`${SimpleParagraphsSchema.description}` +
-									'完整段落文本。挖空处用占位符表示。' +
-									'例如："We might think th{{g1}} preh{{g2}}stori{{g3}} peo{{g4}} concentrated on{{g5}} on ba{{g6}} survival."',
+									`完整段落文本。挖空处用占位符表示。站位id必须为：${SeqIdSchema.description}` +
+									'例如："We might think th{{1}} preh{{2}}stori{{3}} peo{{4}} concentrated on{{5}} on ba{{6}} survival."',
 							),
 						}),
 					}),
@@ -63,7 +63,7 @@ export default defineExam({
 											})
 											.array()
 											.describe(
-												'该单词中所有的挖空配置，比如preh{{g2}}stori{{g3}}，就是两处挖空。',
+												'该单词中所有的挖空配置，比如preh{{1}}stori{{2}}，就是两处挖空。',
 											),
 									})
 									.describe('一个单词对应一个题目（item）'),
@@ -269,7 +269,7 @@ export default defineExam({
 												.enum(['speaker1', 'speaker2'])
 												.describe('标识当前气泡由谁发言'),
 											content: NonEmpStrSchema.describe(
-												`对话内容。普通上下文直接写纯文本；如果是需要拼接的目标句，则在句中包含占位符。例如："Yes! The {{id1}} {{id2}} {{id3}} fantastic. How about you?" 站位id必须为：${SeqIdSchema.description}`,
+												`对话内容。普通上下文直接写纯文本；如果是需要拼接的目标句，则在句中包含占位符。例如："Yes! The {{1}} {{2}} {{3}} fantastic. How about you?" 站位id必须为：${SeqIdSchema.description}`,
 											),
 											isTarget: z
 												.boolean()
