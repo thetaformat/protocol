@@ -45,7 +45,7 @@ export default defineExam({
 					}),
 					__items: {
 						default: {
-							__displayName: { en: 'Default', zh: '唯一子题型' },
+							__displayName: { en: 'Default', zh: '默认题型' },
 							__questionContentSchema: z.object({
 								prompt: z
 									.object({
@@ -84,7 +84,7 @@ export default defineExam({
 					}),
 					__items: {
 						default: {
-							__displayName: { en: 'Default', zh: '唯一子题型' },
+							__displayName: { en: 'Default', zh: '默认题型' },
 							__questionContentSchema: z.object({
 								options: OptionsSchema,
 								prompt: z.object({
@@ -118,7 +118,7 @@ export default defineExam({
 					}),
 					__items: {
 						default: {
-							__displayName: { en: 'Default', zh: '唯一子题型' },
+							__displayName: { en: 'Default', zh: '默认题型' },
 							__questionContentSchema: z.object({
 								options: OptionsSchema,
 								stem: StemSchema,
@@ -140,7 +140,7 @@ export default defineExam({
 					__questionContentSchema: EmptyObjectSchema,
 					__items: {
 						default: {
-							__displayName: { en: 'Default', zh: '唯一子题型' },
+							__displayName: { en: 'Default', zh: '默认题型' },
 							__questionContentSchema: z.object({
 								instruction: NonEmpStrSchema,
 								audio: TranscriptedAudioSchema,
@@ -165,7 +165,7 @@ export default defineExam({
 					}),
 					__items: {
 						default: {
-							__displayName: { en: 'Default', zh: '唯一子题型' },
+							__displayName: { en: 'Default', zh: '默认题型' },
 							__questionContentSchema: z.object({
 								options: OptionsSchema,
 								stem: StemSchema,
@@ -188,7 +188,7 @@ export default defineExam({
 					}),
 					__items: {
 						default: {
-							__displayName: { en: 'Default', zh: '唯一子题型' },
+							__displayName: { en: 'Default', zh: '默认题型' },
 							__questionContentSchema: z.object({
 								options: OptionsSchema,
 								stem: StemSchema,
@@ -211,7 +211,7 @@ export default defineExam({
 					}),
 					__items: {
 						default: {
-							__displayName: { en: 'Default', zh: '唯一子题型' },
+							__displayName: { en: 'Default', zh: '默认题型' },
 							__questionContentSchema: z.object({
 								options: OptionsSchema,
 								stem: StemSchema,
@@ -233,7 +233,7 @@ export default defineExam({
 					__questionContentSchema: EmptyObjectSchema,
 					__items: {
 						default: {
-							__displayName: { en: 'Default', zh: '唯一子题型' },
+							__displayName: { en: 'Default', zh: '默认题型' },
 							__questionContentSchema: z.object({
 								instruction: NonEmpStrSchema,
 								prompt: z.object({
@@ -293,7 +293,7 @@ export default defineExam({
 					__questionContentSchema: EmptyObjectSchema,
 					__items: {
 						default: {
-							__displayName: { en: 'Default', zh: '唯一子题型' },
+							__displayName: { en: 'Default', zh: '默认题型' },
 							__questionContentSchema: z.object({
 								prompt: z.object({
 									main: NonEmpMdSchema.describe(
@@ -315,7 +315,7 @@ export default defineExam({
 					__questionContentSchema: EmptyObjectSchema,
 					__items: {
 						default: {
-							__displayName: { en: 'Default', zh: '唯一子题型' },
+							__displayName: { en: 'Default', zh: '默认题型' },
 							__questionContentSchema: z.object({
 								prompt: z.object({
 									main: NonEmpMdSchema.describe(
@@ -360,7 +360,7 @@ export default defineExam({
 					}),
 					__items: {
 						default: {
-							__displayName: { en: 'Default', zh: '唯一子题型' },
+							__displayName: { en: 'Default', zh: '默认题型' },
 							__questionContentSchema: z.object({
 								instruction: NonEmpStrSchema,
 								audio: TranscriptedAudioSchema,
@@ -382,7 +382,7 @@ export default defineExam({
 					}),
 					__items: {
 						default: {
-							__displayName: { en: 'Default', zh: '唯一子题型' },
+							__displayName: { en: 'Default', zh: '默认题型' },
 							__questionContentSchema: z.object({
 								instruction: NonEmpStrSchema,
 								video: TranscriptedVideoSchema.describe(
