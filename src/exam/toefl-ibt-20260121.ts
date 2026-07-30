@@ -33,40 +33,36 @@ export default defineExam({
 			__tasks: {
 				complete_the_words: {
 					__displayName: { en: 'Complete the Words', zh: '完形填空题' },
-					__questionContentSchema: z.object({
-						instruction: NonEmpStrSchema,
-						prompt: z.object({
-							paragraphs: SimpleParagraphsSchema.describe(
-								`${SimpleParagraphsSchema.description}` +
-									`完整段落文本。挖空处用占位符表示。站位id必须为：${SeqIdSchema.description}` +
-									'例如："We might think th{{1}} preh{{2}}stori{{3}} peo{{4}} concentrated on{{5}} on ba{{6}} survival."',
-							),
-						}),
-					}),
+					__questionContentSchema: EmptyObjectSchema,
 					__items: {
 						default: {
 							__displayName: { en: 'Default', zh: '默认题型' },
 							__questionContentSchema: z.object({
-								prompt: z
-									.object({
-										fullWord: NonEmpStrSchema.describe(
-											'该空位对应的完整单词（例如 "prehistoric"）。',
-										),
-										gaps: z
-											.object({
-												id: SeqIdSchema.describe(
-													'占位符ID，与 textTemplate 中的占位符对应',
+								instruction: NonEmpStrSchema,
+								prompt: z.object({
+									paragraphs: SimpleParagraphsSchema.describe(
+										`${SimpleParagraphsSchema.description}` +
+											`完整段落文本。挖空处用占位符表示。站位id必须为：${SeqIdSchema.description}` +
+											'例如："We might think th{{1}} preh{{2}}toric peo{{3}} concentrated on{{4}} on ba{{5}} survi{{6}}."',
+									),
+									targets: z
+										.record(
+											SeqIdSchema.describe(
+												'所有占位符ID，与 textTemplate 中的占位符对应',
+											),
+											z.object({
+												fullWord: NonEmpStrSchema.describe(
+													'该空位对应的完整单词（例如 "prehistoric"）。',
 												),
 												gapLength: PosIntSchema.describe(
 													'该空位缺失的字符数量。极其重要：前端需要根据这个数字渲染出正确宽度（或对应数量）的灰色输入框。',
 												),
-											})
-											.array()
-											.describe(
-												'该单词中所有的挖空配置，比如preh{{1}}stori{{2}}，就是两处挖空。',
-											),
-									})
-									.describe('一个单词对应一个题目（item）'),
+											}),
+										)
+										.describe(
+											'整篇文本所有空算作一个题目（item），具体而言是testlet型item。',
+										),
+								}),
 							}),
 							__responseContentSchema: ResponseContentClozeSchema,
 						},
