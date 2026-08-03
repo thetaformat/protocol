@@ -32,7 +32,7 @@ export default defineExam({
 			__displayName: { en: 'Reading', zh: '阅读' },
 			__tasks: {
 				complete_the_words: {
-					__displayName: { en: 'Complete the Words', zh: '完形填空题' },
+					__displayName: { en: 'Complete the Words', zh: '完形填空' },
 					__questionContentSchema: EmptyObjectSchema,
 					__items: {
 						default: {
@@ -71,7 +71,7 @@ export default defineExam({
 				read_an_academic_passage: {
 					__displayName: {
 						en: 'Read an Academic Passage',
-						zh: '学术文章阅读题',
+						zh: '学术文章阅读',
 					},
 					__questionContentSchema: z.object({
 						passage: SimplePassageSchema.describe(
@@ -104,7 +104,7 @@ export default defineExam({
 				read_in_daily_life: {
 					__displayName: {
 						en: 'Read in Daily Life',
-						zh: '日常生活阅读题',
+						zh: '日常生活阅读',
 					},
 					__questionContentSchema: z.object({
 						instruction: NonEmpStrSchema,
@@ -131,7 +131,7 @@ export default defineExam({
 				listen_and_choose_a_response: {
 					__displayName: {
 						en: 'Listen and Choose a Response',
-						zh: '短音频听力题',
+						zh: '短音频听力',
 					},
 					__questionContentSchema: EmptyObjectSchema,
 					__items: {
@@ -150,7 +150,7 @@ export default defineExam({
 				listen_to_a_conversation: {
 					__displayName: {
 						en: 'Listen to a Conversation',
-						zh: '对话听力题',
+						zh: '对话听力',
 					},
 					__questionContentSchema: z.object({
 						instruction: NarratedInstructionSchema,
@@ -173,7 +173,7 @@ export default defineExam({
 				listen_to_an_academic_talk: {
 					__displayName: {
 						en: 'Listen to an Academic Talk',
-						zh: '学术听力题',
+						zh: '学术听力',
 					},
 					__questionContentSchema: z.object({
 						instruction: NarratedInstructionSchema,
@@ -196,7 +196,7 @@ export default defineExam({
 				listen_to_an_announcement: {
 					__displayName: {
 						en: 'Listen to an Announcement',
-						zh: '公告听力题',
+						zh: '公告听力',
 					},
 					__questionContentSchema: z.object({
 						instruction: NarratedInstructionSchema,
@@ -224,7 +224,7 @@ export default defineExam({
 				build_a_sentence: {
 					__displayName: {
 						en: 'Build a Sentence',
-						zh: '句子构建题',
+						zh: '句子构建',
 					},
 					__questionContentSchema: EmptyObjectSchema,
 					__items: {
