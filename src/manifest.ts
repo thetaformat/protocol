@@ -2,12 +2,6 @@ import semver from 'semver';
 import { z } from 'zod';
 
 import {
-	FileKeySchema,
-	OffsetDatetimeStrSchema,
-	SequenceSchema,
-	TransDictSchema,
-} from './__shared';
-import {
 	ExamCodeSchema,
 	ItemCodeSchema,
 	ItemContentSchema,
@@ -16,6 +10,12 @@ import {
 	TaskCodeSchema,
 	TaskContentSchema,
 } from './exam';
+import {
+	FileKeySchema,
+	OffsetDatetimeStrSchema,
+	SequenceSchema,
+	TransDictSchema,
+} from './exam/__shared';
 
 export const ManifestPaperSchema = z.object({
 	fileKey: FileKeySchema,

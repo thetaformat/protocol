@@ -1,42 +1,53 @@
 import z from 'zod';
 
-import type { LangCode, TransDict } from '../__shared';
+import type { LangCode, TransDict } from './__shared';
+import ielts_academic_20230503 from './ielts-academic-20230503';
 import toefl_ibt_20260121 from './toefl-ibt-20260121';
 
-export const examDefs = { toefl_ibt_20260121 } satisfies Record<ExamCode, any>;
+export const examDefs = {
+	toefl_ibt_20260121,
+	ielts_academic_20230503,
+} satisfies Record<ExamCode, any>;
 
 export const ExamCodeSchema = z.enum([
 	...toefl_ibt_20260121.ExamCodeSchema.options,
+	...ielts_academic_20230503.ExamCodeSchema.options,
 ]);
 export type ExamCode = z.infer<typeof ExamCodeSchema>;
 
 export const SectionCodeSchema = z.enum([
 	...toefl_ibt_20260121.SectionCodeSchema.options,
+	...ielts_academic_20230503.SectionCodeSchema.options,
 ]);
 export type SectionCode = z.infer<typeof SectionCodeSchema>;
 
 export const TaskCodeSchema = z.enum([
 	...toefl_ibt_20260121.TaskCodeSchema.options,
+	...ielts_academic_20230503.TaskCodeSchema.options,
 ]);
 export type TaskCode = z.infer<typeof TaskCodeSchema>;
 
 export const ItemCodeSchema = z.enum([
 	...toefl_ibt_20260121.ItemCodeSchema.options,
+	...ielts_academic_20230503.ItemCodeSchema.options,
 ]);
 export type ItemCode = z.infer<typeof ItemCodeSchema>;
 
 export const TaskContentSchema = z.discriminatedUnion('taskCode', [
 	...toefl_ibt_20260121.TaskContentSchema.options,
+	...ielts_academic_20230503.TaskContentSchema.options,
 ]);
 export type TaskContent = z.infer<typeof TaskContentSchema>;
 
 export const ItemContentSchema = z.discriminatedUnion('itemCode', [
 	...toefl_ibt_20260121.ItemContentSchema.options,
+	...ielts_academic_20230503.ItemContentSchema.options,
 ]);
 export type ItemContent = z.infer<typeof ItemContentSchema>;
 
 export const ResponseContentSchema = z.discriminatedUnion('itemCode', [
 	...toefl_ibt_20260121.ResponseContentSchema.options,
+	...ielts_academic_20230503.ResponseContentSchema.options,
 ]);
 export type ResponseContent = z.infer<typeof ResponseContentSchema>;
 

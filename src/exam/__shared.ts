@@ -225,9 +225,15 @@ export const StemSchema = NonEmpMdSchema.describe(
 	`${NonEmpMdSchema.description}\n Specifically if the prompt is a SINGLE question prompt, then don't include any positional indicators in the front of that prompt such as '1.', '2. ','3.' etc.`,
 );
 
-export const OptionsSchema = NonEmpStrSchema.describe(
-	`${NonEmpStrSchema.description}\n Specifically, if the text contains positional indicators such as 'A.','B.','C.','D.' etc. Then remove it.`,
-)
+export const OptionsSchema = z
+	.object({
+		id: SeqIdSchema.describe(
+			`${SeqIdSchema.description}\n Specifically, 选项ID`,
+		),
+		text: NonEmpMdSchema.describe(
+			`${NonEmpMdSchema.description}\n 选项文本。Specifically, if the text contains positional indicators such as 'A.','B.','C.','D.' etc. Then remove it.`,
+		),
+	})
 	.array()
 	.min(1);
 

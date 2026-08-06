@@ -1,6 +1,6 @@
 import z from 'zod';
 
-import { OffsetDatetimeStrSchema, PosIntSchema } from './__shared';
+import { OffsetDatetimeStrSchema, PosIntSchema } from './exam/__shared';
 import { ManifestPaperSchema } from './manifest';
 
 export const CatalogPaperSchema = ManifestPaperSchema.pick({

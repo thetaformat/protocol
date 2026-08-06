@@ -21,12 +21,12 @@ import {
 	StemSchema,
 	TranscriptedAudioSchema,
 	TranscriptedVideoSchema,
-} from '../__shared';
+} from './__shared';
 import { defineExam } from './__definer';
 
 export default defineExam({
 	code: 'toefl_ibt_20260121',
-	displayName: { en: 'TOEFL iBT 2026', zh: '托福 iBT 2026' },
+	displayName: { en: 'TOEFL iBT, Latest Version', zh: '托福 iBT 最新版' },
 	__sections: {
 		reading: {
 			__displayName: { en: 'Reading', zh: '阅读' },

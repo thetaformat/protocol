@@ -1,4 +1,4 @@
-export * from './__shared';
+export * from './exam/__shared';
 export {
 	type Catalog,
 	type CatalogPaper,
