@@ -7,10 +7,10 @@ import {
 	InformativeImageSchema,
 	NonEmpMdSchema,
 	NonEmpStrSchema,
-	PassageSchema,
 	SelectionArraySchema,
 	SelectionRecordSchema,
 	SeqIdSchema,
+	SimplePassageSchema,
 	SpeakingSchema,
 	TranscriptedAudioSchema,
 	WritingSchema,
@@ -383,7 +383,7 @@ export default defineExam({
 					},
 					__questionContentSchema: z.object({
 						partitions: PartitionsSchema,
-						passage: PassageSchema,
+						passage: SimplePassageSchema,
 					}),
 					__items: ReadingItems,
 				},
@@ -394,7 +394,7 @@ export default defineExam({
 					},
 					__questionContentSchema: z.object({
 						partitions: PartitionsSchema,
-						passage: PassageSchema,
+						passage: SimplePassageSchema,
 					}),
 					__items: ReadingItems,
 				},
@@ -405,7 +405,7 @@ export default defineExam({
 					},
 					__questionContentSchema: z.object({
 						partitions: PartitionsSchema,
-						passage: PassageSchema,
+						passage: SimplePassageSchema,
 					}),
 					__items: ReadingItems,
 				},

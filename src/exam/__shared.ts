@@ -16,7 +16,8 @@ export type TranscriptedVideo = z.infer<typeof TranscriptedVideoSchema>;
 export type SilentNoddingVideo = z.infer<typeof SilentNoddingVideoSchema>;
 export type Token = z.infer<typeof TokenSchema>;
 export type SegmentedSentence = z.infer<typeof SegmentedSentenceSchema>;
-export type Passage = z.infer<typeof PassageSchema>;
+export type SegmentedParagraphs = z.infer<typeof SegmentedParagraphsSchema>;
+export type SegmentedPassage = z.infer<typeof SegmentedPassageSchema>;
 export type NarratedInstruction = z.infer<typeof NarratedInstructionSchema>;
 export type ResponseCode = z.infer<typeof ResponseCodeSchema>;
 
@@ -169,6 +170,15 @@ export const TitleSchema = z.object({
 	),
 });
 
+export const SimpleParagraphsSchema = z
+	.object({ id: SeqIdSchema, text: NonEmpStrSchema })
+	.array()
+	.describe('The full text paragraph by paragraph.');
+
+export const SimplePassageSchema = TitleSchema.extend({
+	paragraphs: SimpleParagraphsSchema,
+});
+
 /**
  * 嵌套树设计（passage->paragraphs->sentences->tokens），配置SeqId进行定位。
  */
@@ -190,31 +200,18 @@ export const SegmentedSentenceSchema = z
 	})
 	.describe('A segmented sentence containing tokens.');
 
-const PassageBlockSchema = z.discriminatedUnion('type', [
-	z.object({
-		type: z.enum(['simple_paragraph']),
+export const SegmentedParagraphsSchema = z
+	.object({
 		id: SeqIdSchema,
-		text: NonEmpStrSchema,
-	}),
-	z
-		.object({
-			type: z.enum(['segmented_paragraph']),
-			id: SeqIdSchema,
-			sentences: SegmentedSentenceSchema.array(),
-		})
-		.describe('The segmented paragraph, ready for interaction.'),
-	z.object({
-		type: z.enum(['image']),
-		id: SeqIdSchema,
-		image: InformativeImageSchema,
-		caption: NonEmpStrSchema.optional().describe(
-			'（如有）图表下方说明文字，如 Figure 1...',
-		),
-	}),
-]);
+		sentences: SegmentedSentenceSchema.array(),
+	})
+	.array()
+	.describe(
+		'The segmented text paragraph by paragraph, ready for interaction.',
+	);
 
-export const PassageSchema = TitleSchema.extend({
-	blocks: PassageBlockSchema.array(),
+export const SegmentedPassageSchema = TitleSchema.extend({
+	paragraphs: SegmentedParagraphsSchema,
 });
 
 export const NarratedInstructionSchema = z.object({

@@ -9,13 +9,13 @@ import {
 	NonEmpMdSchema,
 	NonEmpStrSchema,
 	OptionsSchema,
-	PassageSchema,
 	PosIntSchema,
 	SelectionArraySchema,
 	SelectionRecordSchema,
 	SeqIdSchema,
 	SilentNoddingVideoSchema,
 	SimpleImageSchema,
+	SimplePassageSchema,
 	SpeakingSchema,
 	StemSchema,
 	TranscriptedAudioSchema,
@@ -38,8 +38,8 @@ export default defineExam({
 							__displayName: { en: 'Default', zh: '默认题型' },
 							__questionContentSchema: z.object({
 								instruction: NonEmpStrSchema,
-								text: PassageSchema.describe(
-									`${PassageSchema.description}` +
+								text: SimplePassageSchema.describe(
+									`${SimplePassageSchema.description}` +
 										`完整段落文本。挖空处用占位符表示。站位id必须为：${SeqIdSchema.description}` +
 										'例如："We might think th{{1}} preh{{2}}toric peo{{3}} concentrated on{{4}} on ba{{5}} survi{{6}}."',
 								),
@@ -71,7 +71,7 @@ export default defineExam({
 						zh: '学术文章阅读',
 					},
 					__questionContentSchema: z.object({
-						passage: PassageSchema.describe(
+						passage: SimplePassageSchema.describe(
 							"高亮规范：如果段落内有需要配合题目高亮的单词或句子，必须使用包裹型标签，例如：'This is a <mark id='id'>highlighted word</mark>.'",
 						),
 					}),
