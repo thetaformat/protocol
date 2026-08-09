@@ -1,5 +1,31 @@
 import { z } from 'zod';
 
+export type LangCode = z.infer<typeof LangCodeSchema>;
+export type SeqId = z.infer<typeof SeqIdSchema>;
+export type FileKey = z.infer<typeof FileKeySchema>;
+export type OffsetDatetimeStr = z.infer<typeof OffsetDatetimeStrSchema>;
+export type TransDict = z.infer<typeof TransDictSchema>;
+export type MdTransDict = z.infer<typeof MdTransDictSchema>;
+export type SimpleImage = z.infer<typeof SimpleImageSchema>;
+export type InformativeImage = z.infer<typeof InformativeImageSchema>;
+export type SimpleAudio = z.infer<typeof SimpleAudioSchema>;
+export type SimpleVideo = z.infer<typeof SimpleVideoSchema>;
+export type Transcript = z.infer<typeof TranscriptSchema>;
+export type TranscriptedAudio = z.infer<typeof TranscriptedAudioSchema>;
+export type TranscriptedVideo = z.infer<typeof TranscriptedVideoSchema>;
+export type SilentNoddingVideo = z.infer<typeof SilentNoddingVideoSchema>;
+export type Token = z.infer<typeof TokenSchema>;
+export type SegmentedSentence = z.infer<typeof SegmentedSentenceSchema>;
+export type Passage = z.infer<typeof PassageSchema>;
+export type NarratedInstruction = z.infer<typeof NarratedInstructionSchema>;
+export type ResponseCode = z.infer<typeof ResponseCodeSchema>;
+
+/**
+ * 多语种支持
+ * 可选项包括：'en','zh','zh-hant','es','ar','fr','pt','ko','ja','hi','de','it','ru','id','vi','tr'
+ */
+export const LangCodeSchema = z.enum(['en', 'zh']);
+
 export const IndexSchema = z
 	.number()
 	.int()
@@ -30,7 +56,6 @@ export const SeqIdSchema = z
 	.describe(
 		'Deterministic sequential pointer ID, starting from "1", incrementing by 1',
 	);
-export type SeqId = z.infer<typeof SeqIdSchema>;
 
 export const NonEmpStrSchema = z
 	.string()
@@ -52,34 +77,23 @@ export const FileKeySchema = z
 		/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\.[a-zA-Z0-9]+$/,
 	)
 	.describe('file key: UUID with extension');
-export type FileKey = z.infer<typeof FileKeySchema>;
 
 /**
  * 绝对时间，包含时区偏移，能唯一确定一个宇宙时间点
  */
 export const OffsetDatetimeStrSchema = z.iso.datetime({ offset: true });
-export type OffsetDatetimeStr = z.infer<typeof OffsetDatetimeStrSchema>;
-
-/**
- * 多语种支持
- * 可选项包括：'en','zh','zh-hant','es','ar','fr','pt','ko','ja','hi','de','it','ru','id','vi','tr'
- */
-export const LangCodeSchema = z.enum(['en', 'zh']);
-export type LangCode = z.infer<typeof LangCodeSchema>;
 
 export const TransDictSchema = z.object(
 	Object.fromEntries(
 		LangCodeSchema.options.map((code) => [code, NonEmpStrSchema]),
 	) as Record<LangCode, z.ZodString>,
 );
-export type TransDict = z.infer<typeof TransDictSchema>;
 
 export const MdTransDictSchema = z.object(
 	Object.fromEntries(
 		LangCodeSchema.options.map((code) => [code, NonEmpMdSchema]),
 	) as Record<LangCode, z.ZodString>,
 );
-export type MdTransDict = z.infer<typeof MdTransDictSchema>;
 
 export const SimpleImageSchema = z.object({
 	formatCode: z.enum(['simple_image']),
@@ -88,7 +102,6 @@ export const SimpleImageSchema = z.object({
 	height: PosIntSchema,
 	width: PosIntSchema,
 });
-export type SimpleImage = z.infer<typeof SimpleImageSchema>;
 
 export const InformativeImageSchema = SimpleImageSchema.extend({
 	formatCode: z.enum(['informative_image']),
@@ -96,15 +109,12 @@ export const InformativeImageSchema = SimpleImageSchema.extend({
 	'Image that bears essential question information rather than pure illustration.',
 );
 
-export type InformativeImage = z.infer<typeof InformativeImageSchema>;
-
 export const SimpleAudioSchema = z.object({
 	formatCode: z.enum(['simple_audio']),
 	fileKey: FileKeySchema,
 	durationSeconds: z.number().min(0),
 	fileSizeInBytes: PosIntSchema,
 });
-export type SimpleAudio = z.infer<typeof SimpleAudioSchema>;
 
 /**
  * inputImage and inputAudio are temporary variables in AI video generation.
@@ -117,7 +127,6 @@ export const SimpleVideoSchema = SimpleAudioSchema.extend({
 	inputImage: z.object({ fileKey: FileKeySchema }).optional(),
 	inputAudio: z.object({ fileKey: FileKeySchema }).optional(),
 });
-export type SimpleVideo = z.infer<typeof SimpleVideoSchema>;
 
 export const TranscriptSchema = z
 	.object({
@@ -135,25 +144,21 @@ export const TranscriptSchema = z
 		),
 	})
 	.array();
-export type Transcript = z.infer<typeof TranscriptSchema>;
 
 export const TranscriptedAudioSchema = SimpleAudioSchema.extend({
 	formatCode: z.enum(['transcripted_audio']),
 	transcript: TranscriptSchema,
 });
-export type TranscriptedAudio = z.infer<typeof TranscriptedAudioSchema>;
 
 export const TranscriptedVideoSchema = SimpleVideoSchema.extend({
 	formatCode: z.enum(['transcripted_video']),
 	transcript: TranscriptSchema,
 });
-export type TranscriptedVideo = z.infer<typeof TranscriptedVideoSchema>;
 
 export const SilentNoddingVideoSchema = SimpleAudioSchema.extend({
 	formatCode: z.enum(['silent_nodding_video']),
 	inputImage: z.object({ fileKey: FileKeySchema }).optional(),
 });
-export type SilentNoddingVideo = z.infer<typeof SilentNoddingVideoSchema>;
 
 export const TitleSchema = z.object({
 	title: NonEmpStrSchema.optional().describe(
@@ -162,15 +167,6 @@ export const TitleSchema = z.object({
 	subtitle: NonEmpStrSchema.optional().describe(
 		'Subtitle is optional unless explicitly provided.',
 	),
-});
-
-export const SimpleParagraphsSchema = z
-	.object({ id: SeqIdSchema, text: NonEmpStrSchema })
-	.array()
-	.describe('The full text paragraph by paragraph.');
-
-export const SimplePassageSchema = TitleSchema.extend({
-	paragraphs: SimpleParagraphsSchema,
 });
 
 /**
@@ -184,7 +180,6 @@ export const TokenSchema = z
 		spaceAfter: z.string().default(''),
 	})
 	.describe('A single word or punctuation mark with its trailing spaces.');
-export type Token = z.infer<typeof TokenSchema>;
 
 export const SegmentedSentenceSchema = z
 	.object({
@@ -194,23 +189,33 @@ export const SegmentedSentenceSchema = z
 		fullText: NonEmpStrSchema.describe('Whole sentence full text.'),
 	})
 	.describe('A segmented sentence containing tokens.');
-export type SegmentedSentence = z.infer<typeof SegmentedSentenceSchema>;
 
-export const SegmentedParagraphsSchema = z
-	.object({
+const PassageBlockSchema = z.discriminatedUnion('type', [
+	z.object({
+		type: z.enum(['simple_paragraph']),
 		id: SeqIdSchema,
-		sentences: SegmentedSentenceSchema.array(),
-	})
-	.array()
-	.describe(
-		'The segmented text paragraph by paragraph, ready for interaction.',
-	);
-export type SegmentedParagraphs = z.infer<typeof SegmentedParagraphsSchema>;
+		text: NonEmpStrSchema,
+	}),
+	z
+		.object({
+			type: z.enum(['segmented_paragraph']),
+			id: SeqIdSchema,
+			sentences: SegmentedSentenceSchema.array(),
+		})
+		.describe('The segmented paragraph, ready for interaction.'),
+	z.object({
+		type: z.enum(['image']),
+		id: SeqIdSchema,
+		image: InformativeImageSchema,
+		caption: NonEmpStrSchema.optional().describe(
+			'（如有）图表下方说明文字，如 Figure 1...',
+		),
+	}),
+]);
 
-export const SegmentedPassageSchema = TitleSchema.extend({
-	paragraphs: SegmentedParagraphsSchema,
+export const PassageSchema = TitleSchema.extend({
+	blocks: PassageBlockSchema.array(),
 });
-export type SegmentedPassage = z.infer<typeof SegmentedPassageSchema>;
 
 export const NarratedInstructionSchema = z.object({
 	formatCode: z.enum(['narrated_instruction']),
@@ -219,10 +224,9 @@ export const NarratedInstructionSchema = z.object({
 		.object({ fileKey: FileKeySchema })
 		.describe('Audio narration of the text. Generated from AI TTS.'),
 });
-export type NarratedInstruction = z.infer<typeof NarratedInstructionSchema>;
 
 export const StemSchema = NonEmpMdSchema.describe(
-	`${NonEmpMdSchema.description}\n Specifically if the prompt is a SINGLE question prompt, then don't include any positional indicators in the front of that prompt such as '1.', '2. ','3.' etc.`,
+	`${NonEmpMdSchema.description}\n Specifically 题干部分。注意: If the prompt is a SINGLE question prompt, then don't include any positional indicators in the front of that prompt such as '1.', '2. ','3.' etc.`,
 );
 
 export const OptionsSchema = z
@@ -237,176 +241,144 @@ export const OptionsSchema = z
 	.array()
 	.min(1);
 
+/**
+ * 采用 6 大正交底层数据原语，收敛并支持全科所有考试题型的作答数据形态。
+ */
 export const ResponseCodeSchema = z.enum([
-	'cloze',
-	'choice',
-	'audio',
-	'dictation',
-	'essay',
-	'highlighting',
-	'matching',
-	'categorization',
-	'slot_mapping',
-	'video',
-	'short_answer',
-	'ordering',
-	'matrix',
+	'selection_array',
+	'filling_record',
+	'selection_record',
+	'writing',
+	'speaking',
+	'filming',
 ]);
-export type ResponseCode = z.infer<typeof ResponseCodeSchema>;
 
 /**
- * 填空题 (文本内联填空，下拉/拖拽/打字均算此类，如 PTE FITB, GRE Text Completion)
+ * 1. 一维序列响应 (Array-style Response)
+ *
+ * 适用但不限于：
+ * - 单选题 / 多选题 / 判断题（如 TOEFL/IELTS Choice, T/F/NG, Y/N/NG）
+ * - 排序题（如 PTE Re-order Paragraphs，数组元素的 Index 隐含了正确的排序顺序）
+ * - 高亮/划线题（如 GRE Select-in-Passage, PTE Highlight Incorrect Words，数组元素为选中的 Token/Span ID）
+ *
+ * @example
+ * // 单选/多选/高亮：选中了 ID 为 "1" 和 "3" 的选项或词块
+ * { responseCode: 'array', array: ['1', '3'] }
+ *
+ * @example
+ * // 排序题：最终提交的有序 ID 序列
+ * { responseCode: 'array', array: ['3', '1', '2'] }
  */
-export const ResponseContentClozeSchema = z.object({
-	responseCode: z.enum([ResponseCodeSchema.enum.cloze]),
-	values: z
+export const SelectionArraySchema = z.object({
+	responseCode: z.enum([ResponseCodeSchema.enum.selection_array]),
+	array: SeqIdSchema.array().describe(
+		'选择题（单选/多选/判断，Selection order 不敏感）、排序题（数组 index 隐含顺序）或高亮划线题（选中的 Token/Span ID 列表）',
+	),
+});
+
+/**
+ * 2. 文本映射响应 (Record-String Response)
+ *
+ * 针对题干 Markdown 中占位符 {{seqId}} 的【开放式文本/打字/听写输入】。
+ * - Key：占位符 ID (对应题干 Markdown 中的 {{1}}, {{2}} ...)
+ * - Value：该占位符接受的开放式文本/字符串答案数组 (如 ["graffiti", "grafiti"])
+ *
+ * 适用于：段落打字填空、表格单元格打字填空、矩阵单元格打字输入等任何需要自由输入纯文本的占位符场景。
+ */
+export const FillingRecordSchema = z.object({
+	responseCode: z.enum([ResponseCodeSchema.enum.filling_record]),
+	record: z
 		.record(SeqIdSchema, z.string().trim().array())
 		.describe(
-			'1. Key 为 gapId/占位符Id。Value 为该gap的可接受答案数组（例如 ["ese"]）。通常只有一个正确答案，但使用数组可以兼容极少数的拼写变体情况。例如: {"1": ["gra"], "2": ["re", "er"]}',
+			'Key 为题干 Markdown 中的占位符 ID (与 {{1}}, {{2}} 对应)，Value 为该占位符可接受的开放式字符串文本答案数组',
 		),
 });
 
 /**
- * 选择题 (单选题、多选题、判断题)
+ * 3. 代号映射响应 (Record-SeqId Response)
+ *
+ * 针对题干 Markdown 中占位符 {{seqId}} 的【闭环式选项代号/卡片选择/拖拽】。
+ * - Key：占位符 ID (对应题干 Markdown 中的 {{1}}, {{2}} ...)
+ * - Value：填入该占位符的预设候选选项代号 ID 数组 (如 ["option_A"] 或 ["col_true"])
+ *
+ * 适用于：选词填空、段落/句尾配对、矩阵按钮勾选、分类归条等任何需要点选/拖拽预设代号的占位符场景。
  */
-export const ResponseContentChoiceSchema = z.object({
-	responseCode: z.enum([ResponseCodeSchema.enum.choice]),
-	selectedIds: SeqIdSchema.array().describe(
-		'选择题 (单选、多选、判断统一处理)。对于多选题，Selection order is not important.',
-	),
-});
-
-/**
- * 语音录制题 (口语跟读、复述、回答，如 TOEFL Speaking, PTE Read Aloud)
- */
-export const ResponseContentAudioSchema = z.object({
-	responseCode: z.enum([ResponseCodeSchema.enum.audio]),
-	...TranscriptedAudioSchema.shape,
-});
-
-/**
- * 听写题 (Listen and Type，按编辑距离判分，如 PTE WFD, DET 听写)
- */
-export const ResponseContentDictationSchema = z.object({
-	responseCode: z.enum([ResponseCodeSchema.enum.dictation]),
-	text: z.string().trim(),
-	wordCount: z.number().int().min(0).optional(),
-});
-
-/**
- * 写作题 (长篇写作、图表作文，AI/人工判分，如 TOEFL/GRE 写作)
- */
-export const ResponseContentEssaySchema = z.object({
-	responseCode: z.enum([ResponseCodeSchema.enum.essay]),
-	text: z.string().trim(),
-	wordCount: z.number().int().min(0).optional(), // 方便直接统计或者校验
-});
-
-/**
- * 高亮/划线题 (在文章中点选句子，如 GRE Select-in-Passage, PTE Highlight Incorrect)
- * 用基于position的答案，没有基于id的好，因为id可以很明确，无歧义。
- */
-export const ResponseContentHighlightingSchema = z.object({
-	responseCode: z.enum([ResponseCodeSchema.enum.highlighting]),
-	selectedIds: SeqIdSchema.array().describe('选中的 Token 或 Span 的 ID'),
-});
-
-/**
- * 匹配题 (连线、1对1/多对1匹配，如 IELTS Matching Features)
- */
-export const ResponseContentMatchingSchema = z.object({
-	responseCode: z.enum([ResponseCodeSchema.enum.matching]),
-	matches: z
-		.object({
-			sourceId: SeqIdSchema.describe('匹配位置节点的ID'),
-			targetId: SeqIdSchema.describe('待匹配的选项的ID'),
-		})
-		.array()
-		.describe('使用 Array of Objects 以防多对一或多对多的复杂匹配'),
-});
-
-/**
- * 分类题 (将选项拖入不同分类框，如 IELTS Classification 分类题)
- */
-export const ResponseContentCategorizationSchema = z.object({
-	responseCode: z.enum([ResponseCodeSchema.enum.categorization]),
-	buckets: z.record(
-		SeqIdSchema.describe('Key: bucketId (例如 "1", "2")'),
-		SeqIdSchema.array().describe('Value: 拖入该框的 optionId 列表'),
-	),
-});
-
-/**
- * 插槽填空题 (将特定词块ID填入特定占位符ID，1对1映射，如 TOEFL Build a Sentence)
- */
-export const ResponseContentSlotMappingSchema = z.object({
-	responseCode: z.enum([ResponseCodeSchema.enum.slot_mapping]),
-	placements: z
-		.record(SeqIdSchema, SeqIdSchema)
+export const SelectionRecordSchema = z.object({
+	responseCode: z.enum([ResponseCodeSchema.enum.selection_record]),
+	record: z
+		.record(SeqIdSchema, SeqIdSchema.array())
 		.describe(
-			'Key 为 targetId/gapId/slotId (插槽ID)，Value 为 candidateId/chunkId (候选选项ID)。将正确的候选选项Id填入对应的插槽。兼容干扰项被剩下的情况。',
+			'Key 为题干 Markdown 中的占位符 ID (与 {{1}}, {{2}} 对应)，Value 为填入该占位符的预设候选选项代号 ID 数组',
 		),
 });
 
 /**
- * 视频录制题 (如 DET Speaking Sample 面试视频)
+ * 4. 开放文本响应 (Text-style Response)
+ *
+ * 适用于：所有主观长文本输出题型（如 TOEFL/IELTS 写作 Essay、简答题 Short Answer）。
+ * 使用字符串数组以原生支持单文本框或多文本框联立提交的场景。
+ *
+ * @example
+ * // 写作题/简答题：数组第 1 项为文本内容（哪怕只有 1 段文本，也必须使用数组包裹）
+ * {
+ *   responseCode: 'writing',
+ *   text: ["In my opinion, environmental protection is vital because..."]
+ * }
  */
-export const ResponseContentVideoSchema = z.object({
-	responseCode: z.enum([ResponseCodeSchema.enum.video]),
-	...TranscriptedVideoSchema.shape,
+export const WritingSchema = z.object({
+	responseCode: z.enum([ResponseCodeSchema.enum.writing]),
+	text: z
+		.string()
+		.trim()
+		.array()
+		.describe(
+			'主观长文本/作文/简答回答内容数组。注意：即使只有 1 个文本框/一篇作文，也必须传单元素数组 ["文本内容"]',
+		),
 });
 
 /**
- * 简答题/数字填空 (短文本输入，正则/精确匹配判分，如 IELTS 简答, SAT/GRE 数学填空)
+ * 5. 语音录制响应 (Audio-style Response)
+ *
+ * 适用于：所有口语跟读、复述、问答录音题型（如 TOEFL Speaking, IELTS Speaking, PTE Read Aloud）。
+ * 包含了录音文件元信息以及 AI TTS/ASR 生成的带时间戳逐句字幕。
+ *
+ * @example
+ * {
+ *   responseCode: 'speaking',
+ *   audio: {
+ *     formatCode: 'transcripted_audio',
+ *     fileKey: '3a1f4b8c-d2e9-4f0a-b1c2-d3e4f5a6b7c8.mp3',
+ *     durationSeconds: 45,
+ *     fileSizeInBytes: 1048576,
+ *     transcript: [
+ *       { startTime: '00:00', endTime: '00:03', speaker: 'Candidate', sentenceText: 'I strongly agree with...' }
+ *     ]
+ *   }
+ * }
  */
-export const ResponseContentShortAnswerSchema = z.object({
-	responseCode: z.enum([ResponseCodeSchema.enum.short_answer]),
-	text: z.string().trim(),
-	wordCount: z.number().int().min(0).optional(),
+export const SpeakingSchema = z.object({
+	responseCode: z.enum([ResponseCodeSchema.enum.speaking]),
+	audio: TranscriptedAudioSchema.describe('口语录音资产及逐句带时间戳转写字幕'),
 });
 
 /**
- * 排序题 (段落重排，如 PTE Re-order Paragraphs)
+ * 6. 视频录制响应 (Video-style Response)
+ *
+ * 适用于：所有视讯面试、视频答题录制题型（如 DET Speaking Sample 面试视频）。
+ *
+ * @example
+ * {
+ *   responseCode: 'filming',
+ *   video: {
+ *     formatCode: 'transcripted_video',
+ *     fileKey: 'c4d3e2b1-a0f9-4e8d-8c7b-6a5b4c3d2e1f.mp4',
+ *     durationSeconds: 60,
+ *     fileSizeInBytes: 10485760,
+ *     transcript: [...]
+ *   }
+ * }
  */
-export const ResponseContentOrderingSchema = z.object({
-	responseCode: z.enum([ResponseCodeSchema.enum.ordering]),
-	ordered: SeqIdSchema.array().describe(
-		'提交一个有序的 ID 数组即可，数组的 index 隐含了顺序',
-	),
+export const FilmingSchema = z.object({
+	responseCode: z.enum([ResponseCodeSchema.enum.filming]),
+	video: TranscriptedVideoSchema.describe('面试视频录制资产及逐句转写字幕'),
 });
-
-/**
- * 矩阵表格题 (二维表格勾选，如 GMAT Two-Part Analysis)
- */
-export const ResponseContentMatrixSchema = z.object({
-	responseCode: z.enum([ResponseCodeSchema.enum.matrix]),
-	rows: z
-		.record(
-			SeqIdSchema.describe('Key: rowId'),
-			SeqIdSchema.array().describe('Value: 选中的 columnIds (支持单选或多选)'),
-		)
-		.describe('行(Row)为题干/条件，列(Column)为用户的勾选项'),
-});
-
-/**
- * 限制 task.content 与 item.content 只能使用预制的白名单键名，防范手抖拼错
- * Key field used in task or item content
- * In order to keep conformity, we defined an enum here.
- * This enum just provides possible combination of key names.
- * The value of the same key can be different in different task or item content.
- * To further constraint the value, you need to write schema description in the implementations.
- */
-export const AllowedQuestionContentKeySchema = z.enum([
-	'instruction', // 当雅思这种会有item group呈现的题目时，我们用第一个item的instruction来承装item group instruction.
-	'audio',
-	'image',
-	'video',
-	'passage',
-	'stimulus',
-	'stem',
-	'options',
-	'prompt',
-]);
-export type AllowedQuestionContentKey = z.infer<
-	typeof AllowedQuestionContentKeySchema
->;

@@ -4,16 +4,16 @@ import type { LangCode, TransDict } from './__shared';
 import ielts_academic_20230503 from './ielts-academic-20230503';
 import toefl_ibt_20260121 from './toefl-ibt-20260121';
 
-export const examDefs = {
-	toefl_ibt_20260121,
-	ielts_academic_20230503,
-} satisfies Record<ExamCode, any>;
-
 export const ExamCodeSchema = z.enum([
 	...toefl_ibt_20260121.ExamCodeSchema.options,
 	...ielts_academic_20230503.ExamCodeSchema.options,
 ]);
 export type ExamCode = z.infer<typeof ExamCodeSchema>;
+
+export const examDefs = {
+	toefl_ibt_20260121,
+	ielts_academic_20230503,
+} satisfies Record<ExamCode, any>;
 
 export const SectionCodeSchema = z.enum([
 	...toefl_ibt_20260121.SectionCodeSchema.options,
@@ -33,23 +33,41 @@ export const ItemCodeSchema = z.enum([
 ]);
 export type ItemCode = z.infer<typeof ItemCodeSchema>;
 
+export type TaskContent =
+	| z.infer<typeof toefl_ibt_20260121.TaskContentSchema>
+	| z.infer<typeof ielts_academic_20230503.TaskContentSchema>;
+
 export const TaskContentSchema = z.discriminatedUnion('taskCode', [
 	...toefl_ibt_20260121.TaskContentSchema.options,
 	...ielts_academic_20230503.TaskContentSchema.options,
-]);
-export type TaskContent = z.infer<typeof TaskContentSchema>;
+] as [any, ...any[]]) as unknown as z.ZodType<TaskContent> & {
+	options: any[];
+	optionsMap?: Map<string, any>;
+};
+
+export type ItemContent =
+	| z.infer<typeof toefl_ibt_20260121.ItemContentSchema>
+	| z.infer<typeof ielts_academic_20230503.ItemContentSchema>;
 
 export const ItemContentSchema = z.discriminatedUnion('itemCode', [
 	...toefl_ibt_20260121.ItemContentSchema.options,
 	...ielts_academic_20230503.ItemContentSchema.options,
-]);
-export type ItemContent = z.infer<typeof ItemContentSchema>;
+] as [any, ...any[]]) as unknown as z.ZodType<ItemContent> & {
+	options: any[];
+	optionsMap?: Map<string, any>;
+};
+
+export type ResponseContent =
+	| z.infer<typeof toefl_ibt_20260121.ResponseContentSchema>
+	| z.infer<typeof ielts_academic_20230503.ResponseContentSchema>;
 
 export const ResponseContentSchema = z.discriminatedUnion('itemCode', [
 	...toefl_ibt_20260121.ResponseContentSchema.options,
 	...ielts_academic_20230503.ResponseContentSchema.options,
-]);
-export type ResponseContent = z.infer<typeof ResponseContentSchema>;
+] as [any, ...any[]]) as unknown as z.ZodType<ResponseContent> & {
+	options: any[];
+	optionsMap?: Map<string, any>;
+};
 
 /**
  * 从zod discriminatedUnion里面提取出对应的schema

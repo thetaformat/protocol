@@ -1,28 +1,6 @@
 import z from 'zod';
 
-import {
-	type AllowedQuestionContentKey,
-	AllowedQuestionContentKeySchema,
-	type TransDict,
-	TransDictSchema,
-} from './__shared';
-
-type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
-	k: infer I,
-) => void
-	? I
-	: never;
-
-type LastOf<U> =
-	UnionToIntersection<U extends any ? () => U : never> extends () => infer R
-		? R
-		: never;
-
-type Push<T extends any[], V> = [...T, V];
-
-type UnionToTuple<T, L = LastOf<T>> = [T] extends [never]
-	? []
-	: Push<UnionToTuple<Exclude<T, L>>, L>;
+import { type TransDict, TransDictSchema } from './__shared';
 
 type ToEnumLike<T extends string> = { [K in T]: K };
 
@@ -143,11 +121,7 @@ type ValidateItem<TItem> = TItem extends {
 }
 	? {
 			__displayName: TransDict;
-			__questionContentSchema: z.ZodObject<{
-				[K in keyof ItemShape]: K extends AllowedQuestionContentKey
-					? ItemShape[K]
-					: never;
-			}>;
+			__questionContentSchema: z.ZodObject<ItemShape>;
 			__responseContentSchema: z.ZodObject<ResponseShape>;
 		} & {
 			[
@@ -169,11 +143,7 @@ type ValidateTask<TTask> = TTask extends {
 }
 	? {
 			__displayName: TransDict;
-			__questionContentSchema: z.ZodObject<{
-				[K in keyof TaskShape]: K extends AllowedQuestionContentKey
-					? TaskShape[K]
-					: never;
-			}>;
+			__questionContentSchema: z.ZodObject<TaskShape>;
 			__items: {
 				[Item in keyof Items]: ValidateItem<Items[Item]>;
 			};
@@ -278,19 +248,6 @@ export function defineExam<
 			// 🌟 收集 Task 的 displayName
 			displayNames[taskCode] = taskDisplayName;
 
-			const taskKeys = Object.keys(
-				taskTyped.__questionContentSchema.shape || {},
-			);
-			for (const key of taskKeys) {
-				const parseResult = AllowedQuestionContentKeySchema.safeParse(key);
-				if (!parseResult.success) {
-					throw new Error(
-						`[Validation fail] Task "${taskCode}" __questionContentSchema contains unauthorized key "${key}". ` +
-							`Allowed keys: [${AllowedQuestionContentKeySchema.options.join(', ')}]`,
-					);
-				}
-			}
-
 			taskSchemas.push(
 				taskTyped.__questionContentSchema.extend({
 					taskCode: z.enum([taskCode]),
@@ -315,19 +272,6 @@ export function defineExam<
 
 				// 🌟 收集 Item 的 displayName
 				displayNames[itemCode] = itemDisplayName;
-
-				const itemKeys = Object.keys(
-					itemTyped.__questionContentSchema.shape || {},
-				);
-				for (const key of itemKeys) {
-					const parseResult = AllowedQuestionContentKeySchema.safeParse(key);
-					if (!parseResult.success) {
-						throw new Error(
-							`[Validation fail] Item "${itemCode}" __questionContentSchema contains unauthorized key "${key}". ` +
-								`Allowed keys: [${AllowedQuestionContentKeySchema.options.join(', ')}]`,
-						);
-					}
-				}
 
 				itemSchemas.push(
 					itemTyped.__questionContentSchema.extend({
@@ -371,35 +315,25 @@ export function defineExam<
 		TaskContentSchema: createUnion(
 			'taskCode',
 			taskSchemas,
-		) as unknown as z.ZodDiscriminatedUnion<
-			UnionToTuple<GetTaskSchemaUnion<TCode, TSections>> extends readonly [
-				any,
-				...any[],
-			]
-				? UnionToTuple<GetTaskSchemaUnion<TCode, TSections>>
-				: any
-		>,
+		) as unknown as z.ZodType<z.infer<GetTaskSchemaUnion<TCode, TSections>>> & {
+			options: any[];
+			optionsMap?: Map<string, any>;
+		},
 		ItemContentSchema: createUnion(
 			'itemCode',
 			itemSchemas,
-		) as unknown as z.ZodDiscriminatedUnion<
-			UnionToTuple<GetItemSchemaUnion<TCode, TSections>> extends readonly [
-				any,
-				...any[],
-			]
-				? UnionToTuple<GetItemSchemaUnion<TCode, TSections>>
-				: any
-		>,
+		) as unknown as z.ZodType<z.infer<GetItemSchemaUnion<TCode, TSections>>> & {
+			options: any[];
+			optionsMap?: Map<string, any>;
+		},
 		ResponseContentSchema: createUnion(
 			'itemCode',
 			responseSchemas,
-		) as unknown as z.ZodDiscriminatedUnion<
-			UnionToTuple<GetResponseSchemaUnion<TCode, TSections>> extends readonly [
-				any,
-				...any[],
-			]
-				? UnionToTuple<GetResponseSchemaUnion<TCode, TSections>>
-				: any
-		>,
+		) as unknown as z.ZodType<
+			z.infer<GetResponseSchemaUnion<TCode, TSections>>
+		> & {
+			options: any[];
+			optionsMap?: Map<string, any>;
+		},
 	};
 }

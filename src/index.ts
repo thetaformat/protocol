@@ -1,4 +1,3 @@
-export * from './exam/__shared';
 export {
 	type Catalog,
 	type CatalogPaper,
@@ -6,6 +5,7 @@ export {
 	CatalogSchema,
 } from './catalog';
 export * from './exam';
+export * from './exam/__shared';
 export {
 	type Manifest,
 	type ManifestPaper,
