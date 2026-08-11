@@ -65,12 +65,16 @@ export const NonEmpStrSchema = z
 	.describe('Non-empty string');
 
 export const NonEmpMdSchema = NonEmpStrSchema.describe(
-	'Fully featured markdown text.',
+	'Fully-featured Markdown text.',
 );
 
 export const EmptyObjectSchema = z
 	.object({})
 	.describe('Intentionally empty content.');
+
+export const UndeterminedSchema = z.object({
+	placeholder: z.enum(['UNDETERMINED']),
+});
 
 export const FileKeySchema = z
 	.string()
@@ -239,19 +243,22 @@ export const OptionsSchema = z
 	.min(1);
 
 /**
- * 采用 6 大正交底层数据原语，收敛并支持全科所有考试题型的作答数据形态。
+ * 采用正交底层数据原语，收敛并支持全科所有考试题型的作答数据形态。
  */
 export const ResponseCodeSchema = z.enum([
 	'selection_array',
-	'filling_record',
+	'filling_array',
 	'selection_record',
+	'filling_record',
 	'writing',
 	'speaking',
 	'filming',
 ]);
 
 /**
- * 1. 一维序列响应 (Array-style Response)
+ * @客观题
+ *
+ * 一维序列响应 (Array-style Response)
  *
  * 适用但不限于：
  * - 单选题 / 多选题 / 判断题（如 TOEFL/IELTS Choice, T/F/NG, Y/N/NG）
@@ -269,12 +276,63 @@ export const ResponseCodeSchema = z.enum([
 export const SelectionArraySchema = z.object({
 	responseCode: z.enum([ResponseCodeSchema.enum.selection_array]),
 	array: SeqIdSchema.array().describe(
-		'选择题（单选/多选/判断，Selection order 不敏感）、排序题（数组 index 隐含顺序）或高亮划线题（选中的 Token/Span ID 列表）',
+		'选择题（单选/多选/判断，Selection order 不敏感）、排序题（数组 index 隐含顺序）或高亮划线题（选中的 Token/Span ID 列表）。如果原选项不是1,2,3,4... 请根据顺序转化为1,2,3,4...',
 	),
 });
 
 /**
- * 2. 文本映射响应 (Record-String Response)
+ * @客观题
+ *
+ * 一维文本答案响应 (Set-String Response)
+ *
+ * 针对题干无需 Markdown 占位符 {{seqId}} 的【单空/独立主观填空题】。
+ * - array**所有可接受的正确文本答案数组**（包含同义词、英美式变体、拼写容错等）。
+ *
+ * 适用于：单空听写填空、单词默写、独立单空主观题等只需校验单个填空位但允许多种正确表达的场景。
+ *
+ * @example
+ * // 接受 "color" 或 "colour" 作为正确答案
+ * { responseCode: 'filling_array', array: ['color', 'colour'] }
+ *
+ * @example
+ * // 拼写容错/同义词示例
+ * { responseCode: 'filling_array', array: ['graffiti', 'grafiti'] }
+ */
+export const FillingArraySchema = z.object({
+	responseCode: z.enum([ResponseCodeSchema.enum.filling_array]),
+	array: z
+		.string()
+		.trim()
+		.array()
+		.describe(
+			'对于标答而言，可以有一个或多个元素：该主观填空题可接受的所有正确文本答案数组（包含同义词、拼写容错变体等）。对于作答而言，只有一个元素。',
+		),
+});
+
+/**
+ * @客观题
+ *
+ * 选择映射响应 (Record-SeqId Response)
+ *
+ * 针对题干 Markdown 中占位符 {{seqId}} 的【闭环式选项代号/卡片选择/拖拽】。
+ * - Key：占位符 ID (对应题干 Markdown 中的 {{1}}, {{2}} ...)
+ * - Value：填入该占位符的预设候选选项代号 ID 数组 (如 ["option_A"] 或 ["col_true"])
+ *
+ * 适用于：选词填空、段落/句尾配对、矩阵按钮勾选、分类归条等任何需要点选/拖拽预设代号的占位符场景。
+ */
+export const SelectionRecordSchema = z.object({
+	responseCode: z.enum([ResponseCodeSchema.enum.selection_record]),
+	record: z
+		.record(SeqIdSchema, SeqIdSchema.array())
+		.describe(
+			'Key 为题干 Markdown 中的占位符 ID (与 {{1}}, {{2}} 对应)，Value 为填入该占位符的预设候选选项代号 ID 答案数组',
+		),
+});
+
+/**
+ * @客观题
+ *
+ * 填空映射响应 (Record-String Response)
  *
  * 针对题干 Markdown 中占位符 {{seqId}} 的【开放式文本/打字/听写输入】。
  * - Key：占位符 ID (对应题干 Markdown 中的 {{1}}, {{2}} ...)
@@ -292,49 +350,28 @@ export const FillingRecordSchema = z.object({
 });
 
 /**
- * 3. 代号映射响应 (Record-SeqId Response)
+ * @主观题
  *
- * 针对题干 Markdown 中占位符 {{seqId}} 的【闭环式选项代号/卡片选择/拖拽】。
- * - Key：占位符 ID (对应题干 Markdown 中的 {{1}}, {{2}} ...)
- * - Value：填入该占位符的预设候选选项代号 ID 数组 (如 ["option_A"] 或 ["col_true"])
+ * 开放文本响应 (Text-style Response)
  *
- * 适用于：选词填空、段落/句尾配对、矩阵按钮勾选、分类归条等任何需要点选/拖拽预设代号的占位符场景。
- */
-export const SelectionRecordSchema = z.object({
-	responseCode: z.enum([ResponseCodeSchema.enum.selection_record]),
-	record: z
-		.record(SeqIdSchema, SeqIdSchema.array())
-		.describe(
-			'Key 为题干 Markdown 中的占位符 ID (与 {{1}}, {{2}} 对应)，Value 为填入该占位符的预设候选选项代号 ID 数组',
-		),
-});
-
-/**
- * 4. 开放文本响应 (Text-style Response)
- *
- * 适用于：所有主观长文本输出题型（如 TOEFL/IELTS 写作 Essay、简答题 Short Answer）。
- * 使用字符串数组以原生支持单文本框或多文本框联立提交的场景。
+ * 适用于：所有主观长文本输出题型（如 TOEFL/IELTS 写作 Essay、简答题 Short Answer）。没有一个“标准“答案。
  *
  * @example
- * // 写作题/简答题：数组第 1 项为文本内容（哪怕只有 1 段文本，也必须使用数组包裹）
+ * // 写作题
  * {
  *   responseCode: 'writing',
- *   text: ["In my opinion, environmental protection is vital because..."]
+ *   text: "In my opinion, environmental protection is vital because..."
  * }
  */
 export const WritingSchema = z.object({
 	responseCode: z.enum([ResponseCodeSchema.enum.writing]),
-	text: z
-		.string()
-		.trim()
-		.array()
-		.describe(
-			'主观长文本/作文/简答回答内容数组。注意：即使只有 1 个文本框/一篇作文，也必须传单元素数组 ["文本内容"]',
-		),
+	text: z.string().trim().describe('主观长文本/作文/简答回答内容数组。'),
 });
 
 /**
- * 5. 语音录制响应 (Audio-style Response)
+ * @主观题
+ *
+ * 语音录制响应 (Audio-style Response)
  *
  * 适用于：所有口语跟读、复述、问答录音题型（如 TOEFL Speaking, IELTS Speaking, PTE Read Aloud）。
  * 包含了录音文件元信息以及 AI TTS/ASR 生成的带时间戳逐句字幕。
@@ -359,7 +396,9 @@ export const SpeakingSchema = z.object({
 });
 
 /**
- * 6. 视频录制响应 (Video-style Response)
+ * @主观题
+ *
+ * 视频录制响应 (Video-style Response)
  *
  * 适用于：所有视讯面试、视频答题录制题型（如 DET Speaking Sample 面试视频）。
  *
