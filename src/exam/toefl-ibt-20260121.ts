@@ -245,15 +245,9 @@ export default defineExam({
 										avatar: SimpleImageSchema,
 									})
 									.describe('发言人 B 的元信息'),
-								candidates: z
-									.object({
-										id: SeqIdSchema,
-										text: NonEmpStrSchema,
-									})
-									.array()
-									.describe(
-										'所有可供拖拽的词块 (Draggables)。包含正确项和干扰项。',
-									),
+								options: OptionsSchema.describe(
+									`${OptionsSchema.description}\n所有可供拖拽的词块 (Draggables)。包含正确项和干扰项。`,
+								),
 								conversation: z
 									.object({
 										id: SeqIdSchema.describe('单条对话的唯一标识'),
