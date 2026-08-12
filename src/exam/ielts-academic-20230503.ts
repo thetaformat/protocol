@@ -23,30 +23,18 @@ import {
 const BaseParitionSchema = z
 	.object({
 		partitionSequence: SequenceSchema.describe(
-			`${SequenceSchema.description}\n题组在 paper全局的顺序`,
+			`${SequenceSchema.description}\n题组在 paper全局中的顺序`,
 		),
 		startItemSequence: SequenceSchema.describe(
-			`${SequenceSchema.description}\n该题组起始 Item 的全局 sequence`,
+			`${SequenceSchema.description}\n该题组起始 Item 的全局 sequence（区别于每个itemContent下的seqId，那是卷面上写的局部编号）`,
 		),
 		endItemSequence: SequenceSchema.describe(
-			`${SequenceSchema.description}\n该题组结束 Item 的全局 sequence`,
+			`${SequenceSchema.description}\n该题组结束 Item 的全局 sequence（区别于每个itemContent下的seqId，那是卷面上写的局部编号）`,
 		),
 	})
 	.describe(
 		'雅思特有的partition制度 (task下面所有items 按照题型分为一个或多个group/partition。partitions是一个寄生在taskContent里面的字段。)\n\n 识别partition的原则：在两个标题e.g.`Questions 1-7`和`Questions 8-13`之间的全部内容，即为一个partition（不包含`Questions 1-7`标题本身）。',
 	);
-
-const PartitionsSchema = z.object({
-	instruction: NonEmpMdSchema.describe(
-		`${NonEmpMdSchema.description}\nThe shared instruction of the partition: e.g. Choose **TWO** correct answers. Usually present after question range indicator (Questions 1-4).`,
-	),
-	markdownPrompt: NonEmpMdSchema.describe(
-		`${NonEmpMdSchema.description}\nThe shared prompt/stem/stimulus of the parition in Markdown format, usually coming along after insturction, using format including but not limited to heading/title, bold/italics, table, bullet points, paragraphing etc. If the prompt contains question blanks to fill, then replace any blanks into placeholders {{1}}, {{2}} etc. e.g. "seats covered in 4 _______ material" to "seats covered in {{4}} material"`,
-	),
-	imagePrompt: InformativeImageSchema.describe(
-		`For plan/map/diagram labelling partition, turn the plan/map/diagram into an informative image rather than using markdownPrompt, so as to capture all the nuances.`,
-	),
-});
 
 const ListeningParitionsSchema = BaseParitionSchema.extend({
 	content: z.discriminatedUnion('partitionCode', [
@@ -169,6 +157,7 @@ const ListeningItems = {
 	multiple_choice: {
 		__displayName: { zh: '选择题', en: 'Multiple Choice' },
 		__questionContentSchema: z.object({
+			seqId: SeqIdSchema,
 			stem: StemSchema,
 			options: OptionsSchema,
 		}),
@@ -181,6 +170,7 @@ const ListeningItems = {
 	matching: {
 		__displayName: { zh: '配对题', en: 'Matching' },
 		__questionContentSchema: z.object({
+			seqId: SeqIdSchema,
 			prompt: NonEmpStrSchema.describe(
 				`${NonEmpStrSchema.description}\nThe question item prompt immediately following the question number. e.g. "walking around the town centre", "helping at concerts" etc. Usually a phrase.`,
 			),
@@ -198,6 +188,7 @@ const ListeningItems = {
 			en: 'Plan/Map/Diagram Labelling',
 		},
 		__questionContentSchema: z.object({
+			seqId: SeqIdSchema,
 			label: NonEmpStrSchema.describe(
 				`${NonEmpStrSchema.description}\nThe question item prompt, a.k.a. the label. e.g. "bridge foundations", "rubbish pit" etc.`,
 			),
@@ -213,7 +204,7 @@ const ListeningItems = {
 			zh: '表单填空题',
 			en: 'Form Completion by Filling',
 		},
-		__questionContentSchema: EmptyObjectSchema,
+		__questionContentSchema: z.object({ seqId: SeqIdSchema }),
 		__responseContentSchema: FillingArraySchema,
 	},
 
@@ -239,7 +230,7 @@ const ListeningItems = {
 			zh: '笔记填空题',
 			en: 'Note Completion by Filling',
 		},
-		__questionContentSchema: EmptyObjectSchema,
+		__questionContentSchema: z.object({ seqId: SeqIdSchema }),
 		__responseContentSchema: FillingArraySchema,
 	},
 
@@ -265,7 +256,7 @@ const ListeningItems = {
 			zh: '表格填空题',
 			en: 'Table Completion by Filling',
 		},
-		__questionContentSchema: EmptyObjectSchema,
+		__questionContentSchema: z.object({ seqId: SeqIdSchema }),
 		__responseContentSchema: FillingArraySchema,
 	},
 
@@ -290,7 +281,7 @@ const ListeningItems = {
 			zh: '流程图填空题',
 			en: 'Flow Chart Completion by Filling',
 		},
-		__questionContentSchema: EmptyObjectSchema,
+		__questionContentSchema: z.object({ seqId: SeqIdSchema }),
 		__responseContentSchema: FillingArraySchema,
 	},
 
@@ -302,7 +293,7 @@ const ListeningItems = {
 			zh: '流程图选择填空题',
 			en: 'Flow Chart Completion by Selection',
 		},
-		__questionContentSchema: EmptyObjectSchema,
+		__questionContentSchema: z.object({ seqId: SeqIdSchema }),
 		__responseContentSchema: UndeterminedSchema,
 	},
 
@@ -314,7 +305,7 @@ const ListeningItems = {
 			zh: '摘要填空题',
 			en: 'Summary Completion by Filling',
 		},
-		__questionContentSchema: EmptyObjectSchema,
+		__questionContentSchema: z.object({ seqId: SeqIdSchema }),
 		__responseContentSchema: FillingArraySchema,
 	},
 
@@ -338,6 +329,7 @@ const ListeningItems = {
 	sentence_completion: {
 		__displayName: { zh: '句子填空题', en: 'Sentence Completion' },
 		__questionContentSchema: z.object({
+			seqId: SeqIdSchema,
 			sentence: NonEmpStrSchema.describe(
 				`${NonEmpStrSchema.description}\n The sentence to complete. The blanks should be replaced by {{seqId}}. e.g. "23. Kira says that lecturers are easier to {{1}} than those in her {{2}}", "24. Paul suggests that Kira may be more {{1}} than when she was studying before."`,
 			),
@@ -352,6 +344,7 @@ const ListeningItems = {
 	short_answer_questions: {
 		__displayName: { zh: '简答题', en: 'Short-Answer Questions' },
 		__questionContentSchema: z.object({
+			seqId: SeqIdSchema,
 			question: NonEmpStrSchema.describe(
 				`${NonEmpStrSchema.description}\n The question to be answered.`,
 			),
@@ -495,8 +488,21 @@ const ReadingParitionsSchema = BaseParitionSchema.extend({
 				.describe('All the stages.'),
 		}),
 		z.object({ partitionCode: z.enum(['flow_chart_completion_by_selection']) }),
-		z.object({ partitionCode: z.enum(['diagram_label_completion']) }),
-		z.object({ partitionCode: z.enum(['short_answer_questions']) }),
+		z.object({
+			partitionCode: z.enum(['diagram_label_completion']),
+			instruction: NonEmpMdSchema.describe(
+				`${NonEmpMdSchema.description}\Instruction for the partition. e.g. "*Label the diagrams below.*\n\n*Choose **ONE WORD ONLY** from the passage for each answer.*\n\n*Write your answers in boxes 1-6 on your answer sheet.*"`,
+			),
+			diagrams: InformativeImageSchema.describe(
+				`${InformativeImageSchema.description}\nThe diagrams in informative image format. Including the title if there is any. Ensure all the diagrams, titles, questions, blanks etc. a.k.a. the prompt, are contained in one image.`,
+			),
+		}),
+		z.object({
+			partitionCode: z.enum(['short_answer_questions']),
+			instruction: NonEmpMdSchema.describe(
+				`${NonEmpMdSchema.description}\Instruction for the partition. e.g. "*Complete the questions below.*\n\n*Choose **NO MORE THAN TWO WORDS AND/OR A NUMBER** from the passage for each answer.*\n\n*Write your answers in boxes 7-10 on your answer sheet.*"`,
+			),
+		}),
 	]),
 }).array();
 
@@ -512,6 +518,7 @@ const ReadingItems = {
 	multiple_choice: {
 		__displayName: { zh: '选择题', en: 'Multiple Choice' },
 		__questionContentSchema: z.object({
+			seqId: SeqIdSchema,
 			stem: StemSchema,
 			options: OptionsSchema,
 		}),
@@ -528,6 +535,7 @@ const ReadingItems = {
 			en: 'Identifying Information (True/False/Not Given)',
 		},
 		__questionContentSchema: z.object({
+			seqId: SeqIdSchema,
 			statement: NonEmpStrSchema.describe(
 				`${NonEmpStrSchema.description}\nThe statement to evaluate.`,
 			),
@@ -546,6 +554,7 @@ const ReadingItems = {
 			en: 'Identifying Writer’s Views/Claims (Yes/No/Not Given)',
 		},
 		__questionContentSchema: z.object({
+			seqId: SeqIdSchema,
 			statement: NonEmpStrSchema.describe(
 				`${NonEmpStrSchema.description}\nThe statement to evaluate.`,
 			),
@@ -561,6 +570,7 @@ const ReadingItems = {
 	matching_information: {
 		__displayName: { zh: '段落信息匹配题', en: 'Matching Information' },
 		__questionContentSchema: z.object({
+			seqId: SeqIdSchema,
 			information: NonEmpStrSchema.describe(
 				`${NonEmpStrSchema.description}\nThe information to evaluate.`,
 			),
@@ -576,6 +586,7 @@ const ReadingItems = {
 	matching_headings: {
 		__displayName: { zh: '段落小标题匹配题', en: 'Matching Headings' },
 		__questionContentSchema: z.object({
+			seqId: SeqIdSchema,
 			prompt: NonEmpMdSchema.describe(
 				`${NonEmpMdSchema.description}\n e.g. "Paragraph **C**", "Paragraph **G**" etc.`,
 			),
@@ -592,6 +603,7 @@ const ReadingItems = {
 	matching_features: {
 		__displayName: { zh: '特征/人名匹配题', en: 'Matching Features' },
 		__questionContentSchema: z.object({
+			seqId: SeqIdSchema,
 			prompt: NonEmpStrSchema.describe(
 				`${NonEmpStrSchema.description}\nThe prompt, e.g. "to remove trees that are diseased" etc.`,
 			),
@@ -608,6 +620,7 @@ const ReadingItems = {
 	matching_sentence_endings: {
 		__displayName: { zh: '句尾匹配题', en: 'Matching Sentence Endings' },
 		__questionContentSchema: z.object({
+			seqId: SeqIdSchema,
 			prompt: NonEmpStrSchema.describe(
 				`${NonEmpStrSchema.description}\nThe prompt sentence stem to be added with an ending, e.g. "At times when they were relaxed, the firefighters usually" etc.`,
 			),
@@ -622,6 +635,7 @@ const ReadingItems = {
 	sentence_completion: {
 		__displayName: { zh: '完成句子题', en: 'Sentence Completion' },
 		__questionContentSchema: z.object({
+			seqId: SeqIdSchema,
 			sentence: NonEmpStrSchema.describe(
 				`${NonEmpStrSchema.description}\nThe sentence to complete. Replace blank with {{seqId}} placeholder. e.g. "A project in LA has increased the number of {{1}} on the city's streets." etc.`,
 			),
@@ -737,8 +751,8 @@ const ReadingItems = {
 	 */
 	diagram_label_completion: {
 		__displayName: { zh: '示意图标注填空题', en: 'Diagram Label Completion' },
-		__questionContentSchema: EmptyObjectSchema,
-		__responseContentSchema: FillingRecordSchema,
+		__questionContentSchema: z.object({ seqId: SeqIdSchema }),
+		__responseContentSchema: FillingArraySchema,
 	},
 
 	/**
@@ -746,7 +760,11 @@ const ReadingItems = {
 	 */
 	short_answer_questions: {
 		__displayName: { zh: '简答题', en: 'Short-Answer Questions' },
-		__questionContentSchema: EmptyObjectSchema,
+		__questionContentSchema: z.object({
+			question: NonEmpStrSchema.describe(
+				`${NonEmpStrSchema.description}\n The question to be answered.`,
+			),
+		}),
 		__responseContentSchema: FillingArraySchema,
 	},
 };
@@ -850,37 +868,56 @@ export default defineExam({
 		writing: {
 			__displayName: { zh: '写作', en: 'Writing' },
 			__tasks: {
+				/**
+				 * @design /design/exam/ielts-academic-20230503-practice/writing_task1_default.png
+				 */
 				task1: {
 					__displayName: {
 						zh: 'Task 1 小作文（图表）',
 						en: 'Academic Writing Task 1',
 					},
-					__questionContentSchema: z.object({
-						prompt: NonEmpMdSchema.describe(
-							'Task 1 图表题干描述以及instruction',
-						),
-						image: InformativeImageSchema.describe(' Task 1 整张图表'),
-					}),
+					__questionContentSchema: EmptyObjectSchema,
 					__items: {
 						default: {
 							__displayName: { zh: '默认题型', en: 'Default' },
-							__questionContentSchema: EmptyObjectSchema,
+							__questionContentSchema: z.object({
+								instruction: NonEmpStrSchema.describe(
+									`${NonEmpStrSchema.description}\ne.g. "You should spend about 20 minutes on this task."`,
+								),
+								prompt: NonEmpMdSchema.describe(
+									`${NonEmpMdSchema.description}\n\n问题描述，通常是黑体加斜体，且有分段。e.g. "***The first table show changes in the total population of New York City from 1800 to 2000. The second and their tables show...***\n\n***Summarise the information by selecting and reporting the main features, and make comparisons where relevant.***" etc.`,
+								),
+								image: InformativeImageSchema.describe(
+									'整张图表（包括子图、对比图等）放到一个image来盛装。',
+								),
+							}),
 							__responseContentSchema: WritingSchema,
 						},
 					},
 				},
+				/**
+				 * @design /design/exam/ielts-academic-20230503-practice/writing_task2_default.png
+				 */
 				task2: {
 					__displayName: {
 						zh: 'Task 2 大作文（议论文）',
 						en: 'Academic Writing Task 2',
 					},
-					__questionContentSchema: z.object({
-						prompt: NonEmpMdSchema.describe('Task 2 议论文题目和instruction'),
-					}),
+					__questionContentSchema: EmptyObjectSchema,
 					__items: {
 						default: {
 							__displayName: { zh: '默认题型', en: 'Default' },
-							__questionContentSchema: EmptyObjectSchema,
+							__questionContentSchema: z.object({
+								instructionBeforePrompt: NonEmpMdSchema.describe(
+									`${NonEmpMdSchema.description}\ne.g. "You should spend about 40 minutes on this task.\n\nWrite about the following topic:"`,
+								),
+								prompt: NonEmpMdSchema.describe(
+									`${NonEmpMdSchema.description}\n议论文题目，通常是黑体加斜体，且有分段。e.g. "***Access to clean water is a basic human right. Therefore every home should have a water supply that is provided free of charge.***\n\n***Do you agree or disagree?***" etc.`,
+								),
+								instructionAfterPrompt: NonEmpMdSchema.describe(
+									`${NonEmpMdSchema.description}\ne.g. "Give reasons for your answer and include any relevant examples from own knowledge or experience.\n\nWrite at least 250 words."`,
+								),
+							}),
 							__responseContentSchema: WritingSchema,
 						},
 					},
@@ -891,26 +928,37 @@ export default defineExam({
 		speaking: {
 			__displayName: { zh: '口语', en: 'Speaking' },
 			__tasks: {
+				/**
+				 * @design /design/exam/ielts-academic-20230503-practice/speaking_part1_default.png
+				 */
 				part1: {
 					__displayName: {
 						zh: 'Part 1 自我介绍与简短问答',
 						en: 'Part 1 Introduction and Interview',
 					},
 					__questionContentSchema: z.object({
-						instruction: NonEmpMdSchema,
-						title: NonEmpStrSchema,
+						instruction: NonEmpStrSchema.describe(
+							`${NonEmpStrSchema.description}\ne.g. The examiner asks you about yourself, your home, work or studies and other familiar topics.`,
+						),
+						topic: NonEmpStrSchema.describe(
+							`${NonEmpStrSchema.description}\ne.g. "Walking"`,
+						),
 					}),
 					__items: {
 						default: {
 							__displayName: { zh: '默认题型', en: 'Default' },
 							__questionContentSchema: z.object({
-								prompt: NonEmpStrSchema,
-								audio: TranscriptedAudioSchema,
+								prompt: NonEmpStrSchema.describe(
+									`${NonEmpStrSchema.description}\nA single question, e.g. "How much walking do you do in your daily life?",`,
+								),
 							}),
 							__responseContentSchema: SpeakingSchema,
 						},
 					},
 				},
+				/**
+				 * @design /design/exam/ielts-academic-20230503-practice/speaking_part2_default.png
+				 */
 				part2: {
 					__displayName: { zh: 'Part 2 个人独白', en: 'Part 2 Long Turn' },
 					__questionContentSchema: EmptyObjectSchema,
@@ -919,25 +967,37 @@ export default defineExam({
 							__displayName: { zh: '默认题型', en: 'Default' },
 							__questionContentSchema: z.object({
 								prompt: NonEmpMdSchema.describe(
-									`${NonEmpMdSchema.description}\nCue Card 话题卡`,
+									`${NonEmpMdSchema.description}\nCue Card 话题卡。用纯黑体和分段。`,
 								),
-								instruction: NonEmpMdSchema,
+								instruction: NonEmpStrSchema.describe(
+									`${NonEmpStrSchema.description}\ne.g. "You will have to talk about the topic for one to two minutes. You have one minute to think about what you are going to say. You can make some notes to help you if you wish."`,
+								),
 							}),
 							__responseContentSchema: SpeakingSchema,
 						},
 					},
 				},
+				/**
+				 * @design /design/exam/ielts-academic-20230503-practice/speaking_part3_default.png
+				 */
 				part3: {
 					__displayName: { zh: 'Part 3 双向讨论', en: 'Part 3 Discussion' },
 					__questionContentSchema: z.object({
-						partitions: PartitionsSchema, // TODO 不需要用到parition，这里直接adhoc 建模即可。
+						partitions: BaseParitionSchema.extend({
+							topic: NonEmpStrSchema.describe(
+								`${NonEmpStrSchema.description}\ne.g. "Theatres today" etc.`,
+							),
+						})
+							.array()
+							.describe('Usually two partitions.'),
 					}),
 					__items: {
 						default: {
 							__displayName: { zh: '默认题型', en: 'Default' },
 							__questionContentSchema: z.object({
-								prompt: NonEmpStrSchema,
-								audio: TranscriptedAudioSchema,
+								prompt: NonEmpStrSchema.describe(
+									`${NonEmpStrSchema.description}\nA single question, e.g. "Do you think theatres need to do more to attract younger audiences?",`,
+								),
 							}),
 							__responseContentSchema: SpeakingSchema,
 						},
