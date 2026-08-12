@@ -159,9 +159,10 @@ After successfully uploading `catalog.json` and its associated `.theta` files to
 
 The latest protocol version supports the following exam schemas:
 
-| Exam Code            | Target Exam | Official Release Date |
-| :------------------- | :---------- | :-------------------- |
-| `toefl_ibt_20260121` | TOEFL iBT   | 2026-01-21            |
+| Exam Code                 | Target Exam    | Official Release Date |
+| :------------------------ | :------------- | :-------------------- |
+| `toefl_ibt_20260121`      | TOEFL iBT      | 2026-01-21            |
+| `ielts_academic_20230503` | IELTS Academic | 2023-05-03            |
 
 > 💡 **Tip**: To extend or contribute new exam schemas, please refer to the `src/exams/` directory in the project repository and submit a Pull Request.
 
