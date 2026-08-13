@@ -11,14 +11,13 @@ import {
 	TaskContentSchema,
 } from './exam';
 import {
-	FileKeySchema,
 	OffsetDatetimeStrSchema,
 	SequenceSchema,
 	TransDictSchema,
 } from './exam/__shared';
 
 export const ManifestPaperSchema = z.object({
-	fileKey: FileKeySchema,
+	id: z.uuid().describe('Canonical Paper ID'), // 🌟 试卷根节点纯 UUID
 	createdAt: OffsetDatetimeStrSchema,
 	updatedAt: OffsetDatetimeStrSchema,
 	examCode: ExamCodeSchema,
@@ -27,15 +26,18 @@ export const ManifestPaperSchema = z.object({
 	issuedAt: OffsetDatetimeStrSchema,
 	sections: z
 		.object({
+			id: z.uuid().describe('Canonical Section ID'),
 			code: SectionCodeSchema,
 			sequence: SequenceSchema,
 			tasks: z
 				.object({
+					id: z.uuid().describe('Canonical Task ID'),
 					code: TaskCodeSchema,
 					sequence: SequenceSchema,
 					content: TaskContentSchema,
 					items: z
 						.object({
+							id: z.uuid().describe('Canonical Item ID'),
 							code: ItemCodeSchema,
 							sequence: SequenceSchema,
 							content: ItemContentSchema,

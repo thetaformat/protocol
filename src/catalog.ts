@@ -4,7 +4,7 @@ import { OffsetDatetimeStrSchema, PosIntSchema } from './exam/__shared';
 import { ManifestPaperSchema } from './manifest';
 
 export const CatalogPaperSchema = ManifestPaperSchema.pick({
-	fileKey: true,
+	id: true,
 	createdAt: true,
 	updatedAt: true,
 	examCode: true,
