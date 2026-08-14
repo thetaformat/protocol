@@ -1,6 +1,10 @@
 import z from 'zod';
 
-import { OffsetDatetimeStrSchema, PosIntSchema } from './exam/__shared';
+import {
+	FileKeySchema,
+	OffsetDatetimeStrSchema,
+	PosIntSchema,
+} from './exam/__shared';
 import { ManifestPaperSchema } from './manifest';
 
 export const CatalogPaperSchema = ManifestPaperSchema.pick({
@@ -12,6 +16,7 @@ export const CatalogPaperSchema = ManifestPaperSchema.pick({
 	paperName: true,
 	issuedAt: true,
 }).extend({
+	fileKey: FileKeySchema,
 	downloadUrl: z.url(),
 	fileSizeInBytes: PosIntSchema,
 });
