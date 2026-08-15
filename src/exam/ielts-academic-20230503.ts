@@ -881,6 +881,7 @@ export default defineExam({
 						default: {
 							__displayName: { zh: '默认题型', en: 'Default' },
 							__questionContentSchema: z.object({
+								seqId: SeqIdSchema,
 								instruction: NonEmpStrSchema.describe(
 									`${NonEmpStrSchema.description}\ne.g. "You should spend about 20 minutes on this task."`,
 								),
@@ -908,6 +909,7 @@ export default defineExam({
 						default: {
 							__displayName: { zh: '默认题型', en: 'Default' },
 							__questionContentSchema: z.object({
+								seqId: SeqIdSchema,
 								instructionBeforePrompt: NonEmpMdSchema.describe(
 									`${NonEmpMdSchema.description}\ne.g. "You should spend about 40 minutes on this task.\n\nWrite about the following topic:"`,
 								),
@@ -948,6 +950,7 @@ export default defineExam({
 						default: {
 							__displayName: { zh: '默认题型', en: 'Default' },
 							__questionContentSchema: z.object({
+								seqId: SeqIdSchema,
 								prompt: NonEmpStrSchema.describe(
 									`${NonEmpStrSchema.description}\nA single question, e.g. "How much walking do you do in your daily life?",`,
 								),
@@ -966,6 +969,7 @@ export default defineExam({
 						default: {
 							__displayName: { zh: '默认题型', en: 'Default' },
 							__questionContentSchema: z.object({
+								seqId: SeqIdSchema,
 								prompt: NonEmpMdSchema.describe(
 									`${NonEmpMdSchema.description}\nCue Card 话题卡。用纯黑体和分段。`,
 								),
@@ -995,6 +999,7 @@ export default defineExam({
 						default: {
 							__displayName: { zh: '默认题型', en: 'Default' },
 							__questionContentSchema: z.object({
+								seqId: SeqIdSchema,
 								prompt: NonEmpStrSchema.describe(
 									`${NonEmpStrSchema.description}\nA single question, e.g. "Do you think theatres need to do more to attract younger audiences?",`,
 								),
