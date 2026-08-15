@@ -248,10 +248,15 @@ export function defineExam<
 			// 🌟 收集 Task 的 displayName
 			displayNames[taskCode] = taskDisplayName;
 
+			const extendedTaskSchema = taskTyped.__questionContentSchema.extend({
+				taskCode: z.enum([taskCode]),
+			});
 			taskSchemas.push(
-				taskTyped.__questionContentSchema.extend({
-					taskCode: z.enum([taskCode]),
-				}),
+				taskTyped.__questionContentSchema.description
+					? extendedTaskSchema.describe(
+							taskTyped.__questionContentSchema.description,
+						)
+					: extendedTaskSchema,
 			);
 
 			for (const [itemKey, itemVal] of Object.entries(taskTyped.__items)) {
@@ -273,16 +278,28 @@ export function defineExam<
 				// 🌟 收集 Item 的 displayName
 				displayNames[itemCode] = itemDisplayName;
 
+				const extendedItemSchema = itemTyped.__questionContentSchema.extend({
+					itemCode: z.enum([itemCode]),
+				});
 				itemSchemas.push(
-					itemTyped.__questionContentSchema.extend({
-						itemCode: z.enum([itemCode]),
-					}),
+					itemTyped.__questionContentSchema.description
+						? extendedItemSchema.describe(
+								itemTyped.__questionContentSchema.description,
+							)
+						: extendedItemSchema,
 				);
 
-				responseSchemas.push(
-					itemTyped.__responseContentSchema.extend({
+				const extendedResponseSchema = itemTyped.__responseContentSchema.extend(
+					{
 						itemCode: z.enum([itemCode]),
-					}),
+					},
+				);
+				responseSchemas.push(
+					itemTyped.__responseContentSchema.description
+						? extendedResponseSchema.describe(
+								itemTyped.__responseContentSchema.description,
+							)
+						: extendedResponseSchema,
 				);
 			}
 		}
