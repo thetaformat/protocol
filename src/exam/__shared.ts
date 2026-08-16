@@ -145,10 +145,11 @@ export const TranscriptSchema = z
 			'Speaker name or role.',
 		),
 		sentenceText: NonEmpStrSchema.describe(
-			`${NonEmpStrSchema.description}\n Transcript text of each sentence.`,
+			`${NonEmpStrSchema.description}\n Transcript text of EACH SENTENCE.`,
 		),
 	})
-	.array();
+	.array()
+	.describe('The full transcript of the audio.');
 
 export const TranscriptedAudioSchema = SimpleAudioSchema.extend({
 	formatCode: z.enum(['transcripted_audio']),
