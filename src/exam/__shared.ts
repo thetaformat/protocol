@@ -145,7 +145,7 @@ export const TranscriptSchema = z
 			'Speaker name or role.',
 		),
 		sentenceText: NonEmpStrSchema.describe(
-			`${NonEmpStrSchema.description}\n Transcript text of EACH SENTENCE.`,
+			`${NonEmpStrSchema.description}\n Text of a single atomic speech segment (one sentence, phrase, or isolated word only, ending with sentence-ending punctuation).`,
 		),
 	})
 	.array()
