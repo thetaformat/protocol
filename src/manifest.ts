@@ -1,4 +1,3 @@
-import semver from 'semver';
 import { z } from 'zod';
 
 import {
@@ -23,6 +22,7 @@ export const ManifestPaperSchema = z.object({
 	examCode: ExamCodeSchema,
 	collectionName: TransDictSchema,
 	paperName: TransDictSchema,
+	releaseNotes: TransDictSchema,
 	issuedAt: OffsetDatetimeStrSchema,
 	sections: z
 		.object({
@@ -57,9 +57,6 @@ export type ManifestPaper = z.infer<typeof ManifestPaperSchema>;
 export const ManifestSchema = z.object({
 	meta: z.object({
 		magic: z.literal('theta'),
-		schemaVersion: z.string().refine((val) => semver.valid(val) !== null, {
-			message: 'Only accept valid SemVer string.',
-		}),
 	}),
 	paper: ManifestPaperSchema,
 });
