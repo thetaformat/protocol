@@ -150,7 +150,7 @@ export const TranscriptSchema = z
 	})
 	.array()
 	.describe(
-		'The complete chronological transcript covering all transcribable speech, from the first spoken sentence to the last.',
+		'Chronological verbatim transcript of all spoken utterances from the first vocal audio to the last',
 	);
 
 export const TranscriptedAudioSchema = SimpleAudioSchema.extend({
