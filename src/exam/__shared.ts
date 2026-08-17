@@ -136,10 +136,10 @@ export const SimpleVideoSchema = SimpleAudioSchema.extend({
 export const TranscriptSchema = z
 	.object({
 		startTime: NonEmpStrSchema.describe(
-			'timestamp format is MM:SS, to the highest accuracy.',
+			'timestamp format is HH:MM:SS, to the highest accuracy.',
 		),
 		endTime: NonEmpStrSchema.describe(
-			'timestamp format is MM:SS, to the highest accuracy.',
+			'timestamp format is HH:MM:SS, to the highest accuracy.',
 		),
 		speaker: NonEmpStrSchema.default('Speaker').describe(
 			'Speaker name or role.',
@@ -150,7 +150,7 @@ export const TranscriptSchema = z
 	})
 	.array()
 	.describe(
-		'The complete transcript covering the entire audio from 00:00 to the end.',
+		'The complete chronological transcript covering all transcribable speech, from the first spoken sentence to the last.',
 	);
 
 export const TranscriptedAudioSchema = SimpleAudioSchema.extend({
