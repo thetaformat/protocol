@@ -149,7 +149,9 @@ export const TranscriptSchema = z
 		),
 	})
 	.array()
-	.describe('The full transcript of the audio.');
+	.describe(
+		'The complete transcript covering the entire audio from 00:00 to the end.',
+	);
 
 export const TranscriptedAudioSchema = SimpleAudioSchema.extend({
 	formatCode: z.enum(['transcripted_audio']),
