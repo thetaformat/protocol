@@ -10,7 +10,6 @@ import { ManifestPaperSchema } from './manifest';
 export const CatalogPaperSchema = ManifestPaperSchema.pick({
 	id: true,
 	createdAt: true,
-	updatedAt: true,
 	examCode: true,
 	collectionName: true,
 	paperName: true,

@@ -18,7 +18,6 @@ import {
 export const ManifestPaperSchema = z.object({
 	id: z.uuid().describe('Canonical Paper ID'), // 🌟 试卷根节点纯 UUID
 	createdAt: OffsetDatetimeStrSchema,
-	updatedAt: OffsetDatetimeStrSchema,
 	examCode: ExamCodeSchema,
 	collectionName: TransDictSchema,
 	paperName: TransDictSchema,

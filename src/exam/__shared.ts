@@ -136,10 +136,10 @@ export const SimpleVideoSchema = SimpleAudioSchema.extend({
 export const TranscriptSchema = z
 	.object({
 		startTime: NonEmpStrSchema.describe(
-			'timestamp format is HH:MM:SS, to the highest accuracy.',
+			'timestamp format is MM:SS, to the highest accuracy.',
 		),
 		endTime: NonEmpStrSchema.describe(
-			'timestamp format is HH:MM:SS, to the highest accuracy.',
+			'timestamp format is MM:SS, to the highest accuracy.',
 		),
 		speaker: NonEmpStrSchema.default('Speaker').describe(
 			'Speaker name or role.',

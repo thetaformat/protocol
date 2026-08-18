@@ -114,9 +114,9 @@ if (!result.success) {
 	"updatedAt": "2026-01-21T08:00:00Z",
 	"papers": [
 		{
+			"id": "77b5bfda-503d-4215-bdb3-8a808746357f",
 			"fileKey": "75f4005b-c343-4d2e-8188-998d60dc4ca6.theta",
 			"createdAt": "2026-01-21T08:00:00Z",
-			"updatedAt": "2026-01-21T08:00:00Z",
 			"examCode": "toefl_ibt_20260121",
 			"collectionName": {
 				"zh": "自研摸底测试试卷集",
@@ -125,6 +125,10 @@ if (!result.success) {
 			"paperName": {
 				"zh": "摸底测试试卷-1",
 				"en": "Placement Exam Paper 1 "
+			},
+			"releaseNotes": {
+				"zh": "此版本修复了 Task 2 Question 中的一处 typo",
+				"en": "This version corrected a typo in Task 2 Question"
 			},
 			"issuedAt": "2026-07-26T08:00:00Z",
 			"downloadUrl": "https://cdn.example-community.org/75f4005b-c343-4d2e-8188-998d60dc4ca6.theta",
