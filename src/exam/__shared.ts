@@ -145,11 +145,11 @@ export const TranscriptSchema = z
 			'Speaker name or role.',
 		),
 		sentenceText: NonEmpStrSchema.describe(
-			`${NonEmpStrSchema.description}\n Text of a sentence, phrase, or isolated word only, ending with sentence-ending punctuation).`,
+			`${NonEmpStrSchema.description}\n Text of EACH SENTENCE.`,
 		),
 	})
 	.array()
-	.describe('The full transcript text.');
+	.describe('The full verbatim transcript text.');
 
 export const TranscriptedAudioSchema = SimpleAudioSchema.extend({
 	formatCode: z.enum(['transcripted_audio']),
