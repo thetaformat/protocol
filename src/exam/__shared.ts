@@ -44,7 +44,7 @@ export const SequenceSchema = z
 	.int()
 	.min(1)
 	.max(1000)
-	.describe('Global sequence within the paper, starting from 1');
+	.describe('Global sequence within the WHOLE paper, starting from 1');
 
 /**
  * 确定性的顺序指针 ID 规范

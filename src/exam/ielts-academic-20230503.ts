@@ -116,7 +116,21 @@ const ListeningParitionsSchema = BaseParitionSchema.extend({
 				.array()
 				.describe('All the stages.'),
 		}),
-		z.object({ partitionCode: z.enum(['flow_chart_completion_by_selection']) }),
+		z.object({
+			partitionCode: z.enum(['flow_chart_completion_by_selection']),
+			instruction: NonEmpMdSchema.describe(
+				`${NonEmpMdSchema.description}\Instruction for the partition. e.g. "Complete the flow chart below\n\nChoose ***FIVE*** answers from the box and write the correct letter, ***A-H***, next to Questions 26-30."`,
+			),
+			flowChartTitle: NonEmpStrSchema.optional().describe(
+				`${NonEmpStrSchema.description}\nThe title of the flow chart, if exists.`,
+			),
+			flowChartContent: NonEmpMdSchema.describe(
+				`${NonEmpMdSchema.description}\The flow chart content for each stage. 注意只支持单链条不分叉的flow。 Use Markdown to mimic the format. Turn blanks to seqId placeholders. e.g. "Choose mice which are all the same 26_______ ." to "Choose mice which are all the same {{26}}."。`,
+			)
+				.array()
+				.describe('All the stages.'),
+			options: OptionsSchema,
+		}),
 		z.object({
 			partitionCode: z.enum(['summary_completion_by_filling']),
 			instruction: NonEmpMdSchema.describe(
@@ -287,6 +301,7 @@ const ListeningItems = {
 
 	/**
 	 * @design /design/exam/ielts-academic-20230503/listening_flow_chart_completion_by_selection.png
+	 * @design /design/exam/ielts-academic-20230503-practice/listening_flow_chart_completion_by_selection.png
 	 */
 	flow_chart_completion_by_selection: {
 		__displayName: {
@@ -294,7 +309,7 @@ const ListeningItems = {
 			en: 'Flow Chart Completion by Selection',
 		},
 		__questionContentSchema: z.object({ seqId: SeqIdSchema }),
-		__responseContentSchema: UndeterminedSchema,
+		__responseContentSchema: SelectionArraySchema,
 	},
 
 	/**
