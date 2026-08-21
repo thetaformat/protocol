@@ -109,7 +109,6 @@ if (!result.success) {
 
 ```json
 {
-	"publisherName": "小白老师",
 	"createdAt": "2026-01-21T08:00:00Z",
 	"updatedAt": "2026-01-21T08:00:00Z",
 	"papers": [

@@ -111,7 +111,6 @@ Referring to `CatalogSchema`, write an index file to aggregate one or more exam 
 
 ```json
 {
-	"publisherName": "Teacher Xiao Bai",
 	"createdAt": "2026-01-21T08:00:00Z",
 	"updatedAt": "2026-01-21T08:00:00Z",
 	"papers": [
