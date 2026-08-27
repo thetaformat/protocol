@@ -89,11 +89,11 @@ const rawData = JSON.parse(fs.readFileSync('./manifest.json', 'utf-8'));
 const result = ManifestSchema.safeParse(rawData);
 
 if (!result.success) {
-	console.error('❌ 数据校验失败，错误详情：');
-	console.error(JSON.stringify(result.error.format(), null, 2));
-	process.exit(1);
+  console.error('❌ 数据校验失败，错误详情：');
+  console.error(JSON.stringify(result.error.format(), null, 2));
+  process.exit(1);
 } else {
-	console.log('✅ 恭喜！manifest.json 格式完全符合 Theta 协议规范。');
+  console.log('✅ 恭喜！manifest.json 格式完全符合 Theta 协议规范。');
 }
 ```
 
@@ -109,31 +109,31 @@ if (!result.success) {
 
 ```json
 {
-	"createdAt": "2026-01-21T08:00:00Z",
-	"updatedAt": "2026-01-21T08:00:00Z",
-	"papers": [
-		{
-			"id": "77b5bfda-503d-4215-bdb3-8a808746357f",
-			"fileKey": "75f4005b-c343-4d2e-8188-998d60dc4ca6.theta",
-			"createdAt": "2026-01-21T08:00:00Z",
-			"examCode": "toefl_ibt_20260121",
-			"collectionName": {
-				"zh": "自研摸底测试试卷集",
-				"en": "Placement Exam Papers"
-			},
-			"paperName": {
-				"zh": "摸底测试试卷-1",
-				"en": "Placement Exam Paper 1 "
-			},
-			"releaseNotes": {
-				"zh": "此版本修复了 Task 2 Question 中的一处 typo",
-				"en": "This version corrected a typo in Task 2 Question"
-			},
-			"issuedAt": "2026-07-26T08:00:00Z",
-			"downloadUrl": "https://cdn.example-community.org/75f4005b-c343-4d2e-8188-998d60dc4ca6.theta",
-			"fileSizeInBytes": 10485760
-		}
-	]
+  "createdAt": "2026-01-21T08:00:00Z",
+  "updatedAt": "2026-01-21T08:00:00Z",
+  "papers": [
+    {
+      "id": "77b5bfda-503d-4215-bdb3-8a808746357f",
+      "fileKey": "75f4005b-c343-4d2e-8188-998d60dc4ca6.theta",
+      "createdAt": "2026-01-21T08:00:00Z",
+      "examCode": "toefl_ibt_20260121",
+      "collectionName": {
+        "zh": "自研摸底测试试卷集",
+        "en": "Placement Exam Papers"
+      },
+      "paperName": {
+        "zh": "摸底测试试卷-1",
+        "en": "Placement Exam Paper 1 "
+      },
+      "releaseNotes": {
+        "zh": "此版本修复了 Task 2 Question 中的一处 typo",
+        "en": "This version corrected a typo in Task 2 Question"
+      },
+      "issuedAt": "2026-07-26T08:00:00Z",
+      "downloadUrl": "https://cdn.example-community.org/75f4005b-c343-4d2e-8188-998d60dc4ca6.theta",
+      "fileSizeInBytes": 10485760
+    }
+  ]
 }
 ```
 

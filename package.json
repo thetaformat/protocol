@@ -1,77 +1,77 @@
 {
-	"name": "@thetaformat/protocol",
-	"version": "1.1.4",
-	"type": "module",
-	"license": "Apache-2.0",
-	"main": "./src/index.ts",
-	"module": "./src/index.ts",
-	"types": "./src/index.ts",
-	"exports": {
-		".": {
-			"types": "./src/index.ts",
-			"import": "./src/index.ts",
-			"require": "./src/index.ts",
-			"default": "./src/index.ts"
-		}
-	},
-	"files": [
-		"dist",
-		"src",
-		"README.md"
-	],
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/thetaformat/protocol.git"
-	},
-	"homepage": "https://github.com/thetaformat/protocol#readme",
-	"bugs": {
-		"url": "https://github.com/thetaformat/protocol/issues"
-	},
-	"keywords": [
-		"protocol",
-		"digital-exam-paper",
-		"ai-native"
-	],
-	"publishConfig": {
-		"access": "public",
-		"main": "./dist/index.js",
-		"module": "./dist/index.js",
-		"types": "./dist/index.d.ts",
-		"exports": {
-			".": {
-				"types": "./dist/index.d.ts",
-				"import": "./dist/index.js",
-				"require": "./dist/index.js",
-				"default": "./dist/index.js"
-			}
-		}
-	},
-	"scripts": {
-		"build": "rm -rf dist && tsup && tsc --emitDeclarationOnly --declaration --declarationMap --outDir dist",
-		"tc": "tsc --noEmit",
-		"push": "pnpm run tc && git add . && git commit -m \"WIP\" && git push",
-		"release": "pnpm run tc && pnpm run build && pnpm version patch --no-git-tag-version && git add . && git commit -m \"chore: bump version & release\" && git push && pnpm publish"
-	},
-	"dependencies": {
-		"semver": "^7.8.0",
-		"zod": "^4.4.3"
-	},
-	"devDependencies": {
-		"@types/semver": "^7.7.1",
-		"tsup": "^8.5.1",
-		"typescript": "^6.0.3",
-		"@types/node": "^22.19.0"
-	},
-	"devEngines": {
-		"runtime": {
-			"name": "node",
-			"version": ">=22.19.0",
-			"onFail": "error"
-		},
-		"packageManager": {
-			"name": "pnpm",
-			"version": ">=10.22.0",
-			"onFail": "warn"
-		}
-	}
+  "name": "@thetaformat/protocol",
+  "version": "1.1.4",
+  "keywords": [
+    "ai-native",
+    "digital-exam-paper",
+    "protocol"
+  ],
+  "homepage": "https://github.com/thetaformat/protocol#readme",
+  "bugs": {
+    "url": "https://github.com/thetaformat/protocol/issues"
+  },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thetaformat/protocol.git"
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
+  "type": "module",
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
+      "require": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "require": "./dist/index.js",
+        "default": "./dist/index.js"
+      }
+    },
+    "access": "public"
+  },
+  "scripts": {
+    "build": "rm -rf dist && tsup && tsc --emitDeclarationOnly --declaration --declarationMap --outDir dist",
+    "tc": "tsc --noEmit",
+    "push": "pnpm run tc && git add . && git commit -m \"WIP\" && git push",
+    "release": "pnpm run tc && pnpm run build && pnpm version patch --no-git-tag-version && git add . && git commit -m \"chore: bump version & release\" && git push && pnpm publish"
+  },
+  "dependencies": {
+    "semver": "^7.8.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.0",
+    "@types/semver": "^7.7.1",
+    "tsup": "^8.5.1",
+    "typescript": "^6.0.3"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": ">=10.22.0",
+      "onFail": "warn"
+    },
+    "runtime": {
+      "name": "node",
+      "version": ">=22.19.0",
+      "onFail": "error"
+    }
+  }
 }
