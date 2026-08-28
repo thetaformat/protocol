@@ -13,6 +13,7 @@ export const CatalogPaperSchema = ManifestPaperSchema.pick({
   examCode: true,
   collectionName: true,
   paperName: true,
+  releaseNotes: true,
   issuedAt: true,
 }).extend({
   fileKey: FileKeySchema,
