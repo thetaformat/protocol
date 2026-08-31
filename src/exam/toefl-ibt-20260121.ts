@@ -20,7 +20,6 @@ import {
   StemSchema,
   TranscriptedAudioSchema,
   TranscriptedVideoSchema,
-  VerbatimSequenceSchema,
   WritingSchema,
 } from './__shared';
 
@@ -38,7 +37,6 @@ export default defineExam({
             default: {
               __displayName: { en: 'Default', zh: '默认题型' },
               __questionContentSchema: z.object({
-                verbatimSequence: VerbatimSequenceSchema,
                 instruction: NonEmptyStringSchema,
                 text: SimplePassageSchema.describe(
                   `${SimplePassageSchema.description}` +
@@ -81,7 +79,6 @@ export default defineExam({
             default: {
               __displayName: { en: 'Default', zh: '默认题型' },
               __questionContentSchema: z.object({
-                verbatimSequence: VerbatimSequenceSchema,
                 stem: StemSchema,
                 options: OptionsSchema,
                 paragraphReference: SeqIdSchema.array()
@@ -114,8 +111,6 @@ export default defineExam({
             default: {
               __displayName: { en: 'Default', zh: '默认题型' },
               __questionContentSchema: z.object({
-                verbatimSequence: VerbatimSequenceSchema,
-
                 stem: StemSchema,
                 options: OptionsSchema,
               }),
@@ -138,7 +133,6 @@ export default defineExam({
             default: {
               __displayName: { en: 'Default', zh: '默认题型' },
               __questionContentSchema: z.object({
-                verbatimSequence: VerbatimSequenceSchema,
                 instruction: NonEmptyStringSchema,
                 audio: TranscriptedAudioSchema,
                 illustration: SimpleImageSchema.describe(
@@ -166,7 +160,6 @@ export default defineExam({
             default: {
               __displayName: { en: 'Default', zh: '默认题型' },
               __questionContentSchema: z.object({
-                verbatimSequence: VerbatimSequenceSchema,
                 options: OptionsSchema,
                 stem: StemSchema,
               }),
@@ -190,7 +183,6 @@ export default defineExam({
             default: {
               __displayName: { en: 'Default', zh: '默认题型' },
               __questionContentSchema: z.object({
-                verbatimSequence: VerbatimSequenceSchema,
                 stem: StemSchema,
                 options: OptionsSchema,
               }),
@@ -214,7 +206,6 @@ export default defineExam({
             default: {
               __displayName: { en: 'Default', zh: '默认题型' },
               __questionContentSchema: z.object({
-                verbatimSequence: VerbatimSequenceSchema,
                 stem: StemSchema,
                 options: OptionsSchema,
               }),
@@ -237,7 +228,6 @@ export default defineExam({
             default: {
               __displayName: { en: 'Default', zh: '默认题型' },
               __questionContentSchema: z.object({
-                verbatimSequence: VerbatimSequenceSchema,
                 instruction: NonEmptyStringSchema,
                 speaker1: z
                   .object({
@@ -290,7 +280,6 @@ export default defineExam({
             default: {
               __displayName: { en: 'Default', zh: '默认题型' },
               __questionContentSchema: z.object({
-                verbatimSequence: VerbatimSequenceSchema,
                 introduction: NonEmptyMdSchema.describe(
                   `${NonEmptyMdSchema.description}\nThe prompt main body, which includes scenario description and requirements.`,
                 ),
@@ -311,7 +300,6 @@ export default defineExam({
             default: {
               __displayName: { en: 'Default', zh: '默认题型' },
               __questionContentSchema: z.object({
-                verbatimSequence: VerbatimSequenceSchema,
                 introduction: NonEmptyMdSchema.describe(
                   `${NonEmptyMdSchema.description}\nThe prompt main body, which includes scenario description and requirements.`,
                 ),
@@ -364,7 +352,6 @@ export default defineExam({
             default: {
               __displayName: { en: 'Default', zh: '默认题型' },
               __questionContentSchema: z.object({
-                verbatimSequence: VerbatimSequenceSchema,
                 instruction: NonEmptyStringSchema,
                 audio: TranscriptedAudioSchema,
                 image: SimpleImageSchema.describe(
@@ -387,7 +374,6 @@ export default defineExam({
             default: {
               __displayName: { en: 'Default', zh: '默认题型' },
               __questionContentSchema: z.object({
-                verbatimSequence: VerbatimSequenceSchema,
                 instruction: NonEmptyStringSchema,
                 video: TranscriptedVideoSchema.describe(
                   'Question prompt video',

@@ -1,6 +1,11 @@
 import z from 'zod';
 
-import { type TransDict, TransDictSchema } from './__shared';
+import {
+  type TransDict,
+  TransDictSchema,
+  type VerbatimSequence,
+  VerbatimSequenceSchema,
+} from './__shared';
 
 type ToEnumLike<T extends string> = { [K in T]: K };
 
@@ -81,6 +86,7 @@ type GetItemSchemaUnion<
       ]: z.ZodObject<
         TSections[S]['__tasks'][Task]['__items'][Item]['__questionContentSchema']['shape'] & {
           itemCode: z.ZodEnum<ToEnumLike<`${TCode}_${S}_${Task}_${Item}`>>;
+          verbatimSequence: VerbatimSequence;
         }
       >;
     }[keyof TSections[S]['__tasks'][Task]['__items'] & string];
@@ -148,7 +154,6 @@ type ValidateTask<TTask> = TTask extends {
         [Item in keyof Items]: ValidateItem<Items[Item]>;
       };
     } & {
-      // 强约束：多余字段映射为 never
       [
         K in Exclude<
           keyof TTask,
@@ -169,7 +174,6 @@ type ValidateSection<TSection> = TSection extends {
         [Task in keyof Tasks]: ValidateTask<Tasks[Task]>;
       };
     } & {
-      // 强约束：多余字段映射为 never
       [K in Exclude<keyof TSection, '__displayName' | '__tasks'>]: never;
     }
   : never;
@@ -204,7 +208,6 @@ export function defineExam<
   const itemSchemas: any[] = [];
   const responseSchemas: any[] = [];
 
-  // 🌟 声明扁平化 displayNames 键值账本
   const displayNames: Record<string, TransDict> = {
     [examCode]: examDisplayName,
   };
@@ -215,7 +218,6 @@ export function defineExam<
 
     const sectionTyped = sectionVal as any;
 
-    // 运行时校验 Section 层的 __displayName
     const sectionDisplayName = sectionTyped.__displayName;
     const sectionDisplayNameParseResult =
       TransDictSchema.safeParse(sectionDisplayName);
@@ -226,7 +228,6 @@ export function defineExam<
       );
     }
 
-    // 🌟 收集 Section 的 displayName
     displayNames[sectionCode] = sectionDisplayName;
 
     for (const [taskKey, taskVal] of Object.entries(sectionTyped.__tasks)) {
@@ -234,7 +235,6 @@ export function defineExam<
       const taskCode = `${sectionCode}_${taskKey}`;
       taskCodes.push(taskCode);
 
-      // 运行时校验 Task 层的 __displayName
       const taskDisplayName = taskTyped.__displayName;
       const taskDisplayNameParseResult =
         TransDictSchema.safeParse(taskDisplayName);
@@ -245,7 +245,6 @@ export function defineExam<
         );
       }
 
-      // 🌟 收集 Task 的 displayName
       displayNames[taskCode] = taskDisplayName;
 
       const extendedTaskSchema = taskTyped.__questionContentSchema.extend({
@@ -264,7 +263,6 @@ export function defineExam<
         const itemCode = `${taskCode}_${itemKey}`;
         itemCodes.push(itemCode);
 
-        // 运行时校验 Item 层的 __displayName
         const itemDisplayName = itemTyped.__displayName;
         const itemDisplayNameParseResult =
           TransDictSchema.safeParse(itemDisplayName);
@@ -275,11 +273,12 @@ export function defineExam<
           );
         }
 
-        // 🌟 收集 Item 的 displayName
         displayNames[itemCode] = itemDisplayName;
 
+        // 🌟 集中注入 itemCode 与 verbatimSequence
         const extendedItemSchema = itemTyped.__questionContentSchema.extend({
           itemCode: z.enum([itemCode]),
+          verbatimSequence: VerbatimSequenceSchema,
         });
         itemSchemas.push(
           itemTyped.__questionContentSchema.description

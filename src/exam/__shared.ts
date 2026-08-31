@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 export type LangCode = z.infer<typeof LangCodeSchema>;
+export type VerbatimSequence = z.infer<typeof VerbatimSequenceSchema>;
 export type SeqId = z.infer<typeof SeqIdSchema>;
 export type FileKey = z.infer<typeof FileKeySchema>;
 export type OffsetDatetimeStr = z.infer<typeof OffsetDatetimeStrSchema>;

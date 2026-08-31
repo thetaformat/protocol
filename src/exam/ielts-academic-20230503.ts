@@ -16,7 +16,6 @@ import {
   SpeakingSchema,
   StemSchema,
   TranscriptedAudioSchema,
-  VerbatimSequenceSchema,
   WritingSchema,
 } from './__shared';
 
@@ -171,7 +170,6 @@ const ListeningItems = {
   multiple_choice: {
     __displayName: { zh: '选择题', en: 'Multiple Choice' },
     __questionContentSchema: z.object({
-      verbatimSequence: VerbatimSequenceSchema,
       stem: StemSchema,
       options: OptionsSchema,
     }),
@@ -184,7 +182,6 @@ const ListeningItems = {
   matching: {
     __displayName: { zh: '配对题', en: 'Matching' },
     __questionContentSchema: z.object({
-      verbatimSequence: VerbatimSequenceSchema,
       prompt: NonEmptyStringSchema.describe(
         `${NonEmptyStringSchema.description}\nThe question item prompt immediately following the question number. e.g. "walking around the town centre", "helping at concerts" etc. Usually a phrase.`,
       ),
@@ -202,7 +199,6 @@ const ListeningItems = {
       en: 'Plan/Map/Diagram Labelling',
     },
     __questionContentSchema: z.object({
-      verbatimSequence: VerbatimSequenceSchema,
       label: NonEmptyStringSchema.describe(
         `${NonEmptyStringSchema.description}\nThe question item prompt, a.k.a. the label. e.g. "bridge foundations", "rubbish pit" etc.`,
       ),
@@ -218,9 +214,7 @@ const ListeningItems = {
       zh: '表单填空题',
       en: 'Form Completion by Filling',
     },
-    __questionContentSchema: z.object({
-      verbatimSequence: VerbatimSequenceSchema,
-    }),
+    __questionContentSchema: EmptyObjectSchema,
     __responseContentSchema: FillingArraySchema,
   },
 
@@ -246,9 +240,7 @@ const ListeningItems = {
       zh: '笔记填空题',
       en: 'Note Completion by Filling',
     },
-    __questionContentSchema: z.object({
-      verbatimSequence: VerbatimSequenceSchema,
-    }),
+    __questionContentSchema: EmptyObjectSchema,
     __responseContentSchema: FillingArraySchema,
   },
 
@@ -274,9 +266,7 @@ const ListeningItems = {
       zh: '表格填空题',
       en: 'Table Completion by Filling',
     },
-    __questionContentSchema: z.object({
-      verbatimSequence: VerbatimSequenceSchema,
-    }),
+    __questionContentSchema: EmptyObjectSchema,
     __responseContentSchema: FillingArraySchema,
   },
 
@@ -301,9 +291,7 @@ const ListeningItems = {
       zh: '流程图填空题',
       en: 'Flow Chart Completion by Filling',
     },
-    __questionContentSchema: z.object({
-      verbatimSequence: VerbatimSequenceSchema,
-    }),
+    __questionContentSchema: EmptyObjectSchema,
     __responseContentSchema: FillingArraySchema,
   },
 
@@ -316,9 +304,7 @@ const ListeningItems = {
       zh: '流程图选择填空题',
       en: 'Flow Chart Completion by Selection',
     },
-    __questionContentSchema: z.object({
-      verbatimSequence: VerbatimSequenceSchema,
-    }),
+    __questionContentSchema: EmptyObjectSchema,
     __responseContentSchema: SelectionArraySchema,
   },
 
@@ -330,9 +316,7 @@ const ListeningItems = {
       zh: '摘要填空题',
       en: 'Summary Completion by Filling',
     },
-    __questionContentSchema: z.object({
-      verbatimSequence: VerbatimSequenceSchema,
-    }),
+    __questionContentSchema: EmptyObjectSchema,
     __responseContentSchema: FillingArraySchema,
   },
 
@@ -356,7 +340,6 @@ const ListeningItems = {
   sentence_completion: {
     __displayName: { zh: '句子填空题', en: 'Sentence Completion' },
     __questionContentSchema: z.object({
-      verbatimSequence: VerbatimSequenceSchema,
       sentence: NonEmptyStringSchema.describe(
         `${NonEmptyStringSchema.description}\n The sentence to complete. The blanks should be replaced by {{verbatimSequence}}. e.g. "23. Kira says that lecturers are easier to {{1}} than those in her {{2}}", "24. Paul suggests that Kira may be more {{1}} than when she was studying before."`,
       ),
@@ -371,7 +354,6 @@ const ListeningItems = {
   short_answer_questions: {
     __displayName: { zh: '简答题', en: 'Short-Answer Questions' },
     __questionContentSchema: z.object({
-      verbatimSequence: VerbatimSequenceSchema,
       question: NonEmptyStringSchema.describe(
         `${NonEmptyStringSchema.description}\n The question to be answered.`,
       ),
@@ -545,7 +527,6 @@ const ReadingItems = {
   multiple_choice: {
     __displayName: { zh: '选择题', en: 'Multiple Choice' },
     __questionContentSchema: z.object({
-      verbatimSequence: VerbatimSequenceSchema,
       stem: StemSchema,
       options: OptionsSchema,
     }),
@@ -562,7 +543,6 @@ const ReadingItems = {
       en: 'Identifying Information (True/False/Not Given)',
     },
     __questionContentSchema: z.object({
-      verbatimSequence: VerbatimSequenceSchema,
       statement: NonEmptyStringSchema.describe(
         `${NonEmptyStringSchema.description}\nThe statement to evaluate.`,
       ),
@@ -579,7 +559,6 @@ const ReadingItems = {
       en: 'Identifying Writer’s Views/Claims (Yes/No/Not Given)',
     },
     __questionContentSchema: z.object({
-      verbatimSequence: VerbatimSequenceSchema,
       statement: NonEmptyStringSchema.describe(
         `${NonEmptyStringSchema.description}\nThe statement to evaluate.`,
       ),
@@ -593,7 +572,6 @@ const ReadingItems = {
   matching_information: {
     __displayName: { zh: '段落信息匹配题', en: 'Matching Information' },
     __questionContentSchema: z.object({
-      verbatimSequence: VerbatimSequenceSchema,
       information: NonEmptyStringSchema.describe(
         `${NonEmptyStringSchema.description}\nThe information to evaluate.`,
       ),
@@ -607,7 +585,6 @@ const ReadingItems = {
   matching_headings: {
     __displayName: { zh: '段落小标题匹配题', en: 'Matching Headings' },
     __questionContentSchema: z.object({
-      verbatimSequence: VerbatimSequenceSchema,
       prompt: NonEmptyMdSchema.describe(
         `${NonEmptyMdSchema.description}\n e.g. "Paragraph **C**", "Paragraph **G**" etc.`,
       ),
@@ -622,7 +599,6 @@ const ReadingItems = {
   matching_features: {
     __displayName: { zh: '特征/人名匹配题', en: 'Matching Features' },
     __questionContentSchema: z.object({
-      verbatimSequence: VerbatimSequenceSchema,
       prompt: NonEmptyStringSchema.describe(
         `${NonEmptyStringSchema.description}\nThe prompt, e.g. "to remove trees that are diseased" etc.`,
       ),
@@ -639,7 +615,6 @@ const ReadingItems = {
   matching_sentence_endings: {
     __displayName: { zh: '句尾匹配题', en: 'Matching Sentence Endings' },
     __questionContentSchema: z.object({
-      verbatimSequence: VerbatimSequenceSchema,
       prompt: NonEmptyStringSchema.describe(
         `${NonEmptyStringSchema.description}\nThe prompt sentence stem to be added with an ending, e.g. "At times when they were relaxed, the firefighters usually" etc.`,
       ),
@@ -654,7 +629,6 @@ const ReadingItems = {
   sentence_completion: {
     __displayName: { zh: '完成句子题', en: 'Sentence Completion' },
     __questionContentSchema: z.object({
-      verbatimSequence: VerbatimSequenceSchema,
       sentence: NonEmptyStringSchema.describe(
         `${NonEmptyStringSchema.description}\nThe sentence to complete. Replace blank with {{verbatimSequence}} placeholder. e.g. "A project in LA has increased the number of {{1}} on the city's streets." etc.`,
       ),
@@ -671,9 +645,7 @@ const ReadingItems = {
       zh: '摘要填空题',
       en: 'Summary Completion by Filling',
     },
-    __questionContentSchema: z.object({
-      verbatimSequence: VerbatimSequenceSchema,
-    }),
+    __questionContentSchema: EmptyObjectSchema,
     __responseContentSchema: FillingArraySchema,
   },
 
@@ -686,9 +658,7 @@ const ReadingItems = {
       zh: '摘要选择填空题',
       en: 'Summary Completion by Selection',
     },
-    __questionContentSchema: z.object({
-      verbatimSequence: VerbatimSequenceSchema,
-    }),
+    __questionContentSchema: EmptyObjectSchema,
     __responseContentSchema: SelectionArraySchema,
   },
 
@@ -701,9 +671,7 @@ const ReadingItems = {
       zh: '笔记填空题',
       en: 'Note Completion by Filling',
     },
-    __questionContentSchema: z.object({
-      verbatimSequence: VerbatimSequenceSchema,
-    }),
+    __questionContentSchema: EmptyObjectSchema,
     __responseContentSchema: FillingArraySchema,
   },
 
@@ -729,9 +697,7 @@ const ReadingItems = {
       zh: '表格填空题',
       en: 'Table Completion by Filling',
     },
-    __questionContentSchema: z.object({
-      verbatimSequence: VerbatimSequenceSchema,
-    }),
+    __questionContentSchema: EmptyObjectSchema,
     __responseContentSchema: FillingArraySchema,
   },
 
@@ -756,9 +722,7 @@ const ReadingItems = {
       zh: '流程图填空题',
       en: 'Flow-Chart Completion by Filling',
     },
-    __questionContentSchema: z.object({
-      verbatimSequence: VerbatimSequenceSchema,
-    }),
+    __questionContentSchema: EmptyObjectSchema,
     __responseContentSchema: FillingArraySchema,
   },
 
@@ -780,9 +744,7 @@ const ReadingItems = {
    */
   diagram_label_completion: {
     __displayName: { zh: '示意图标注填空题', en: 'Diagram Label Completion' },
-    __questionContentSchema: z.object({
-      verbatimSequence: VerbatimSequenceSchema,
-    }),
+    __questionContentSchema: EmptyObjectSchema,
     __responseContentSchema: FillingArraySchema,
   },
 
@@ -912,7 +874,6 @@ export default defineExam({
             default: {
               __displayName: { zh: '默认题型', en: 'Default' },
               __questionContentSchema: z.object({
-                verbatimSequence: VerbatimSequenceSchema,
                 instruction: NonEmptyStringSchema.describe(
                   `${NonEmptyStringSchema.description}\ne.g. "You should spend about 20 minutes on this task."`,
                 ),
@@ -940,7 +901,6 @@ export default defineExam({
             default: {
               __displayName: { zh: '默认题型', en: 'Default' },
               __questionContentSchema: z.object({
-                verbatimSequence: VerbatimSequenceSchema,
                 instructionBeforePrompt: NonEmptyMdSchema.describe(
                   `${NonEmptyMdSchema.description}\ne.g. "You should spend about 40 minutes on this task.\n\nWrite about the following topic:"`,
                 ),
@@ -981,7 +941,6 @@ export default defineExam({
             default: {
               __displayName: { zh: '默认题型', en: 'Default' },
               __questionContentSchema: z.object({
-                verbatimSequence: VerbatimSequenceSchema,
                 prompt: NonEmptyStringSchema.describe(
                   `${NonEmptyStringSchema.description}\nA single question, e.g. "How much walking do you do in your daily life?",`,
                 ),
@@ -1000,7 +959,6 @@ export default defineExam({
             default: {
               __displayName: { zh: '默认题型', en: 'Default' },
               __questionContentSchema: z.object({
-                verbatimSequence: VerbatimSequenceSchema,
                 prompt: NonEmptyMdSchema.describe(
                   `${NonEmptyMdSchema.description}\nCue Card 话题卡。用纯黑体和分段。`,
                 ),
@@ -1030,7 +988,6 @@ export default defineExam({
             default: {
               __displayName: { zh: '默认题型', en: 'Default' },
               __questionContentSchema: z.object({
-                verbatimSequence: VerbatimSequenceSchema,
                 prompt: NonEmptyStringSchema.describe(
                   `${NonEmptyStringSchema.description}\nA single question, e.g. "Do you think theatres need to do more to attract younger audiences?",`,
                 ),
