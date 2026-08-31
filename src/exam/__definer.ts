@@ -86,7 +86,7 @@ type GetItemSchemaUnion<
       ]: z.ZodObject<
         TSections[S]['__tasks'][Task]['__items'][Item]['__questionContentSchema']['shape'] & {
           itemCode: z.ZodEnum<ToEnumLike<`${TCode}_${S}_${Task}_${Item}`>>;
-          verbatimSequence: VerbatimSequence;
+          verbatimSequence: z.ZodType<VerbatimSequence>;
         }
       >;
     }[keyof TSections[S]['__tasks'][Task]['__items'] & string];
