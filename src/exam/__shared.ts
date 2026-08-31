@@ -39,12 +39,21 @@ export const PosIntSchema = z
   .min(1)
   .describe('Positive integer');
 
-export const SequenceSchema = z
+export const PaperWideSequenceSchema = z
   .number()
   .int()
   .min(1)
   .max(1000)
-  .describe('Global sequence within the WHOLE paper, starting from 1');
+  .describe('Paper-wide global sequence, starting from 1.');
+
+export const VerbatimSequenceSchema = z
+  .number()
+  .int()
+  .min(1)
+  .max(1000)
+  .describe(
+    'Verbatim sequence shown on the PDF materials. If none is shown, use scoped 1,2,3...',
+  );
 
 /**
  * 确定性的顺序指针 ID 规范
@@ -58,13 +67,23 @@ export const SeqIdSchema = z
     'Deterministic sequential pointer ID, starting from "1", incrementing by 1',
   );
 
-export const NonEmpStrSchema = z
+export const LabelIdSchema = z
+  .string()
+  .min(1)
+  .trim()
+  .describe(
+    'Label ID. A/B/C, True/False/Not Given, i/ii/iii/iv etc. if none, use 1,2,3...',
+  );
+
+export const NonEmptyStringSchema = z
   .string()
   .min(1)
   .trim()
   .describe('Non-empty string');
 
-export const NonEmpMdSchema = NonEmpStrSchema.describe(
+export const MaybeEmptyStringSchema = z.string().trim();
+
+export const NonEmptyMdSchema = NonEmptyStringSchema.describe(
   'Fully-featured Markdown text.',
 );
 
@@ -72,8 +91,9 @@ export const EmptyObjectSchema = z
   .object({})
   .describe('Intentionally empty content.');
 
-export const UndeterminedSchema = z.object({
-  placeholder: z.enum(['UNDETERMINED']),
+// 用占位符代表 Undetermined Schema 比如雅思有些理论上存在的题型的QuestionContentSchema
+export const PlaceholderSchema = z.object({
+  placeholder: z.enum(['PLACEHOLDER']),
 });
 
 export const FileKeySchema = z
@@ -90,13 +110,13 @@ export const OffsetDatetimeStrSchema = z.iso.datetime({ offset: true });
 
 export const TransDictSchema = z.object(
   Object.fromEntries(
-    LangCodeSchema.options.map((code) => [code, NonEmpStrSchema]),
+    LangCodeSchema.options.map((code) => [code, NonEmptyStringSchema]),
   ) as Record<LangCode, z.ZodString>,
 );
 
 export const MdTransDictSchema = z.object(
   Object.fromEntries(
-    LangCodeSchema.options.map((code) => [code, NonEmpMdSchema]),
+    LangCodeSchema.options.map((code) => [code, NonEmptyMdSchema]),
   ) as Record<LangCode, z.ZodString>,
 );
 
@@ -135,17 +155,17 @@ export const SimpleVideoSchema = SimpleAudioSchema.extend({
 
 export const TranscriptSchema = z
   .object({
-    startTime: NonEmpStrSchema.describe(
+    startTime: NonEmptyStringSchema.describe(
       'timestamp format is MM:SS, to the highest accuracy.',
     ),
-    endTime: NonEmpStrSchema.describe(
+    endTime: NonEmptyStringSchema.describe(
       'timestamp format is MM:SS, to the highest accuracy.',
     ),
-    speaker: NonEmpStrSchema.default('Speaker').describe(
+    speaker: NonEmptyStringSchema.default('Speaker').describe(
       'Speaker name or role.',
     ),
-    sentenceText: NonEmpStrSchema.describe(
-      `${NonEmpStrSchema.description}\n Text of EACH SENTENCE.`,
+    sentenceText: NonEmptyStringSchema.describe(
+      `${NonEmptyStringSchema.description}\n Text of EACH SENTENCE.`,
     ),
   })
   .array()
@@ -167,16 +187,16 @@ export const SilentNoddingVideoSchema = SimpleAudioSchema.extend({
 });
 
 export const TitleSchema = z.object({
-  title: NonEmpStrSchema.optional().describe(
+  title: NonEmptyStringSchema.optional().describe(
     'Title is optional unless explicitly provided.',
   ),
-  subtitle: NonEmpStrSchema.optional().describe(
+  subtitle: NonEmptyStringSchema.optional().describe(
     'Subtitle is optional unless explicitly provided.',
   ),
 });
 
 export const SimpleParagraphsSchema = z
-  .object({ id: SeqIdSchema, text: NonEmpStrSchema })
+  .object({ id: LabelIdSchema, text: NonEmptyStringSchema })
   .array()
   .describe('The full text paragraph by paragraph.');
 
@@ -185,12 +205,12 @@ export const SimplePassageSchema = TitleSchema.extend({
 });
 
 /**
- * 嵌套树设计（passage->paragraphs->sentences->tokens），配置SeqId进行定位。
+ * 嵌套树设计（passage->paragraphs->sentences->tokens），配置 Label ID 进行定位。
  */
 export const TokenSchema = z
   .object({
     id: SeqIdSchema,
-    text: z.string(),
+    text: NonEmptyStringSchema,
     type: z.enum(['word', 'non_word']).default('word'),
     spaceAfter: z.string().default(''),
   })
@@ -201,13 +221,13 @@ export const SegmentedSentenceSchema = z
     formatCode: z.enum(['segmented_sentence']),
     id: SeqIdSchema,
     tokens: TokenSchema.array(),
-    fullText: NonEmpStrSchema.describe('Whole sentence full text.'),
+    fullText: NonEmptyStringSchema.describe('Whole sentence full text.'),
   })
   .describe('A segmented sentence containing tokens.');
 
 export const SegmentedParagraphsSchema = z
   .object({
-    id: SeqIdSchema,
+    id: LabelIdSchema, // 兼容段落名称，比如 A-G 段
     sentences: SegmentedSentenceSchema.array(),
   })
   .array()
@@ -221,23 +241,21 @@ export const SegmentedPassageSchema = TitleSchema.extend({
 
 export const NarratedInstructionSchema = z.object({
   formatCode: z.enum(['narrated_instruction']),
-  text: NonEmpMdSchema,
+  text: NonEmptyMdSchema,
   audio: z
     .object({ fileKey: FileKeySchema })
     .describe('Audio narration of the text. Generated from AI TTS.'),
 });
 
-export const StemSchema = NonEmpMdSchema.describe(
-  `${NonEmpMdSchema.description}\n Specifically 题干部分。注意: If the prompt is a SINGLE question prompt, then don't include any positional indicators in the front of that prompt such as '1.', '2. ','3.' etc.`,
+export const StemSchema = NonEmptyMdSchema.describe(
+  `${NonEmptyMdSchema.description}\n Specifically 题干部分。注意: If the prompt is a SINGLE question prompt, then don't include any question label ids in the front of that prompt such as but not limited to '1.', '2. ','3.' etc.`,
 );
 
 export const OptionsSchema = z
   .object({
-    id: SeqIdSchema.describe(
-      `${SeqIdSchema.description}\n Specifically, 选项ID`,
-    ),
-    text: NonEmpMdSchema.describe(
-      `${NonEmpMdSchema.description}\n 选项文本。Specifically, if the text contains positional indicators such as 'A.','B.','C.','D.' etc. Then remove it.`,
+    id: LabelIdSchema,
+    text: NonEmptyMdSchema.describe(
+      `${NonEmptyMdSchema.description}\n 选项文本。`,
     ),
   })
   .array()
@@ -267,8 +285,8 @@ export const ResponseCodeSchema = z.enum([
  * - 高亮/划线题（如 GRE Select-in-Passage, PTE Highlight Incorrect Words，数组元素为选中的 Token/Span ID）
  *
  * @example
- * // 单选/多选/高亮：选中了 ID 为 "1" 和 "3" 的选项或词块
- * { responseCode: 'array', array: ['1', '3'] }
+ * // 单选/多选/高亮：选中了 ID 为 "A" 和 "C" 的选项或词块
+ * { responseCode: 'array', array: ['A', 'C'] }
  *
  * @example
  * // 排序题：最终提交的有序 ID 序列
@@ -276,8 +294,8 @@ export const ResponseCodeSchema = z.enum([
  */
 export const SelectionArraySchema = z.object({
   responseCode: z.enum([ResponseCodeSchema.enum.selection_array]),
-  array: SeqIdSchema.array().describe(
-    '选择题（单选/多选/判断，Selection order 不敏感）、排序题（数组 index 隐含顺序）或高亮划线题（选中的 Token/Span ID 列表）。如果原选项不是1,2,3,4... 请根据顺序转化为1,2,3,4...',
+  array: LabelIdSchema.array().describe(
+    '选择题（单选/多选/判断，Selection order 不敏感）、排序题（数组 index 隐含顺序）或高亮划线题（选中的 Token/Span ID 列表）。',
   ),
 });
 
@@ -324,7 +342,7 @@ export const FillingArraySchema = z.object({
 export const SelectionRecordSchema = z.object({
   responseCode: z.enum([ResponseCodeSchema.enum.selection_record]),
   record: z
-    .record(SeqIdSchema, SeqIdSchema.array())
+    .record(SeqIdSchema, LabelIdSchema.array())
     .describe(
       'Key 为题干 Markdown 中的占位符 ID (与 {{1}}, {{2}} 对应)，Value 为填入该占位符的预设候选选项代号 ID 答案数组',
     ),
@@ -344,7 +362,7 @@ export const SelectionRecordSchema = z.object({
 export const FillingRecordSchema = z.object({
   responseCode: z.enum([ResponseCodeSchema.enum.filling_record]),
   record: z
-    .record(SeqIdSchema, z.string().trim().array())
+    .record(SeqIdSchema, NonEmptyStringSchema.trim().array())
     .describe(
       'Key 为题干 Markdown 中的占位符 ID (与 {{1}}, {{2}} 对应)，Value 为该占位符可接受的开放式字符串文本答案数组',
     ),
@@ -366,7 +384,7 @@ export const FillingRecordSchema = z.object({
  */
 export const WritingSchema = z.object({
   responseCode: z.enum([ResponseCodeSchema.enum.writing]),
-  text: z.string().trim().describe('主观长文本/作文/简答回答内容数组。'),
+  text: MaybeEmptyStringSchema.describe('主观长文本/作文/简答回答内容数组。'),
 });
 
 /**

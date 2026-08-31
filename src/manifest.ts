@@ -11,7 +11,7 @@ import {
 } from './exam';
 import {
   OffsetDatetimeStrSchema,
-  SequenceSchema,
+  PaperWideSequenceSchema,
   TransDictSchema,
 } from './exam/__shared';
 
@@ -27,18 +27,18 @@ export const ManifestPaperSchema = z.object({
     .object({
       id: z.uuid().describe('Canonical Section ID'),
       code: SectionCodeSchema,
-      sequence: SequenceSchema,
+      sequence: PaperWideSequenceSchema,
       tasks: z
         .object({
           id: z.uuid().describe('Canonical Task ID'),
           code: TaskCodeSchema,
-          sequence: SequenceSchema,
+          sequence: PaperWideSequenceSchema,
           content: TaskContentSchema,
           items: z
             .object({
               id: z.uuid().describe('Canonical Item ID'),
               code: ItemCodeSchema,
-              sequence: SequenceSchema,
+              sequence: PaperWideSequenceSchema,
               content: ItemContentSchema,
               modelResponseContent: ResponseContentSchema,
             })

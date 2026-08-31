@@ -6,8 +6,8 @@ import {
   FillingRecordSchema,
   InformativeImageSchema,
   NarratedInstructionSchema,
-  NonEmpMdSchema,
-  NonEmpStrSchema,
+  NonEmptyMdSchema,
+  NonEmptyStringSchema,
   OptionsSchema,
   PosIntSchema,
   SelectionArraySchema,
@@ -20,6 +20,7 @@ import {
   StemSchema,
   TranscriptedAudioSchema,
   TranscriptedVideoSchema,
+  VerbatimSequenceSchema,
   WritingSchema,
 } from './__shared';
 
@@ -37,7 +38,8 @@ export default defineExam({
             default: {
               __displayName: { en: 'Default', zh: '默认题型' },
               __questionContentSchema: z.object({
-                instruction: NonEmpStrSchema,
+                verbatimSequence: VerbatimSequenceSchema,
+                instruction: NonEmptyStringSchema,
                 text: SimplePassageSchema.describe(
                   `${SimplePassageSchema.description}` +
                     `完整段落文本。挖空处用占位符表示。站位id必须为：${SeqIdSchema.description}` +
@@ -49,7 +51,7 @@ export default defineExam({
                       '所有占位符ID，与 textTemplate 中的占位符对应',
                     ),
                     z.object({
-                      fullWord: NonEmpStrSchema.describe(
+                      fullWord: NonEmptyStringSchema.describe(
                         '该空位对应的完整单词（例如 "prehistoric"）。',
                       ),
                       gapLength: PosIntSchema.describe(
@@ -79,6 +81,7 @@ export default defineExam({
             default: {
               __displayName: { en: 'Default', zh: '默认题型' },
               __questionContentSchema: z.object({
+                verbatimSequence: VerbatimSequenceSchema,
                 stem: StemSchema,
                 options: OptionsSchema,
                 paragraphReference: SeqIdSchema.array()
@@ -102,7 +105,7 @@ export default defineExam({
             zh: '日常生活阅读',
           },
           __questionContentSchema: z.object({
-            instruction: NonEmpStrSchema,
+            instruction: NonEmptyStringSchema,
             stimulus: InformativeImageSchema.describe(
               `${InformativeImageSchema.description}\nThe image crop of the stimulus materials.`,
             ),
@@ -111,6 +114,8 @@ export default defineExam({
             default: {
               __displayName: { en: 'Default', zh: '默认题型' },
               __questionContentSchema: z.object({
+                verbatimSequence: VerbatimSequenceSchema,
+
                 stem: StemSchema,
                 options: OptionsSchema,
               }),
@@ -133,7 +138,8 @@ export default defineExam({
             default: {
               __displayName: { en: 'Default', zh: '默认题型' },
               __questionContentSchema: z.object({
-                instruction: NonEmpStrSchema,
+                verbatimSequence: VerbatimSequenceSchema,
+                instruction: NonEmptyStringSchema,
                 audio: TranscriptedAudioSchema,
                 illustration: SimpleImageSchema.describe(
                   'Illustration of the item.',
@@ -160,6 +166,7 @@ export default defineExam({
             default: {
               __displayName: { en: 'Default', zh: '默认题型' },
               __questionContentSchema: z.object({
+                verbatimSequence: VerbatimSequenceSchema,
                 options: OptionsSchema,
                 stem: StemSchema,
               }),
@@ -183,6 +190,7 @@ export default defineExam({
             default: {
               __displayName: { en: 'Default', zh: '默认题型' },
               __questionContentSchema: z.object({
+                verbatimSequence: VerbatimSequenceSchema,
                 stem: StemSchema,
                 options: OptionsSchema,
               }),
@@ -206,6 +214,7 @@ export default defineExam({
             default: {
               __displayName: { en: 'Default', zh: '默认题型' },
               __questionContentSchema: z.object({
+                verbatimSequence: VerbatimSequenceSchema,
                 stem: StemSchema,
                 options: OptionsSchema,
               }),
@@ -228,10 +237,11 @@ export default defineExam({
             default: {
               __displayName: { en: 'Default', zh: '默认题型' },
               __questionContentSchema: z.object({
-                instruction: NonEmpStrSchema,
+                verbatimSequence: VerbatimSequenceSchema,
+                instruction: NonEmptyStringSchema,
                 speaker1: z
                   .object({
-                    name: NonEmpStrSchema.describe(
+                    name: NonEmptyStringSchema.describe(
                       '发言人 A 的名字（如 Kelly）',
                     ),
                     avatar: SimpleImageSchema,
@@ -239,7 +249,7 @@ export default defineExam({
                   .describe('发言人 A 的元信息'),
                 speaker2: z
                   .object({
-                    name: NonEmpStrSchema.describe(
+                    name: NonEmptyStringSchema.describe(
                       '发言人 B 的名字（如 Andrew）',
                     ),
                     avatar: SimpleImageSchema,
@@ -254,7 +264,7 @@ export default defineExam({
                     speaker: z
                       .enum(['speaker1', 'speaker2'])
                       .describe('标识当前气泡由谁发言'),
-                    content: NonEmpStrSchema.describe(
+                    content: NonEmptyStringSchema.describe(
                       `对话内容。普通上下文直接写纯文本；如果是需要拼接的目标句，则在句中包含占位符。例如："Yes! The {{1}} {{2}} {{3}} fantastic. How about you?" 站位id必须为：${SeqIdSchema.description}`,
                     ),
                     isTarget: z
@@ -280,11 +290,12 @@ export default defineExam({
             default: {
               __displayName: { en: 'Default', zh: '默认题型' },
               __questionContentSchema: z.object({
-                introduction: NonEmpMdSchema.describe(
-                  `${NonEmpMdSchema.description}\nThe prompt main body, which includes scenario description and requirements.`,
+                verbatimSequence: VerbatimSequenceSchema,
+                introduction: NonEmptyMdSchema.describe(
+                  `${NonEmptyMdSchema.description}\nThe prompt main body, which includes scenario description and requirements.`,
                 ),
-                subject: NonEmpStrSchema,
-                to: NonEmpStrSchema,
+                subject: NonEmptyStringSchema,
+                to: NonEmptyStringSchema,
               }),
               __responseContentSchema: WritingSchema,
             },
@@ -300,25 +311,36 @@ export default defineExam({
             default: {
               __displayName: { en: 'Default', zh: '默认题型' },
               __questionContentSchema: z.object({
-                introduction: NonEmpMdSchema.describe(
-                  `${NonEmpMdSchema.description}\nThe prompt main body, which includes scenario description and requirements.`,
+                verbatimSequence: VerbatimSequenceSchema,
+                introduction: NonEmptyMdSchema.describe(
+                  `${NonEmptyMdSchema.description}\nThe prompt main body, which includes scenario description and requirements.`,
                 ),
                 professor: z.object({
-                  name: NonEmpStrSchema.describe('教授的名字（如 Dr. Gupta）'),
+                  name: NonEmptyStringSchema.describe(
+                    '教授的名字（如 Dr. Gupta）',
+                  ),
                   avatar: SimpleImageSchema,
-                  content: NonEmpStrSchema.describe(
+                  content: NonEmptyStringSchema.describe(
                     '教授发表的讨论引导语/问题',
                   ),
                 }),
                 student1: z.object({
-                  name: NonEmpStrSchema.describe('学生甲的名字（如 Kelly）'),
+                  name: NonEmptyStringSchema.describe(
+                    '学生甲的名字（如 Kelly）',
+                  ),
                   avatar: SimpleImageSchema,
-                  content: NonEmpStrSchema.describe('学生甲发表的观点文本'),
+                  content: NonEmptyStringSchema.describe(
+                    '学生甲发表的观点文本',
+                  ),
                 }),
                 student2: z.object({
-                  name: NonEmpStrSchema.describe('学生乙的名字（如 Andrew）'),
+                  name: NonEmptyStringSchema.describe(
+                    '学生乙的名字（如 Andrew）',
+                  ),
                   avatar: SimpleImageSchema,
-                  content: NonEmpStrSchema.describe('学生乙发表的观点文本'),
+                  content: NonEmptyStringSchema.describe(
+                    '学生乙发表的观点文本',
+                  ),
                 }),
               }),
               __responseContentSchema: WritingSchema,
@@ -342,7 +364,8 @@ export default defineExam({
             default: {
               __displayName: { en: 'Default', zh: '默认题型' },
               __questionContentSchema: z.object({
-                instruction: NonEmpStrSchema,
+                verbatimSequence: VerbatimSequenceSchema,
+                instruction: NonEmptyStringSchema,
                 audio: TranscriptedAudioSchema,
                 image: SimpleImageSchema.describe(
                   'Illustration for the item. With highlighted area.',
@@ -364,7 +387,8 @@ export default defineExam({
             default: {
               __displayName: { en: 'Default', zh: '默认题型' },
               __questionContentSchema: z.object({
-                instruction: NonEmpStrSchema,
+                verbatimSequence: VerbatimSequenceSchema,
+                instruction: NonEmptyStringSchema,
                 video: TranscriptedVideoSchema.describe(
                   'Question prompt video',
                 ),

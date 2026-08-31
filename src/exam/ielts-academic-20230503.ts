@@ -6,30 +6,30 @@ import {
   FillingArraySchema,
   FillingRecordSchema,
   InformativeImageSchema,
-  NonEmpMdSchema,
-  NonEmpStrSchema,
+  NonEmptyMdSchema,
+  NonEmptyStringSchema,
   OptionsSchema,
+  PaperWideSequenceSchema,
+  PlaceholderSchema,
   SelectionArraySchema,
-  SeqIdSchema,
-  SequenceSchema,
   SimplePassageSchema,
   SpeakingSchema,
   StemSchema,
   TranscriptedAudioSchema,
-  UndeterminedSchema,
+  VerbatimSequenceSchema,
   WritingSchema,
 } from './__shared';
 
 const BaseParitionSchema = z
   .object({
-    partitionSequence: SequenceSchema.describe(
-      `${SequenceSchema.description}\n题组在 paper全局中的顺序`,
+    partitionSequence: PaperWideSequenceSchema.describe(
+      `${PaperWideSequenceSchema.description}\n题组在 paper全局中的顺序`,
     ),
-    startItemSequence: SequenceSchema.describe(
-      `${SequenceSchema.description}\n该题组起始 Item 的全局 sequence（区别于每个itemContent下的seqId，那是卷面上写的局部编号）`,
+    startItemSequence: PaperWideSequenceSchema.describe(
+      `${PaperWideSequenceSchema.description}\n该题组起始 Item 的全局 sequence（区别于每个itemContent下的verbatimSequence，那是卷面上写的局部编号）`,
     ),
-    endItemSequence: SequenceSchema.describe(
-      `${SequenceSchema.description}\n该题组结束 Item 的全局 sequence（区别于每个itemContent下的seqId，那是卷面上写的局部编号）`,
+    endItemSequence: PaperWideSequenceSchema.describe(
+      `${PaperWideSequenceSchema.description}\n该题组结束 Item 的全局 sequence（区别于每个itemContent下的verbatimSequence，那是卷面上写的局部编号）`,
     ),
   })
   .describe(
@@ -40,27 +40,27 @@ const ListeningParitionsSchema = BaseParitionSchema.extend({
   content: z.discriminatedUnion('partitionCode', [
     z.object({
       partitionCode: z.enum(['multiple_choice']),
-      instruction: NonEmpMdSchema.describe(
-        `${NonEmpMdSchema.description}\nThe shared instruction of the partition: e.g. "Choose **TWO** correct answers.", "Choose the correct answer."`,
+      instruction: NonEmptyMdSchema.describe(
+        `${NonEmptyMdSchema.description}\nThe shared instruction of the partition: e.g. "Choose **TWO** correct answers.", "Choose the correct answer."`,
       ),
     }),
     z.object({
       partitionCode: z.enum(['matching']),
-      instruction: NonEmpMdSchema.describe(
-        `${NonEmpMdSchema.description}\nQuestion and instruction for the partition. e.g. "What is the role of the volunteers in each of the following activities?\n\nChoose ***SIX*** answers from the box and write the correct letter, ***A-I***, next to Questions 11-16."`,
+      instruction: NonEmptyMdSchema.describe(
+        `${NonEmptyMdSchema.description}\nQuestion and instruction for the partition. e.g. "What is the role of the volunteers in each of the following activities?\n\nChoose ***SIX*** answers from the box and write the correct letter, ***A-I***, next to Questions 11-16."`,
       ),
-      candidatesTitle: NonEmpStrSchema.describe(
-        `${NonEmpStrSchema.description}\nThe title of the choice candidates, e.g. "Role of volunteers".`,
+      candidatesTitle: NonEmptyStringSchema.describe(
+        `${NonEmptyStringSchema.description}\nThe title of the choice candidates, e.g. "Role of volunteers".`,
       ),
       candidates: OptionsSchema,
-      itemsTitle: NonEmpStrSchema.describe(
-        `${NonEmpStrSchema.description}\nThe title of the actual question items, e.g. "Activities".`,
+      itemsTitle: NonEmptyStringSchema.describe(
+        `${NonEmptyStringSchema.description}\nThe title of the actual question items, e.g. "Activities".`,
       ),
     }),
     z.object({
       partitionCode: z.enum(['plan_or_map_or_diagram_labelling']),
-      instruction: NonEmpMdSchema.describe(
-        `${NonEmpMdSchema.description}Instruction for the partition. e.g. "Label the map below\n\nChoose the correct letter, ***A-G***, for each label."`,
+      instruction: NonEmptyMdSchema.describe(
+        `${NonEmptyMdSchema.description}Instruction for the partition. e.g. "Label the map below\n\nChoose the correct letter, ***A-G***, for each label."`,
       ),
       image: InformativeImageSchema.describe(
         `${InformativeImageSchema.description}\nThe plan/map/diagram in informative image format. Including the title if there is any.`,
@@ -68,64 +68,64 @@ const ListeningParitionsSchema = BaseParitionSchema.extend({
     }),
     z.object({
       partitionCode: z.enum(['form_completion_by_filling']),
-      instruction: NonEmpMdSchema.describe(
-        `${NonEmpMdSchema.description}Instruction for the partition. e.g. "Complete the form below\n\nWrite ***ONE WORD AND/OR A NUMBER***, for each answer."`,
+      instruction: NonEmptyMdSchema.describe(
+        `${NonEmptyMdSchema.description}Instruction for the partition. e.g. "Complete the form below\n\nWrite ***ONE WORD AND/OR A NUMBER***, for each answer."`,
       ),
-      formTitle: NonEmpStrSchema.describe(
-        `${NonEmpStrSchema.description}\nThe title of the form, e.g. "Wayside Camera Club membership form".`,
+      formTitle: NonEmptyStringSchema.describe(
+        `${NonEmptyStringSchema.description}\nThe title of the form, e.g. "Wayside Camera Club membership form".`,
       ),
-      formContent: NonEmpMdSchema.describe(
-        `${NonEmpMdSchema.description}The form content. Use Markdown to mimic the format. Turn blanks to seqId placeholders. e.g. "1______ Street" to "{{1}} Street", "to enter competitions to 3______" to "to enter competitions to {{3}}".`,
+      formContent: NonEmptyMdSchema.describe(
+        `${NonEmptyMdSchema.description}The form content. Use Markdown to mimic the format. Turn blanks to verbatimSequence placeholders. e.g. "1______ Street" to "{{1}} Street", "to enter competitions to 3______" to "to enter competitions to {{3}}".`,
       ),
     }),
     z.object({ partitionCode: z.enum(['form_completion_by_selection']) }),
     z.object({
       partitionCode: z.enum(['note_completion_by_filling']),
-      instruction: NonEmpMdSchema.describe(
-        `${NonEmpMdSchema.description}Instruction for the partition. e.g. "Complete the notes below\n\nWrite ***ONE WORD ONLY*** for each answer."`,
+      instruction: NonEmptyMdSchema.describe(
+        `${NonEmptyMdSchema.description}Instruction for the partition. e.g. "Complete the notes below\n\nWrite ***ONE WORD ONLY*** for each answer."`,
       ),
-      notesTitle: NonEmpStrSchema.describe(
-        `${NonEmpStrSchema.description}\nThe title of the notes, e.g. "Reclaiming urban rivers".`,
+      notesTitle: NonEmptyStringSchema.describe(
+        `${NonEmptyStringSchema.description}\nThe title of the notes, e.g. "Reclaiming urban rivers".`,
       ),
-      notesContent: NonEmpMdSchema.describe(
-        `${NonEmpMdSchema.description}The notes content. Use Markdown to mimic the format. Turn blanks to seqId placeholders. e.g. "- pollution from 31_______ on the river bank" to "- pollution from {{31}} on the river bank".`,
+      notesContent: NonEmptyMdSchema.describe(
+        `${NonEmptyMdSchema.description}The notes content. Use Markdown to mimic the format. Turn blanks to verbatimSequence placeholders. e.g. "- pollution from 31_______ on the river bank" to "- pollution from {{31}} on the river bank".`,
       ),
     }),
     z.object({ partitionCode: z.enum(['note_completion_by_selection']) }),
     z.object({
       partitionCode: z.enum(['table_completion_by_filling']),
-      instruction: NonEmpMdSchema.describe(
-        `${NonEmpMdSchema.description}Instruction for the partition. e.g. "Complete the table below\n\nWrite ***ONE WORD AND/OR A NUMBER*** for each answer."`,
+      instruction: NonEmptyMdSchema.describe(
+        `${NonEmptyMdSchema.description}Instruction for the partition. e.g. "Complete the table below\n\nWrite ***ONE WORD AND/OR A NUMBER*** for each answer."`,
       ),
-      tableContent: NonEmpMdSchema.describe(
-        `${NonEmpMdSchema.description}The table content. Use Markdown to mimic the format. Turn blanks to seqId placeholders. e.g. "Set lunch costs 9 £_______ per person" to "Set lunch costs £{{9}} per person", "All the 7________ are very good" to "All the {{7}} are very good".`,
+      tableContent: NonEmptyMdSchema.describe(
+        `${NonEmptyMdSchema.description}The table content. Use Markdown to mimic the format. Turn blanks to verbatimSequence placeholders. e.g. "Set lunch costs 9 £_______ per person" to "Set lunch costs £{{9}} per person", "All the 7________ are very good" to "All the {{7}} are very good".`,
       ),
     }),
     z.object({ partitionCode: z.enum(['table_completion_by_selection']) }),
     z.object({
       partitionCode: z.enum(['flow_chart_completion_by_filling']),
-      instruction: NonEmpMdSchema.describe(
-        `${NonEmpMdSchema.description}Instruction for the partition. e.g. "Complete the flow chart below\n\nWrite ***ONE WORD ONLY*** for each answer."`,
+      instruction: NonEmptyMdSchema.describe(
+        `${NonEmptyMdSchema.description}Instruction for the partition. e.g. "Complete the flow chart below\n\nWrite ***ONE WORD ONLY*** for each answer."`,
       ),
-      flowChartTitle: NonEmpStrSchema.describe(
-        `${NonEmpStrSchema.description}\nThe title of the flow chart, e.g. "Assignment plan".`,
+      flowChartTitle: NonEmptyStringSchema.describe(
+        `${NonEmptyStringSchema.description}\nThe title of the flow chart, e.g. "Assignment plan".`,
       ),
-      flowChartContent: NonEmpMdSchema.describe(
-        `${NonEmpMdSchema.description}The flow chart content for each stage. 注意只支持单链条不分叉的flow。 Use Markdown to mimic the format. Turn blanks to seqId placeholders. e.g. "Twelve students from the 25_______ department" to "Twelve students from the {{25}} department."。`,
+      flowChartContent: NonEmptyMdSchema.describe(
+        `${NonEmptyMdSchema.description}The flow chart content for each stage. 注意只支持单链条不分叉的flow。 Use Markdown to mimic the format. Turn blanks to verbatimSequence placeholders. e.g. "Twelve students from the 25_______ department" to "Twelve students from the {{25}} department."。`,
       )
         .array()
         .describe('All the stages.'),
     }),
     z.object({
       partitionCode: z.enum(['flow_chart_completion_by_selection']),
-      instruction: NonEmpMdSchema.describe(
-        `${NonEmpMdSchema.description}Instruction for the partition. e.g. "Complete the flow chart below\n\nChoose ***FIVE*** answers from the box and write the correct letter, ***A-H***, next to Questions 26-30."`,
+      instruction: NonEmptyMdSchema.describe(
+        `${NonEmptyMdSchema.description}Instruction for the partition. e.g. "Complete the flow chart below\n\nChoose ***FIVE*** answers from the box and write the correct letter, ***A-H***, next to Questions 26-30."`,
       ),
-      flowChartTitle: NonEmpStrSchema.optional().describe(
-        `${NonEmpStrSchema.description}\nThe title of the flow chart, if exists.`,
+      flowChartTitle: NonEmptyStringSchema.optional().describe(
+        `${NonEmptyStringSchema.description}\nThe title of the flow chart, if exists.`,
       ),
-      flowChartContent: NonEmpMdSchema.describe(
-        `${NonEmpMdSchema.description}The flow chart content for each stage. 注意只支持单链条不分叉的flow。 Use Markdown to mimic the format. Turn blanks to seqId placeholders. e.g. "Choose mice which are all the same 26_______ ." to "Choose mice which are all the same {{26}}."。`,
+      flowChartContent: NonEmptyMdSchema.describe(
+        `${NonEmptyMdSchema.description}The flow chart content for each stage. 注意只支持单链条不分叉的flow。 Use Markdown to mimic the format. Turn blanks to verbatimSequence placeholders. e.g. "Choose mice which are all the same 26_______ ." to "Choose mice which are all the same {{26}}."。`,
       )
         .array()
         .describe('All the stages.'),
@@ -133,27 +133,27 @@ const ListeningParitionsSchema = BaseParitionSchema.extend({
     }),
     z.object({
       partitionCode: z.enum(['summary_completion_by_filling']),
-      instruction: NonEmpMdSchema.describe(
-        `${NonEmpMdSchema.description}Instruction for the partition. e.g. "Complete the summary below\n\nWrite ***ONE WORD ONLY*** for each answer."`,
+      instruction: NonEmptyMdSchema.describe(
+        `${NonEmptyMdSchema.description}Instruction for the partition. e.g. "Complete the summary below\n\nWrite ***ONE WORD ONLY*** for each answer."`,
       ),
-      summaryTitle: NonEmpStrSchema.describe(
-        `${NonEmpStrSchema.description}\nThe title of the summary, e.g. "Looking for Asian honey bees".`,
+      summaryTitle: NonEmptyStringSchema.describe(
+        `${NonEmptyStringSchema.description}\nThe title of the summary, e.g. "Looking for Asian honey bees".`,
       ),
-      summaryContent: NonEmpMdSchema.describe(
-        `${NonEmpMdSchema.description}The summary content. Use Markdown to mimic the format. Turn blanks to seqId placeholders. e.g. "Here 28________ is used to soften them, and the researchers look for the 29_______ of Asian bees in the pellets." to "Here {{28}} is used to soften them, and the researchers look for the {{29}} of Asian bees in the pellets.".`,
+      summaryContent: NonEmptyMdSchema.describe(
+        `${NonEmptyMdSchema.description}The summary content. Use Markdown to mimic the format. Turn blanks to verbatimSequence placeholders. e.g. "Here 28________ is used to soften them, and the researchers look for the 29_______ of Asian bees in the pellets." to "Here {{28}} is used to soften them, and the researchers look for the {{29}} of Asian bees in the pellets.".`,
       ),
     }),
     z.object({ partitionCode: z.enum(['summary_completion_by_selection']) }),
     z.object({
       partitionCode: z.enum(['sentence_completion']),
-      instruction: NonEmpMdSchema.describe(
-        `${NonEmpMdSchema.description}Instruction for the partition. e.g. "Complete the sentences below\n\nWrite ***ONE WORD ONLY*** for each answer."`,
+      instruction: NonEmptyMdSchema.describe(
+        `${NonEmptyMdSchema.description}Instruction for the partition. e.g. "Complete the sentences below\n\nWrite ***ONE WORD ONLY*** for each answer."`,
       ),
     }),
     z.object({
       partitionCode: z.enum(['short_answer_questions']),
-      instruction: NonEmpMdSchema.describe(
-        `${NonEmpMdSchema.description}Instruction for the partition. e.g. "Complete the questions below\n\nWrite ***NO MORE THAN THREE WORDS AND/OR A NUMBER*** for each answer."`,
+      instruction: NonEmptyMdSchema.describe(
+        `${NonEmptyMdSchema.description}Instruction for the partition. e.g. "Complete the questions below\n\nWrite ***NO MORE THAN THREE WORDS AND/OR A NUMBER*** for each answer."`,
       ),
     }),
   ]),
@@ -171,7 +171,7 @@ const ListeningItems = {
   multiple_choice: {
     __displayName: { zh: '选择题', en: 'Multiple Choice' },
     __questionContentSchema: z.object({
-      seqId: SeqIdSchema,
+      verbatimSequence: VerbatimSequenceSchema,
       stem: StemSchema,
       options: OptionsSchema,
     }),
@@ -184,9 +184,9 @@ const ListeningItems = {
   matching: {
     __displayName: { zh: '配对题', en: 'Matching' },
     __questionContentSchema: z.object({
-      seqId: SeqIdSchema,
-      prompt: NonEmpStrSchema.describe(
-        `${NonEmpStrSchema.description}\nThe question item prompt immediately following the question number. e.g. "walking around the town centre", "helping at concerts" etc. Usually a phrase.`,
+      verbatimSequence: VerbatimSequenceSchema,
+      prompt: NonEmptyStringSchema.describe(
+        `${NonEmptyStringSchema.description}\nThe question item prompt immediately following the question number. e.g. "walking around the town centre", "helping at concerts" etc. Usually a phrase.`,
       ),
     }),
     __responseContentSchema: SelectionArraySchema,
@@ -202,9 +202,9 @@ const ListeningItems = {
       en: 'Plan/Map/Diagram Labelling',
     },
     __questionContentSchema: z.object({
-      seqId: SeqIdSchema,
-      label: NonEmpStrSchema.describe(
-        `${NonEmpStrSchema.description}\nThe question item prompt, a.k.a. the label. e.g. "bridge foundations", "rubbish pit" etc.`,
+      verbatimSequence: VerbatimSequenceSchema,
+      label: NonEmptyStringSchema.describe(
+        `${NonEmptyStringSchema.description}\nThe question item prompt, a.k.a. the label. e.g. "bridge foundations", "rubbish pit" etc.`,
       ),
     }),
     __responseContentSchema: SelectionArraySchema,
@@ -218,7 +218,9 @@ const ListeningItems = {
       zh: '表单填空题',
       en: 'Form Completion by Filling',
     },
-    __questionContentSchema: z.object({ seqId: SeqIdSchema }),
+    __questionContentSchema: z.object({
+      verbatimSequence: VerbatimSequenceSchema,
+    }),
     __responseContentSchema: FillingArraySchema,
   },
 
@@ -231,8 +233,8 @@ const ListeningItems = {
       zh: '表单选择填空题',
       en: 'Form Completion by Selection',
     },
-    __questionContentSchema: UndeterminedSchema,
-    __responseContentSchema: UndeterminedSchema,
+    __questionContentSchema: PlaceholderSchema,
+    __responseContentSchema: PlaceholderSchema,
   },
 
   /**
@@ -244,7 +246,9 @@ const ListeningItems = {
       zh: '笔记填空题',
       en: 'Note Completion by Filling',
     },
-    __questionContentSchema: z.object({ seqId: SeqIdSchema }),
+    __questionContentSchema: z.object({
+      verbatimSequence: VerbatimSequenceSchema,
+    }),
     __responseContentSchema: FillingArraySchema,
   },
 
@@ -257,8 +261,8 @@ const ListeningItems = {
       zh: '笔记选择填空题',
       en: 'Note Completion by Selection',
     },
-    __questionContentSchema: UndeterminedSchema,
-    __responseContentSchema: UndeterminedSchema,
+    __questionContentSchema: PlaceholderSchema,
+    __responseContentSchema: PlaceholderSchema,
   },
 
   /**
@@ -270,7 +274,9 @@ const ListeningItems = {
       zh: '表格填空题',
       en: 'Table Completion by Filling',
     },
-    __questionContentSchema: z.object({ seqId: SeqIdSchema }),
+    __questionContentSchema: z.object({
+      verbatimSequence: VerbatimSequenceSchema,
+    }),
     __responseContentSchema: FillingArraySchema,
   },
 
@@ -283,8 +289,8 @@ const ListeningItems = {
       zh: '表格选择填空题',
       en: 'Table Completion by Selection',
     },
-    __questionContentSchema: UndeterminedSchema,
-    __responseContentSchema: UndeterminedSchema,
+    __questionContentSchema: PlaceholderSchema,
+    __responseContentSchema: PlaceholderSchema,
   },
 
   /**
@@ -295,7 +301,9 @@ const ListeningItems = {
       zh: '流程图填空题',
       en: 'Flow Chart Completion by Filling',
     },
-    __questionContentSchema: z.object({ seqId: SeqIdSchema }),
+    __questionContentSchema: z.object({
+      verbatimSequence: VerbatimSequenceSchema,
+    }),
     __responseContentSchema: FillingArraySchema,
   },
 
@@ -308,7 +316,9 @@ const ListeningItems = {
       zh: '流程图选择填空题',
       en: 'Flow Chart Completion by Selection',
     },
-    __questionContentSchema: z.object({ seqId: SeqIdSchema }),
+    __questionContentSchema: z.object({
+      verbatimSequence: VerbatimSequenceSchema,
+    }),
     __responseContentSchema: SelectionArraySchema,
   },
 
@@ -320,7 +330,9 @@ const ListeningItems = {
       zh: '摘要填空题',
       en: 'Summary Completion by Filling',
     },
-    __questionContentSchema: z.object({ seqId: SeqIdSchema }),
+    __questionContentSchema: z.object({
+      verbatimSequence: VerbatimSequenceSchema,
+    }),
     __responseContentSchema: FillingArraySchema,
   },
 
@@ -333,8 +345,8 @@ const ListeningItems = {
       zh: '摘要选择填空题',
       en: 'Summary Completion by Selection',
     },
-    __questionContentSchema: UndeterminedSchema,
-    __responseContentSchema: UndeterminedSchema,
+    __questionContentSchema: PlaceholderSchema,
+    __responseContentSchema: PlaceholderSchema,
   },
 
   /**
@@ -344,9 +356,9 @@ const ListeningItems = {
   sentence_completion: {
     __displayName: { zh: '句子填空题', en: 'Sentence Completion' },
     __questionContentSchema: z.object({
-      seqId: SeqIdSchema,
-      sentence: NonEmpStrSchema.describe(
-        `${NonEmpStrSchema.description}\n The sentence to complete. The blanks should be replaced by {{seqId}}. e.g. "23. Kira says that lecturers are easier to {{1}} than those in her {{2}}", "24. Paul suggests that Kira may be more {{1}} than when she was studying before."`,
+      verbatimSequence: VerbatimSequenceSchema,
+      sentence: NonEmptyStringSchema.describe(
+        `${NonEmptyStringSchema.description}\n The sentence to complete. The blanks should be replaced by {{verbatimSequence}}. e.g. "23. Kira says that lecturers are easier to {{1}} than those in her {{2}}", "24. Paul suggests that Kira may be more {{1}} than when she was studying before."`,
       ),
     }),
     __responseContentSchema: FillingRecordSchema,
@@ -359,9 +371,9 @@ const ListeningItems = {
   short_answer_questions: {
     __displayName: { zh: '简答题', en: 'Short-Answer Questions' },
     __questionContentSchema: z.object({
-      seqId: SeqIdSchema,
-      question: NonEmpStrSchema.describe(
-        `${NonEmpStrSchema.description}\n The question to be answered.`,
+      verbatimSequence: VerbatimSequenceSchema,
+      question: NonEmptyStringSchema.describe(
+        `${NonEmptyStringSchema.description}\n The question to be answered.`,
       ),
     }),
     __responseContentSchema: FillingArraySchema,
@@ -372,43 +384,43 @@ const ReadingParitionsSchema = BaseParitionSchema.extend({
   content: z.discriminatedUnion('partitionCode', [
     z.object({
       partitionCode: z.enum(['multiple_choice']),
-      instruction: NonEmpMdSchema.describe(
-        `${NonEmpMdSchema.description}Instruction for the partition. e.g. "Choose the correct letter, ***A, B, C or D.***\n\nWrite the correct letter in boxes 27-30 on your answer sheet."`,
+      instruction: NonEmptyMdSchema.describe(
+        `${NonEmptyMdSchema.description}Instruction for the partition. e.g. "Choose the correct letter, ***A, B, C or D.***\n\nWrite the correct letter in boxes 27-30 on your answer sheet."`,
       ),
     }),
     z.object({
       partitionCode: z.enum(['identifying_information']),
-      instruction: NonEmpMdSchema.describe(
-        `${NonEmpMdSchema.description}Instruction for the partition. e.g. "Do the following statements agree with the information given in Reading Passage 1?\n\nIn boxes 1-6 on your answer sheet, write\n\n***TRUE***        *if the statement agrees with the information*\n\n***FALSE***        *if the statement contradicts the information*\n\n***NOT GIVEN***        *if there is no information on this*"`,
+      instruction: NonEmptyMdSchema.describe(
+        `${NonEmptyMdSchema.description}Instruction for the partition. e.g. "Do the following statements agree with the information given in Reading Passage 1?\n\nIn boxes 1-6 on your answer sheet, write\n\n***TRUE***        *if the statement agrees with the information*\n\n***FALSE***        *if the statement contradicts the information*\n\n***NOT GIVEN***        *if there is no information on this*"`,
       ),
     }),
     z.object({
       partitionCode: z.enum(['identifying_writers_views_or_claims']),
-      instruction: NonEmpMdSchema.describe(
-        `${NonEmpMdSchema.description}Instruction for the partition. e.g. "Do the following statements agree with the claims of the writer in Reading Passage 2?\n\nIn boxes 20-23 on your answer sheet, write\n\n***YES***        *if the statement agrees with the claims of the writer*\n\n***NO***        *if the statement contradicts the claims of the writer*\n\n***NOT GIVEN***        *if it is impossible to say what the writer thinks about this*"`,
+      instruction: NonEmptyMdSchema.describe(
+        `${NonEmptyMdSchema.description}Instruction for the partition. e.g. "Do the following statements agree with the claims of the writer in Reading Passage 2?\n\nIn boxes 20-23 on your answer sheet, write\n\n***YES***        *if the statement agrees with the claims of the writer*\n\n***NO***        *if the statement contradicts the claims of the writer*\n\n***NOT GIVEN***        *if it is impossible to say what the writer thinks about this*"`,
       ),
     }),
     z.object({
       partitionCode: z.enum(['matching_information']),
-      instruction: NonEmpMdSchema.describe(
-        `${NonEmpMdSchema.description}Instruction for the partition. e.g. "Reading Passage 2 has seven sections, **A-G**.\n\nWhich section contains the following information?\n\n*Write the correct letter, **A-G**, in boxes 14-18 on your answer sheet.*\n\n***NB**  You may use any letter more than once.*"`,
+      instruction: NonEmptyMdSchema.describe(
+        `${NonEmptyMdSchema.description}Instruction for the partition. e.g. "Reading Passage 2 has seven sections, **A-G**.\n\nWhich section contains the following information?\n\n*Write the correct letter, **A-G**, in boxes 14-18 on your answer sheet.*\n\n***NB**  You may use any letter more than once.*"`,
       ),
     }),
     z.object({
       partitionCode: z.enum(['matching_headings']),
-      instruction: NonEmpMdSchema.describe(
-        `${NonEmpMdSchema.description}Instruction for the partition. e.g. "Reading Passage 2 has seven paragraphs, **A-G**.\n\nChoose the correct heading for each paragraph from the list of headings below.\n\n*Write the correct number, **i-viii**, in boxes 14-20 on your answer sheet.*"`,
+      instruction: NonEmptyMdSchema.describe(
+        `${NonEmptyMdSchema.description}Instruction for the partition. e.g. "Reading Passage 2 has seven paragraphs, **A-G**.\n\nChoose the correct heading for each paragraph from the list of headings below.\n\n*Write the correct number, **i-viii**, in boxes 14-20 on your answer sheet.*"`,
       ),
-      headingsTitle: NonEmpStrSchema.describe(
-        `${NonEmpStrSchema.description}\nThe title of the headings, e.g. "List of Headings".`,
+      headingsTitle: NonEmptyStringSchema.describe(
+        `${NonEmptyStringSchema.description}\nThe title of the headings, e.g. "List of Headings".`,
       ),
       headings: z
         .object({
-          identifier: NonEmpStrSchema.describe(
-            `${NonEmpStrSchema}\ne.g."i","iv","viii" etc.`,
+          identifier: NonEmptyStringSchema.describe(
+            `${NonEmptyStringSchema}\ne.g."i","iv","viii" etc.`,
           ),
-          content: NonEmpStrSchema.describe(
-            `${NonEmpStrSchema}\ne.g. "Marketing issues lead to failure", "A disappointing outcome for customers" etc.`,
+          content: NonEmptyStringSchema.describe(
+            `${NonEmptyStringSchema}\ne.g. "Marketing issues lead to failure", "A disappointing outcome for customers" etc.`,
           ),
         })
         .array()
@@ -416,88 +428,88 @@ const ReadingParitionsSchema = BaseParitionSchema.extend({
     }),
     z.object({
       partitionCode: z.enum(['matching_features']),
-      instruction: NonEmpMdSchema.describe(
-        `${NonEmpMdSchema.description}Instruction for the partition. e.g. "*Look at the following purposes (Questions 19-21) and the list of timber cuts below.*\n\n*Match each purpose with the correct timber cut, **A**, **B**, or **C**.*\n\n*Write the correct letter, **A**, **B**, or **C**, in boxes 19-21 on your answer sheet.*\n\n***NB**  You may use any letter more than once.*"`,
+      instruction: NonEmptyMdSchema.describe(
+        `${NonEmptyMdSchema.description}Instruction for the partition. e.g. "*Look at the following purposes (Questions 19-21) and the list of timber cuts below.*\n\n*Match each purpose with the correct timber cut, **A**, **B**, or **C**.*\n\n*Write the correct letter, **A**, **B**, or **C**, in boxes 19-21 on your answer sheet.*\n\n***NB**  You may use any letter more than once.*"`,
       ),
-      optionsTitle: NonEmpStrSchema.describe(
-        `${NonEmpStrSchema.description}\nThe title of the options, e.g. "List of Timber Cuts".`,
+      optionsTitle: NonEmptyStringSchema.describe(
+        `${NonEmptyStringSchema.description}\nThe title of the options, e.g. "List of Timber Cuts".`,
       ),
       options: OptionsSchema,
     }),
     z.object({
       partitionCode: z.enum(['matching_sentence_endings']),
-      instruction: NonEmpMdSchema.describe(
-        `${NonEmpMdSchema.description}Instruction for the partition. e.g. "*Complete each sentence with the correct ending, **A-G**, below.*\n\n*Write the correct letter, **A-G**, in boxes 31-35 on your answer sheet.*"`,
+      instruction: NonEmptyMdSchema.describe(
+        `${NonEmptyMdSchema.description}Instruction for the partition. e.g. "*Complete each sentence with the correct ending, **A-G**, below.*\n\n*Write the correct letter, **A-G**, in boxes 31-35 on your answer sheet.*"`,
       ),
       options: OptionsSchema,
     }),
     z.object({
       partitionCode: z.enum(['sentence_completion']),
-      instruction: NonEmpMdSchema.describe(
-        `${NonEmpMdSchema.description}Instruction for the partition. e.g. "*Complete the sentences below*\n\n*Choose **ONE WORD ONLY** from the passage for each answer.*\n\n*Write your answers in boxes 18-22 on your answer sheet.*"`,
+      instruction: NonEmptyMdSchema.describe(
+        `${NonEmptyMdSchema.description}Instruction for the partition. e.g. "*Complete the sentences below*\n\n*Choose **ONE WORD ONLY** from the passage for each answer.*\n\n*Write your answers in boxes 18-22 on your answer sheet.*"`,
       ),
     }),
     z.object({
       partitionCode: z.enum(['summary_completion_by_filling']),
-      instruction: NonEmpMdSchema.describe(
-        `${NonEmpMdSchema.description}Instruction for the partition. e.g. "*Complete the summary below*\n\n*Choose **ONE WORD ONLY** from the passage for each answer.*\n\n*Write your answers in boxes 7-13 on your answer sheet.*"`,
+      instruction: NonEmptyMdSchema.describe(
+        `${NonEmptyMdSchema.description}Instruction for the partition. e.g. "*Complete the summary below*\n\n*Choose **ONE WORD ONLY** from the passage for each answer.*\n\n*Write your answers in boxes 7-13 on your answer sheet.*"`,
       ),
-      summaryTitle: NonEmpStrSchema.describe(
-        `${NonEmpStrSchema.description}\ne.g. Guard rails`,
+      summaryTitle: NonEmptyStringSchema.describe(
+        `${NonEmptyStringSchema.description}\ne.g. Guard rails`,
       ),
-      summaryContent: NonEmpMdSchema.describe(
-        `${NonEmpMdSchema.description}\nThe summary paragraphs. Replace blank with {{seqId}} placeholder. e.g. "Guard rails were introduced on British roads to improve the {{7}} of pedestrians, while ensuring that the movement of {{8}} is not disrupted." etc.`,
+      summaryContent: NonEmptyMdSchema.describe(
+        `${NonEmptyMdSchema.description}\nThe summary paragraphs. Replace blank with {{verbatimSequence}} placeholder. e.g. "Guard rails were introduced on British roads to improve the {{7}} of pedestrians, while ensuring that the movement of {{8}} is not disrupted." etc.`,
       ),
     }),
     z.object({
       partitionCode: z.enum(['summary_completion_by_selection']),
-      instruction: NonEmpMdSchema.describe(
-        `${NonEmpMdSchema.description}Instruction for the partition. e.g. "*Complete the summary using the list of phrases. **A-J**, below.*\n\n*Write the correct letter, **A-J**, in boxes 27-31 on your answer sheet.*"`,
+      instruction: NonEmptyMdSchema.describe(
+        `${NonEmptyMdSchema.description}Instruction for the partition. e.g. "*Complete the summary using the list of phrases. **A-J**, below.*\n\n*Write the correct letter, **A-J**, in boxes 27-31 on your answer sheet.*"`,
       ),
-      summaryTitle: NonEmpStrSchema.describe(
-        `${NonEmpStrSchema.description}\ne.g. "The story behind the hunt for Charles II"`,
+      summaryTitle: NonEmptyStringSchema.describe(
+        `${NonEmptyStringSchema.description}\ne.g. "The story behind the hunt for Charles II"`,
       ),
-      summaryContent: NonEmpMdSchema.describe(
-        `${NonEmpMdSchema.description}\nThe summary paragraphs. Replace blank with {{seqId}} placeholder. e.g. "...and Charles had to flee for his life. A {{30}} was offered for Charles's capture, ..." etc.`,
+      summaryContent: NonEmptyMdSchema.describe(
+        `${NonEmptyMdSchema.description}\nThe summary paragraphs. Replace blank with {{verbatimSequence}} placeholder. e.g. "...and Charles had to flee for his life. A {{30}} was offered for Charles's capture, ..." etc.`,
       ),
       options: OptionsSchema,
     }),
     z.object({
       partitionCode: z.enum(['note_completion_by_filling']),
-      instruction: NonEmpMdSchema.describe(
-        `${NonEmpMdSchema.description}Instruction for the partition. e.g. "*Complete the notes below.*\n\n*Choose **ONE WORD AND/OR A NUMBER** from the passage for each answer.*\n\n*Write your answers in boxes 7-13 on your answer sheet.*"`,
+      instruction: NonEmptyMdSchema.describe(
+        `${NonEmptyMdSchema.description}Instruction for the partition. e.g. "*Complete the notes below.*\n\n*Choose **ONE WORD AND/OR A NUMBER** from the passage for each answer.*\n\n*Write your answers in boxes 7-13 on your answer sheet.*"`,
       ),
-      notesTitle: NonEmpStrSchema.describe(
-        `${NonEmpStrSchema.description}\ne.g. "New Zealand’s kākāpō"`,
+      notesTitle: NonEmptyStringSchema.describe(
+        `${NonEmptyStringSchema.description}\ne.g. "New Zealand’s kākāpō"`,
       ),
-      notesContent: NonEmpMdSchema.describe(
-        `${NonEmpMdSchema.description}\nThe notes content. Replace blank with {{seqId}} placeholder. e.g. "**A type of parrot**\n\n- diet consists of fern fronds, various parts of a tree and {{7}}" etc.`,
+      notesContent: NonEmptyMdSchema.describe(
+        `${NonEmptyMdSchema.description}\nThe notes content. Replace blank with {{verbatimSequence}} placeholder. e.g. "**A type of parrot**\n\n- diet consists of fern fronds, various parts of a tree and {{7}}" etc.`,
       ),
     }),
     z.object({ partitionCode: z.enum(['note_completion_by_selection']) }),
     z.object({
       partitionCode: z.enum(['table_completion_by_filling']),
-      instruction: NonEmpMdSchema.describe(
-        `${NonEmpMdSchema.description}Instruction for the partition. e.g. "*Complete the table below.*\n\n*Choose **ONE WORD ONLY** from the passage for each answer.*\n\n*Write your answers in boxes 4-7 on your answer sheet.*"`,
+      instruction: NonEmptyMdSchema.describe(
+        `${NonEmptyMdSchema.description}Instruction for the partition. e.g. "*Complete the table below.*\n\n*Choose **ONE WORD ONLY** from the passage for each answer.*\n\n*Write your answers in boxes 4-7 on your answer sheet.*"`,
       ),
-      tableTitle: NonEmpStrSchema.describe(
-        `${NonEmpStrSchema.description}\ne.g. "Intensive farming versus aeroponic urban farming"`,
+      tableTitle: NonEmptyStringSchema.describe(
+        `${NonEmptyStringSchema.description}\ne.g. "Intensive farming versus aeroponic urban farming"`,
       ),
-      tableContent: NonEmpMdSchema.describe(
-        `${NonEmpMdSchema.description}\nThe table content. Use markdown syntax to mimic the table. Replace blank with {{seqId}} placeholder. e.g. "- wide range of {{4}} used\n\n- techniques pollute air" etc.`,
+      tableContent: NonEmptyMdSchema.describe(
+        `${NonEmptyMdSchema.description}\nThe table content. Use markdown syntax to mimic the table. Replace blank with {{verbatimSequence}} placeholder. e.g. "- wide range of {{4}} used\n\n- techniques pollute air" etc.`,
       ),
     }),
     z.object({ partitionCode: z.enum(['table_completion_by_selection']) }),
     z.object({
       partitionCode: z.enum(['flow_chart_completion_by_filling']),
-      instruction: NonEmpMdSchema.describe(
-        `${NonEmpMdSchema.description}Instruction for the partition. e.g. "*Complete the flow-chart below.*\n\n*Choose **NO MORE THAN TWO WORDS AND/OR A NUMBER** from the passage for each answer.*\n\n*Write your answers in boxes 34-39 on your answer sheet.*"`,
+      instruction: NonEmptyMdSchema.describe(
+        `${NonEmptyMdSchema.description}Instruction for the partition. e.g. "*Complete the flow-chart below.*\n\n*Choose **NO MORE THAN TWO WORDS AND/OR A NUMBER** from the passage for each answer.*\n\n*Write your answers in boxes 34-39 on your answer sheet.*"`,
       ),
-      flowChartTitle: NonEmpStrSchema.describe(
-        `${NonEmpStrSchema.description}\nThe title of the flow chart, e.g. "Method of determing where the ancestors of turtles and tortoises come from".`,
+      flowChartTitle: NonEmptyStringSchema.describe(
+        `${NonEmptyStringSchema.description}\nThe title of the flow chart, e.g. "Method of determing where the ancestors of turtles and tortoises come from".`,
       ),
-      flowChartContent: NonEmpMdSchema.describe(
-        `${NonEmpMdSchema.description}The flow chart content for each stage. 注意只支持单链条不分叉的flow。 Use Markdown to mimic the format. Turn blanks to seqId placeholders. e.g. "**Step 1**\n\n71 species of living turtles and tortoises were examined and a total of {{34}} were taken from the bones of their forelimbs."。`,
+      flowChartContent: NonEmptyMdSchema.describe(
+        `${NonEmptyMdSchema.description}The flow chart content for each stage. 注意只支持单链条不分叉的flow。 Use Markdown to mimic the format. Turn blanks to verbatimSequence placeholders. e.g. "**Step 1**\n\n71 species of living turtles and tortoises were examined and a total of {{34}} were taken from the bones of their forelimbs."。`,
       )
         .array()
         .describe('All the stages.'),
@@ -505,8 +517,8 @@ const ReadingParitionsSchema = BaseParitionSchema.extend({
     z.object({ partitionCode: z.enum(['flow_chart_completion_by_selection']) }),
     z.object({
       partitionCode: z.enum(['diagram_label_completion']),
-      instruction: NonEmpMdSchema.describe(
-        `${NonEmpMdSchema.description}Instruction for the partition. e.g. "*Label the diagrams below.*\n\n*Choose **ONE WORD ONLY** from the passage for each answer.*\n\n*Write your answers in boxes 1-6 on your answer sheet.*"`,
+      instruction: NonEmptyMdSchema.describe(
+        `${NonEmptyMdSchema.description}Instruction for the partition. e.g. "*Label the diagrams below.*\n\n*Choose **ONE WORD ONLY** from the passage for each answer.*\n\n*Write your answers in boxes 1-6 on your answer sheet.*"`,
       ),
       diagrams: InformativeImageSchema.describe(
         `${InformativeImageSchema.description}\nThe diagrams in informative image format. Including the title if there is any. Ensure all the diagrams, titles, questions, blanks etc. a.k.a. the prompt, are contained in one image.`,
@@ -514,8 +526,8 @@ const ReadingParitionsSchema = BaseParitionSchema.extend({
     }),
     z.object({
       partitionCode: z.enum(['short_answer_questions']),
-      instruction: NonEmpMdSchema.describe(
-        `${NonEmpMdSchema.description}Instruction for the partition. e.g. "*Complete the questions below.*\n\n*Choose **NO MORE THAN TWO WORDS AND/OR A NUMBER** from the passage for each answer.*\n\n*Write your answers in boxes 7-10 on your answer sheet.*"`,
+      instruction: NonEmptyMdSchema.describe(
+        `${NonEmptyMdSchema.description}Instruction for the partition. e.g. "*Complete the questions below.*\n\n*Choose **NO MORE THAN TWO WORDS AND/OR A NUMBER** from the passage for each answer.*\n\n*Write your answers in boxes 7-10 on your answer sheet.*"`,
       ),
     }),
   ]),
@@ -533,7 +545,7 @@ const ReadingItems = {
   multiple_choice: {
     __displayName: { zh: '选择题', en: 'Multiple Choice' },
     __questionContentSchema: z.object({
-      seqId: SeqIdSchema,
+      verbatimSequence: VerbatimSequenceSchema,
       stem: StemSchema,
       options: OptionsSchema,
     }),
@@ -550,14 +562,12 @@ const ReadingItems = {
       en: 'Identifying Information (True/False/Not Given)',
     },
     __questionContentSchema: z.object({
-      seqId: SeqIdSchema,
-      statement: NonEmpStrSchema.describe(
-        `${NonEmpStrSchema.description}\nThe statement to evaluate.`,
+      verbatimSequence: VerbatimSequenceSchema,
+      statement: NonEmptyStringSchema.describe(
+        `${NonEmptyStringSchema.description}\nThe statement to evaluate.`,
       ),
     }),
-    __responseContentSchema: SelectionArraySchema.describe(
-      `${SelectionArraySchema.description}\nTRUE is 1, FALSE is 2, and NOT GIVEN is 3.`,
-    ),
+    __responseContentSchema: SelectionArraySchema,
   },
 
   /**
@@ -569,14 +579,12 @@ const ReadingItems = {
       en: 'Identifying Writer’s Views/Claims (Yes/No/Not Given)',
     },
     __questionContentSchema: z.object({
-      seqId: SeqIdSchema,
-      statement: NonEmpStrSchema.describe(
-        `${NonEmpStrSchema.description}\nThe statement to evaluate.`,
+      verbatimSequence: VerbatimSequenceSchema,
+      statement: NonEmptyStringSchema.describe(
+        `${NonEmptyStringSchema.description}\nThe statement to evaluate.`,
       ),
     }),
-    __responseContentSchema: SelectionArraySchema.describe(
-      `${SelectionArraySchema.description}\nYES is 1, NO is 2, and NOT GIVEN is 3.`,
-    ),
+    __responseContentSchema: SelectionArraySchema,
   },
 
   /**
@@ -585,14 +593,12 @@ const ReadingItems = {
   matching_information: {
     __displayName: { zh: '段落信息匹配题', en: 'Matching Information' },
     __questionContentSchema: z.object({
-      seqId: SeqIdSchema,
-      information: NonEmpStrSchema.describe(
-        `${NonEmpStrSchema.description}\nThe information to evaluate.`,
+      verbatimSequence: VerbatimSequenceSchema,
+      information: NonEmptyStringSchema.describe(
+        `${NonEmptyStringSchema.description}\nThe information to evaluate.`,
       ),
     }),
-    __responseContentSchema: SelectionArraySchema.describe(
-      `${SelectionArraySchema.description}\ne.g. Transform A-G to 1-7`,
-    ),
+    __responseContentSchema: SelectionArraySchema,
   },
 
   /**
@@ -601,14 +607,12 @@ const ReadingItems = {
   matching_headings: {
     __displayName: { zh: '段落小标题匹配题', en: 'Matching Headings' },
     __questionContentSchema: z.object({
-      seqId: SeqIdSchema,
-      prompt: NonEmpMdSchema.describe(
-        `${NonEmpMdSchema.description}\n e.g. "Paragraph **C**", "Paragraph **G**" etc.`,
+      verbatimSequence: VerbatimSequenceSchema,
+      prompt: NonEmptyMdSchema.describe(
+        `${NonEmptyMdSchema.description}\n e.g. "Paragraph **C**", "Paragraph **G**" etc.`,
       ),
     }),
-    __responseContentSchema: SelectionArraySchema.describe(
-      `${SelectionArraySchema.description}\nTurn "i" to "1", "ii" to "2" and so on.`,
-    ),
+    __responseContentSchema: SelectionArraySchema,
   },
 
   /**
@@ -618,9 +622,9 @@ const ReadingItems = {
   matching_features: {
     __displayName: { zh: '特征/人名匹配题', en: 'Matching Features' },
     __questionContentSchema: z.object({
-      seqId: SeqIdSchema,
-      prompt: NonEmpStrSchema.describe(
-        `${NonEmpStrSchema.description}\nThe prompt, e.g. "to remove trees that are diseased" etc.`,
+      verbatimSequence: VerbatimSequenceSchema,
+      prompt: NonEmptyStringSchema.describe(
+        `${NonEmptyStringSchema.description}\nThe prompt, e.g. "to remove trees that are diseased" etc.`,
       ),
     }),
     __responseContentSchema: SelectionArraySchema.describe(
@@ -635,9 +639,9 @@ const ReadingItems = {
   matching_sentence_endings: {
     __displayName: { zh: '句尾匹配题', en: 'Matching Sentence Endings' },
     __questionContentSchema: z.object({
-      seqId: SeqIdSchema,
-      prompt: NonEmpStrSchema.describe(
-        `${NonEmpStrSchema.description}\nThe prompt sentence stem to be added with an ending, e.g. "At times when they were relaxed, the firefighters usually" etc.`,
+      verbatimSequence: VerbatimSequenceSchema,
+      prompt: NonEmptyStringSchema.describe(
+        `${NonEmptyStringSchema.description}\nThe prompt sentence stem to be added with an ending, e.g. "At times when they were relaxed, the firefighters usually" etc.`,
       ),
     }),
     __responseContentSchema: SelectionArraySchema,
@@ -650,9 +654,9 @@ const ReadingItems = {
   sentence_completion: {
     __displayName: { zh: '完成句子题', en: 'Sentence Completion' },
     __questionContentSchema: z.object({
-      seqId: SeqIdSchema,
-      sentence: NonEmpStrSchema.describe(
-        `${NonEmpStrSchema.description}\nThe sentence to complete. Replace blank with {{seqId}} placeholder. e.g. "A project in LA has increased the number of {{1}} on the city's streets." etc.`,
+      verbatimSequence: VerbatimSequenceSchema,
+      sentence: NonEmptyStringSchema.describe(
+        `${NonEmptyStringSchema.description}\nThe sentence to complete. Replace blank with {{verbatimSequence}} placeholder. e.g. "A project in LA has increased the number of {{1}} on the city's streets." etc.`,
       ),
     }),
     __responseContentSchema: FillingRecordSchema,
@@ -667,7 +671,9 @@ const ReadingItems = {
       zh: '摘要填空题',
       en: 'Summary Completion by Filling',
     },
-    __questionContentSchema: z.object({ seqId: SeqIdSchema }),
+    __questionContentSchema: z.object({
+      verbatimSequence: VerbatimSequenceSchema,
+    }),
     __responseContentSchema: FillingArraySchema,
   },
 
@@ -680,7 +686,9 @@ const ReadingItems = {
       zh: '摘要选择填空题',
       en: 'Summary Completion by Selection',
     },
-    __questionContentSchema: z.object({ seqId: SeqIdSchema }),
+    __questionContentSchema: z.object({
+      verbatimSequence: VerbatimSequenceSchema,
+    }),
     __responseContentSchema: SelectionArraySchema,
   },
 
@@ -693,7 +701,9 @@ const ReadingItems = {
       zh: '笔记填空题',
       en: 'Note Completion by Filling',
     },
-    __questionContentSchema: z.object({ seqId: SeqIdSchema }),
+    __questionContentSchema: z.object({
+      verbatimSequence: VerbatimSequenceSchema,
+    }),
     __responseContentSchema: FillingArraySchema,
   },
 
@@ -706,8 +716,8 @@ const ReadingItems = {
       zh: '笔记选择填空题',
       en: 'Note Completion by Selection',
     },
-    __questionContentSchema: UndeterminedSchema,
-    __responseContentSchema: UndeterminedSchema,
+    __questionContentSchema: PlaceholderSchema,
+    __responseContentSchema: PlaceholderSchema,
   },
 
   /**
@@ -719,7 +729,9 @@ const ReadingItems = {
       zh: '表格填空题',
       en: 'Table Completion by Filling',
     },
-    __questionContentSchema: z.object({ seqId: SeqIdSchema }),
+    __questionContentSchema: z.object({
+      verbatimSequence: VerbatimSequenceSchema,
+    }),
     __responseContentSchema: FillingArraySchema,
   },
 
@@ -732,8 +744,8 @@ const ReadingItems = {
       zh: '表格选择填空题',
       en: 'Table Completion by Selection',
     },
-    __questionContentSchema: UndeterminedSchema,
-    __responseContentSchema: UndeterminedSchema,
+    __questionContentSchema: PlaceholderSchema,
+    __responseContentSchema: PlaceholderSchema,
   },
 
   /**
@@ -744,7 +756,9 @@ const ReadingItems = {
       zh: '流程图填空题',
       en: 'Flow-Chart Completion by Filling',
     },
-    __questionContentSchema: z.object({ seqId: SeqIdSchema }),
+    __questionContentSchema: z.object({
+      verbatimSequence: VerbatimSequenceSchema,
+    }),
     __responseContentSchema: FillingArraySchema,
   },
 
@@ -757,8 +771,8 @@ const ReadingItems = {
       zh: '流程图选择填空题',
       en: 'Flow-Chart Completion by Selection',
     },
-    __questionContentSchema: UndeterminedSchema,
-    __responseContentSchema: UndeterminedSchema,
+    __questionContentSchema: PlaceholderSchema,
+    __responseContentSchema: PlaceholderSchema,
   },
 
   /**
@@ -766,7 +780,9 @@ const ReadingItems = {
    */
   diagram_label_completion: {
     __displayName: { zh: '示意图标注填空题', en: 'Diagram Label Completion' },
-    __questionContentSchema: z.object({ seqId: SeqIdSchema }),
+    __questionContentSchema: z.object({
+      verbatimSequence: VerbatimSequenceSchema,
+    }),
     __responseContentSchema: FillingArraySchema,
   },
 
@@ -776,8 +792,8 @@ const ReadingItems = {
   short_answer_questions: {
     __displayName: { zh: '简答题', en: 'Short-Answer Questions' },
     __questionContentSchema: z.object({
-      question: NonEmpStrSchema.describe(
-        `${NonEmpStrSchema.description}\n The question to be answered.`,
+      question: NonEmptyStringSchema.describe(
+        `${NonEmptyStringSchema.description}\n The question to be answered.`,
       ),
     }),
     __responseContentSchema: FillingArraySchema,
@@ -846,7 +862,7 @@ export default defineExam({
       __tasks: {
         passage1: {
           __displayName: {
-            zh: 'Passage 1 文章一（基础）',
+            zh: 'Passage 1（基础）',
             en: 'Passage 1 (Basic)',
           },
           __questionContentSchema: z.object({
@@ -857,7 +873,7 @@ export default defineExam({
         },
         passage2: {
           __displayName: {
-            zh: 'Passage 2 文章二（中等）',
+            zh: 'Passage 2（中等）',
             en: 'Passage 2 (Intermediate)',
           },
           __questionContentSchema: z.object({
@@ -868,7 +884,7 @@ export default defineExam({
         },
         passage3: {
           __displayName: {
-            zh: 'Passage 3 文章三（高难）',
+            zh: 'Passage 3（高难）',
             en: 'Passage 3 (Advanced)',
           },
           __questionContentSchema: z.object({
@@ -888,7 +904,7 @@ export default defineExam({
          */
         task1: {
           __displayName: {
-            zh: 'Task 1 小作文（图表）',
+            zh: 'Task 1（小作文）',
             en: 'Academic Writing Task 1',
           },
           __questionContentSchema: EmptyObjectSchema,
@@ -896,12 +912,12 @@ export default defineExam({
             default: {
               __displayName: { zh: '默认题型', en: 'Default' },
               __questionContentSchema: z.object({
-                seqId: SeqIdSchema,
-                instruction: NonEmpStrSchema.describe(
-                  `${NonEmpStrSchema.description}\ne.g. "You should spend about 20 minutes on this task."`,
+                verbatimSequence: VerbatimSequenceSchema,
+                instruction: NonEmptyStringSchema.describe(
+                  `${NonEmptyStringSchema.description}\ne.g. "You should spend about 20 minutes on this task."`,
                 ),
-                prompt: NonEmpMdSchema.describe(
-                  `${NonEmpMdSchema.description}\n\n问题描述，通常是黑体加斜体，且有分段。e.g. "***The first table show changes in the total population of New York City from 1800 to 2000. The second and their tables show...***\n\n***Summarise the information by selecting and reporting the main features, and make comparisons where relevant.***" etc.`,
+                prompt: NonEmptyMdSchema.describe(
+                  `${NonEmptyMdSchema.description}\n\n问题描述，通常是黑体加斜体，且有分段。e.g. "***The first table show changes in the total population of New York City from 1800 to 2000. The second and their tables show...***\n\n***Summarise the information by selecting and reporting the main features, and make comparisons where relevant.***" etc.`,
                 ),
                 image: InformativeImageSchema.describe(
                   '整张图表（包括子图、对比图等）放到一个image来盛装。',
@@ -916,7 +932,7 @@ export default defineExam({
          */
         task2: {
           __displayName: {
-            zh: 'Task 2 大作文（议论文）',
+            zh: 'Task 2（大作文）',
             en: 'Academic Writing Task 2',
           },
           __questionContentSchema: EmptyObjectSchema,
@@ -924,15 +940,15 @@ export default defineExam({
             default: {
               __displayName: { zh: '默认题型', en: 'Default' },
               __questionContentSchema: z.object({
-                seqId: SeqIdSchema,
-                instructionBeforePrompt: NonEmpMdSchema.describe(
-                  `${NonEmpMdSchema.description}\ne.g. "You should spend about 40 minutes on this task.\n\nWrite about the following topic:"`,
+                verbatimSequence: VerbatimSequenceSchema,
+                instructionBeforePrompt: NonEmptyMdSchema.describe(
+                  `${NonEmptyMdSchema.description}\ne.g. "You should spend about 40 minutes on this task.\n\nWrite about the following topic:"`,
                 ),
-                prompt: NonEmpMdSchema.describe(
-                  `${NonEmpMdSchema.description}\n议论文题目，通常是黑体加斜体，且有分段。e.g. "***Access to clean water is a basic human right. Therefore every home should have a water supply that is provided free of charge.***\n\n***Do you agree or disagree?***" etc.`,
+                prompt: NonEmptyMdSchema.describe(
+                  `${NonEmptyMdSchema.description}\n议论文题目，通常是黑体加斜体，且有分段。e.g. "***Access to clean water is a basic human right. Therefore every home should have a water supply that is provided free of charge.***\n\n***Do you agree or disagree?***" etc.`,
                 ),
-                instructionAfterPrompt: NonEmpMdSchema.describe(
-                  `${NonEmpMdSchema.description}\ne.g. "Give reasons for your answer and include any relevant examples from own knowledge or experience.\n\nWrite at least 250 words."`,
+                instructionAfterPrompt: NonEmptyMdSchema.describe(
+                  `${NonEmptyMdSchema.description}\ne.g. "Give reasons for your answer and include any relevant examples from own knowledge or experience.\n\nWrite at least 250 words."`,
                 ),
               }),
               __responseContentSchema: WritingSchema,
@@ -950,24 +966,24 @@ export default defineExam({
          */
         part1: {
           __displayName: {
-            zh: 'Part 1 自我介绍与简短问答',
-            en: 'Part 1 Introduction and Interview',
+            zh: 'Part 1（自我介绍与简短问答）',
+            en: 'Part 1 (Introduction and Interview)',
           },
           __questionContentSchema: z.object({
-            instruction: NonEmpStrSchema.describe(
-              `${NonEmpStrSchema.description}\ne.g. The examiner asks you about yourself, your home, work or studies and other familiar topics.`,
+            instruction: NonEmptyStringSchema.describe(
+              `${NonEmptyStringSchema.description}\ne.g. The examiner asks you about yourself, your home, work or studies and other familiar topics.`,
             ),
-            topic: NonEmpStrSchema.describe(
-              `${NonEmpStrSchema.description}\ne.g. "Walking"`,
+            topic: NonEmptyStringSchema.describe(
+              `${NonEmptyStringSchema.description}\ne.g. "Walking"`,
             ),
           }),
           __items: {
             default: {
               __displayName: { zh: '默认题型', en: 'Default' },
               __questionContentSchema: z.object({
-                seqId: SeqIdSchema,
-                prompt: NonEmpStrSchema.describe(
-                  `${NonEmpStrSchema.description}\nA single question, e.g. "How much walking do you do in your daily life?",`,
+                verbatimSequence: VerbatimSequenceSchema,
+                prompt: NonEmptyStringSchema.describe(
+                  `${NonEmptyStringSchema.description}\nA single question, e.g. "How much walking do you do in your daily life?",`,
                 ),
               }),
               __responseContentSchema: SpeakingSchema,
@@ -978,18 +994,18 @@ export default defineExam({
          * @design /design/exam/ielts-academic-20230503-practice/speaking_part2_default.png
          */
         part2: {
-          __displayName: { zh: 'Part 2 个人独白', en: 'Part 2 Long Turn' },
+          __displayName: { zh: 'Part 2（个人独白）', en: 'Part 2 (Long Turn)' },
           __questionContentSchema: EmptyObjectSchema,
           __items: {
             default: {
               __displayName: { zh: '默认题型', en: 'Default' },
               __questionContentSchema: z.object({
-                seqId: SeqIdSchema,
-                prompt: NonEmpMdSchema.describe(
-                  `${NonEmpMdSchema.description}\nCue Card 话题卡。用纯黑体和分段。`,
+                verbatimSequence: VerbatimSequenceSchema,
+                prompt: NonEmptyMdSchema.describe(
+                  `${NonEmptyMdSchema.description}\nCue Card 话题卡。用纯黑体和分段。`,
                 ),
-                instruction: NonEmpStrSchema.describe(
-                  `${NonEmpStrSchema.description}\ne.g. "You will have to talk about the topic for one to two minutes. You have one minute to think about what you are going to say. You can make some notes to help you if you wish."`,
+                instruction: NonEmptyStringSchema.describe(
+                  `${NonEmptyStringSchema.description}\ne.g. "You will have to talk about the topic for one to two minutes. You have one minute to think about what you are going to say. You can make some notes to help you if you wish."`,
                 ),
               }),
               __responseContentSchema: SpeakingSchema,
@@ -1000,11 +1016,11 @@ export default defineExam({
          * @design /design/exam/ielts-academic-20230503-practice/speaking_part3_default.png
          */
         part3: {
-          __displayName: { zh: 'Part 3 双向讨论', en: 'Part 3 Discussion' },
+          __displayName: { zh: 'Part 3（双向讨论）', en: 'Part 3 Discussion' },
           __questionContentSchema: z.object({
             partitions: BaseParitionSchema.extend({
-              topic: NonEmpStrSchema.describe(
-                `${NonEmpStrSchema.description}\ne.g. "Theatres today" etc.`,
+              topic: NonEmptyStringSchema.describe(
+                `${NonEmptyStringSchema.description}\ne.g. "Theatres today" etc.`,
               ),
             })
               .array()
@@ -1014,9 +1030,9 @@ export default defineExam({
             default: {
               __displayName: { zh: '默认题型', en: 'Default' },
               __questionContentSchema: z.object({
-                seqId: SeqIdSchema,
-                prompt: NonEmpStrSchema.describe(
-                  `${NonEmpStrSchema.description}\nA single question, e.g. "Do you think theatres need to do more to attract younger audiences?",`,
+                verbatimSequence: VerbatimSequenceSchema,
+                prompt: NonEmptyStringSchema.describe(
+                  `${NonEmptyStringSchema.description}\nA single question, e.g. "Do you think theatres need to do more to attract younger audiences?",`,
                 ),
               }),
               __responseContentSchema: SpeakingSchema,
