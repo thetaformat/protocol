@@ -93,7 +93,7 @@ export const EmptyObjectSchema = z
   .describe('Intentionally empty content.');
 
 // 用占位符代表 Undetermined Schema 比如雅思有些理论上存在的题型的QuestionContentSchema
-export const PlaceholderSchema = z.object({
+export const PlaceholderObjectSchema = z.object({
   placeholder: z.enum(['PLACEHOLDER']),
 });
 

@@ -10,7 +10,7 @@ import {
   NonEmptyStringSchema,
   OptionsSchema,
   PaperWideSequenceSchema,
-  PlaceholderSchema,
+  PlaceholderObjectSchema,
   SelectionArraySchema,
   SimplePassageSchema,
   SpeakingSchema,
@@ -227,8 +227,8 @@ const ListeningItems = {
       zh: '表单选择填空题',
       en: 'Form Completion by Selection',
     },
-    __questionContentSchema: PlaceholderSchema,
-    __responseContentSchema: PlaceholderSchema,
+    __questionContentSchema: PlaceholderObjectSchema,
+    __responseContentSchema: SelectionArraySchema,
   },
 
   /**
@@ -253,8 +253,8 @@ const ListeningItems = {
       zh: '笔记选择填空题',
       en: 'Note Completion by Selection',
     },
-    __questionContentSchema: PlaceholderSchema,
-    __responseContentSchema: PlaceholderSchema,
+    __questionContentSchema: PlaceholderObjectSchema,
+    __responseContentSchema: SelectionArraySchema,
   },
 
   /**
@@ -279,8 +279,8 @@ const ListeningItems = {
       zh: '表格选择填空题',
       en: 'Table Completion by Selection',
     },
-    __questionContentSchema: PlaceholderSchema,
-    __responseContentSchema: PlaceholderSchema,
+    __questionContentSchema: PlaceholderObjectSchema,
+    __responseContentSchema: SelectionArraySchema,
   },
 
   /**
@@ -329,8 +329,8 @@ const ListeningItems = {
       zh: '摘要选择填空题',
       en: 'Summary Completion by Selection',
     },
-    __questionContentSchema: PlaceholderSchema,
-    __responseContentSchema: PlaceholderSchema,
+    __questionContentSchema: PlaceholderObjectSchema,
+    __responseContentSchema: SelectionArraySchema,
   },
 
   /**
@@ -684,8 +684,8 @@ const ReadingItems = {
       zh: '笔记选择填空题',
       en: 'Note Completion by Selection',
     },
-    __questionContentSchema: PlaceholderSchema,
-    __responseContentSchema: PlaceholderSchema,
+    __questionContentSchema: PlaceholderObjectSchema,
+    __responseContentSchema: SelectionArraySchema,
   },
 
   /**
@@ -710,8 +710,8 @@ const ReadingItems = {
       zh: '表格选择填空题',
       en: 'Table Completion by Selection',
     },
-    __questionContentSchema: PlaceholderSchema,
-    __responseContentSchema: PlaceholderSchema,
+    __questionContentSchema: PlaceholderObjectSchema,
+    __responseContentSchema: SelectionArraySchema,
   },
 
   /**
@@ -735,8 +735,8 @@ const ReadingItems = {
       zh: '流程图选择填空题',
       en: 'Flow-Chart Completion by Selection',
     },
-    __questionContentSchema: PlaceholderSchema,
-    __responseContentSchema: PlaceholderSchema,
+    __questionContentSchema: PlaceholderObjectSchema,
+    __responseContentSchema: SelectionArraySchema,
   },
 
   /**
