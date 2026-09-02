@@ -824,8 +824,8 @@ export default defineExam({
       __tasks: {
         passage1: {
           __displayName: {
-            zh: 'Passage 1（基础）',
-            en: 'Passage 1 (Basic)',
+            zh: 'Passage 1',
+            en: 'Passage 1',
           },
           __questionContentSchema: z.object({
             partitions: ReadingParitionsSchema,
@@ -835,8 +835,8 @@ export default defineExam({
         },
         passage2: {
           __displayName: {
-            zh: 'Passage 2（中等）',
-            en: 'Passage 2 (Intermediate)',
+            zh: 'Passage 2',
+            en: 'Passage 2',
           },
           __questionContentSchema: z.object({
             partitions: ReadingParitionsSchema,
@@ -846,8 +846,8 @@ export default defineExam({
         },
         passage3: {
           __displayName: {
-            zh: 'Passage 3（高难）',
-            en: 'Passage 3 (Advanced)',
+            zh: 'Passage 3',
+            en: 'Passage 3',
           },
           __questionContentSchema: z.object({
             partitions: ReadingParitionsSchema,
