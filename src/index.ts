@@ -1,11 +1,17 @@
 import z from 'zod';
 
-import type { LangCode, TransDict } from './__shared';
+import {
+  type LangCode,
+  type TransDict,
+  FileKeySchema,
+  OffsetDatetimeStrSchema,
+  PaperWideSequenceSchema,
+  PosIntSchema,
+  TransDictSchema,
+} from './__shared';
 import ielts_academic_20230503 from './ielts-academic-20230503';
 import toefl_ibt_20260121 from './toefl-ibt-20260121';
 
-export * from './__catalog';
-export * from './__manifest';
 export * from './__shared';
 
 export const ExamCodeSchema = z.enum([
@@ -72,6 +78,77 @@ export const ResponseContentSchema = z.discriminatedUnion('itemCode', [
   options: any[];
   optionsMap?: Map<string, any>;
 };
+
+export const ManifestPaperSchema = z.object({
+  id: z.uuid().describe('Canonical Paper ID'), // 🌟 试卷根节点纯 UUID
+  createdAt: OffsetDatetimeStrSchema,
+  examCode: ExamCodeSchema,
+  collectionName: TransDictSchema,
+  paperName: TransDictSchema,
+  releaseNotes: TransDictSchema,
+  issuedAt: OffsetDatetimeStrSchema,
+  sections: z
+    .object({
+      id: z.uuid().describe('Canonical Section ID'),
+      code: SectionCodeSchema,
+      sequence: PaperWideSequenceSchema,
+      tasks: z
+        .object({
+          id: z.uuid().describe('Canonical Task ID'),
+          code: TaskCodeSchema,
+          sequence: PaperWideSequenceSchema,
+          content: TaskContentSchema,
+          items: z
+            .object({
+              id: z.uuid().describe('Canonical Item ID'),
+              code: ItemCodeSchema,
+              sequence: PaperWideSequenceSchema,
+              content: ItemContentSchema,
+              modelResponseContent: ResponseContentSchema,
+            })
+            .array(),
+        })
+        .array(),
+    })
+    .array(),
+});
+export type ManifestPaper = z.infer<typeof ManifestPaperSchema>;
+
+/**
+ * manifest.json schema
+ */
+export const ManifestSchema = z.object({
+  meta: z.object({
+    magic: z.literal('theta'),
+  }),
+  paper: ManifestPaperSchema,
+});
+export type Manifest = z.infer<typeof ManifestSchema>;
+
+export const CatalogPaperSchema = ManifestPaperSchema.pick({
+  id: true,
+  createdAt: true,
+  examCode: true,
+  collectionName: true,
+  paperName: true,
+  releaseNotes: true,
+  issuedAt: true,
+}).extend({
+  fileKey: FileKeySchema,
+  downloadUrl: z.url(),
+  fileSizeInBytes: PosIntSchema,
+});
+export type CatalogPaper = z.infer<typeof CatalogPaperSchema>;
+
+/**
+ * catalog.json schema
+ */
+export const CatalogSchema = z.object({
+  createdAt: OffsetDatetimeStrSchema,
+  updatedAt: OffsetDatetimeStrSchema,
+  papers: CatalogPaperSchema.array(),
+});
+export type Catalog = z.infer<typeof CatalogSchema>;
 
 /**
  * 从zod discriminatedUnion里面提取出对应的schema
