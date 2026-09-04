@@ -1,11 +1,11 @@
 import z from 'zod';
 
+import { ManifestPaperSchema } from './__manifest';
 import {
   FileKeySchema,
   OffsetDatetimeStrSchema,
   PosIntSchema,
-} from './exam/__shared';
-import { ManifestPaperSchema } from './manifest';
+} from './__shared';
 
 export const CatalogPaperSchema = ManifestPaperSchema.pick({
   id: true,

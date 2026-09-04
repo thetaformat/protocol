@@ -25,17 +25,17 @@ import {
 
 export default defineExam({
   code: 'toefl_ibt_20260121',
-  displayName: { en: 'TOEFL iBT, Latest Version', zh: '托福 iBT 最新版' },
+  displayName: { en: 'TOEFL iBT, Latest Version', 'zh-cn': '托福 iBT 最新版' },
   __sections: {
     reading: {
-      __displayName: { en: 'Reading', zh: '阅读' },
+      __displayName: { en: 'Reading', 'zh-cn': '阅读' },
       __tasks: {
         complete_the_words: {
-          __displayName: { en: 'Complete the Words', zh: '完形填空' },
+          __displayName: { en: 'Complete the Words', 'zh-cn': '完形填空' },
           __questionContentSchema: EmptyObjectSchema,
           __items: {
             default: {
-              __displayName: { en: 'Default', zh: '默认题型' },
+              __displayName: { en: 'Default', 'zh-cn': '默认题型' },
               __questionContentSchema: z.object({
                 instruction: NonEmptyStringSchema,
                 text: SimplePassageSchema.describe(
@@ -68,7 +68,7 @@ export default defineExam({
         read_an_academic_passage: {
           __displayName: {
             en: 'Read an Academic Passage',
-            zh: '学术文章阅读',
+            'zh-cn': '学术文章阅读',
           },
           __questionContentSchema: z.object({
             passage: SimplePassageSchema.describe(
@@ -77,7 +77,7 @@ export default defineExam({
           }),
           __items: {
             default: {
-              __displayName: { en: 'Default', zh: '默认题型' },
+              __displayName: { en: 'Default', 'zh-cn': '默认题型' },
               __questionContentSchema: z.object({
                 stem: StemSchema,
                 options: OptionsSchema,
@@ -99,7 +99,7 @@ export default defineExam({
         read_in_daily_life: {
           __displayName: {
             en: 'Read in Daily Life',
-            zh: '日常生活阅读',
+            'zh-cn': '日常生活阅读',
           },
           __questionContentSchema: z.object({
             instruction: NonEmptyStringSchema,
@@ -109,7 +109,7 @@ export default defineExam({
           }),
           __items: {
             default: {
-              __displayName: { en: 'Default', zh: '默认题型' },
+              __displayName: { en: 'Default', 'zh-cn': '默认题型' },
               __questionContentSchema: z.object({
                 stem: StemSchema,
                 options: OptionsSchema,
@@ -121,17 +121,17 @@ export default defineExam({
       },
     },
     listening: {
-      __displayName: { en: 'Listening', zh: '听力' },
+      __displayName: { en: 'Listening', 'zh-cn': '听力' },
       __tasks: {
         listen_and_choose_a_response: {
           __displayName: {
             en: 'Listen and Choose a Response',
-            zh: '短音频听力',
+            'zh-cn': '短音频听力',
           },
           __questionContentSchema: EmptyObjectSchema,
           __items: {
             default: {
-              __displayName: { en: 'Default', zh: '默认题型' },
+              __displayName: { en: 'Default', 'zh-cn': '默认题型' },
               __questionContentSchema: z.object({
                 instruction: NonEmptyStringSchema,
                 audio: TranscriptedAudioSchema,
@@ -147,7 +147,7 @@ export default defineExam({
         listen_to_a_conversation: {
           __displayName: {
             en: 'Listen to a Conversation',
-            zh: '对话听力',
+            'zh-cn': '对话听力',
           },
           __questionContentSchema: z.object({
             instruction: NarratedInstructionSchema,
@@ -158,7 +158,7 @@ export default defineExam({
           }),
           __items: {
             default: {
-              __displayName: { en: 'Default', zh: '默认题型' },
+              __displayName: { en: 'Default', 'zh-cn': '默认题型' },
               __questionContentSchema: z.object({
                 options: OptionsSchema,
                 stem: StemSchema,
@@ -170,7 +170,7 @@ export default defineExam({
         listen_to_an_academic_talk: {
           __displayName: {
             en: 'Listen to an Academic Talk',
-            zh: '学术听力',
+            'zh-cn': '学术听力',
           },
           __questionContentSchema: z.object({
             instruction: NarratedInstructionSchema,
@@ -181,7 +181,7 @@ export default defineExam({
           }),
           __items: {
             default: {
-              __displayName: { en: 'Default', zh: '默认题型' },
+              __displayName: { en: 'Default', 'zh-cn': '默认题型' },
               __questionContentSchema: z.object({
                 stem: StemSchema,
                 options: OptionsSchema,
@@ -193,7 +193,7 @@ export default defineExam({
         listen_to_an_announcement: {
           __displayName: {
             en: 'Listen to an Announcement',
-            zh: '公告听力',
+            'zh-cn': '公告听力',
           },
           __questionContentSchema: z.object({
             instruction: NarratedInstructionSchema,
@@ -204,7 +204,7 @@ export default defineExam({
           }),
           __items: {
             default: {
-              __displayName: { en: 'Default', zh: '默认题型' },
+              __displayName: { en: 'Default', 'zh-cn': '默认题型' },
               __questionContentSchema: z.object({
                 stem: StemSchema,
                 options: OptionsSchema,
@@ -216,17 +216,17 @@ export default defineExam({
       },
     },
     writing: {
-      __displayName: { en: 'Writing', zh: '写作' },
+      __displayName: { en: 'Writing', 'zh-cn': '写作' },
       __tasks: {
         build_a_sentence: {
           __displayName: {
             en: 'Build a Sentence',
-            zh: '句子构建',
+            'zh-cn': '句子构建',
           },
           __questionContentSchema: EmptyObjectSchema,
           __items: {
             default: {
-              __displayName: { en: 'Default', zh: '默认题型' },
+              __displayName: { en: 'Default', 'zh-cn': '默认题型' },
               __questionContentSchema: z.object({
                 instruction: NonEmptyStringSchema,
                 speaker1: z
@@ -274,11 +274,11 @@ export default defineExam({
           },
         },
         write_an_email: {
-          __displayName: { en: 'Write an Email', zh: '撰写电子邮件' },
+          __displayName: { en: 'Write an Email', 'zh-cn': '撰写电子邮件' },
           __questionContentSchema: EmptyObjectSchema,
           __items: {
             default: {
-              __displayName: { en: 'Default', zh: '默认题型' },
+              __displayName: { en: 'Default', 'zh-cn': '默认题型' },
               __questionContentSchema: z.object({
                 introduction: NonEmptyMdSchema.describe(
                   `${NonEmptyMdSchema.description}\nThe prompt main body, which includes scenario description and requirements.`,
@@ -293,12 +293,12 @@ export default defineExam({
         write_for_an_academic_discussion: {
           __displayName: {
             en: 'Write for an Academic Discussion',
-            zh: '学术讨论写作',
+            'zh-cn': '学术讨论写作',
           },
           __questionContentSchema: EmptyObjectSchema,
           __items: {
             default: {
-              __displayName: { en: 'Default', zh: '默认题型' },
+              __displayName: { en: 'Default', 'zh-cn': '默认题型' },
               __questionContentSchema: z.object({
                 introduction: NonEmptyMdSchema.describe(
                   `${NonEmptyMdSchema.description}\nThe prompt main body, which includes scenario description and requirements.`,
@@ -338,10 +338,10 @@ export default defineExam({
       },
     },
     speaking: {
-      __displayName: { en: 'Speaking', zh: '口语' },
+      __displayName: { en: 'Speaking', 'zh-cn': '口语' },
       __tasks: {
         listen_and_repeat: {
-          __displayName: { en: 'Listen and Repeat', zh: '听句子复述' },
+          __displayName: { en: 'Listen and Repeat', 'zh-cn': '听句子复述' },
           __questionContentSchema: z.object({
             instruction: NarratedInstructionSchema,
             image: SimpleImageSchema.describe(
@@ -350,7 +350,7 @@ export default defineExam({
           }),
           __items: {
             default: {
-              __displayName: { en: 'Default', zh: '默认题型' },
+              __displayName: { en: 'Default', 'zh-cn': '默认题型' },
               __questionContentSchema: z.object({
                 instruction: NonEmptyStringSchema,
                 audio: TranscriptedAudioSchema,
@@ -363,7 +363,7 @@ export default defineExam({
           },
         },
         take_an_interview: {
-          __displayName: { en: 'Take an Interview', zh: '面试口语问答' },
+          __displayName: { en: 'Take an Interview', 'zh-cn': '面试口语问答' },
           __questionContentSchema: z.object({
             instruction: NarratedInstructionSchema,
             video: SilentNoddingVideoSchema.describe(
@@ -372,7 +372,7 @@ export default defineExam({
           }),
           __items: {
             default: {
-              __displayName: { en: 'Default', zh: '默认题型' },
+              __displayName: { en: 'Default', 'zh-cn': '默认题型' },
               __questionContentSchema: z.object({
                 instruction: NonEmptyStringSchema,
                 video: TranscriptedVideoSchema.describe(

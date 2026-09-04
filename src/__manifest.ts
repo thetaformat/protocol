@@ -8,12 +8,12 @@ import {
   SectionCodeSchema,
   TaskCodeSchema,
   TaskContentSchema,
-} from './exam';
+} from '.';
 import {
   OffsetDatetimeStrSchema,
   PaperWideSequenceSchema,
   TransDictSchema,
-} from './exam/__shared';
+} from './__shared';
 
 export const ManifestPaperSchema = z.object({
   id: z.uuid().describe('Canonical Paper ID'), // 🌟 试卷根节点纯 UUID

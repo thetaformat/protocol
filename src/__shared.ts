@@ -24,9 +24,9 @@ export type ResponseCode = z.infer<typeof ResponseCodeSchema>;
 
 /**
  * 多语种支持
- * 可选项包括：'en','zh','zh-hant','es','ar','fr','pt','ko','ja','hi','de','it','ru','id','vi','tr'
+ * 可选项包括：'en','zh-cn','zh-hant'?,'es','ar','fr','pt','ko','ja','hi','de','it','ru','id','vi','tr'
  */
-export const LangCodeSchema = z.enum(['en', 'zh']);
+export const LangCodeSchema = z.enum(['en', 'zh-cn']);
 
 export const IndexSchema = z
   .number()

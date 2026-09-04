@@ -168,7 +168,7 @@ const ListeningItems = {
    * @design /design/exam/ielts-academic-20230503-practice/listening_multiple_choice.png
    */
   multiple_choice: {
-    __displayName: { zh: '选择题', en: 'Multiple Choice' },
+    __displayName: { 'zh-cn': '选择题', en: 'Multiple Choice' },
     __questionContentSchema: z.object({
       stem: StemSchema,
       options: OptionsSchema,
@@ -180,7 +180,7 @@ const ListeningItems = {
    * @design /design/exam/ielts-academic-20230503-practice/listening_matching.png
    */
   matching: {
-    __displayName: { zh: '配对题', en: 'Matching' },
+    __displayName: { 'zh-cn': '配对题', en: 'Matching' },
     __questionContentSchema: z.object({
       prompt: NonEmptyStringSchema.describe(
         `${NonEmptyStringSchema.description}\nThe question item prompt immediately following the question number. e.g. "walking around the town centre", "helping at concerts" etc. Usually a phrase.`,
@@ -195,7 +195,7 @@ const ListeningItems = {
    */
   plan_or_map_or_diagram_labelling: {
     __displayName: {
-      zh: '地图/平面图/结构图标记题',
+      'zh-cn': '地图/平面图/结构图标记题',
       en: 'Plan/Map/Diagram Labelling',
     },
     __questionContentSchema: z.object({
@@ -211,7 +211,7 @@ const ListeningItems = {
    */
   form_completion_by_filling: {
     __displayName: {
-      zh: '表单填空题',
+      'zh-cn': '表单填空题',
       en: 'Form Completion by Filling',
     },
     __questionContentSchema: EmptyObjectSchema,
@@ -224,7 +224,7 @@ const ListeningItems = {
    */
   form_completion_by_selection: {
     __displayName: {
-      zh: '表单选择填空题',
+      'zh-cn': '表单选择填空题',
       en: 'Form Completion by Selection',
     },
     __questionContentSchema: PlaceholderObjectSchema,
@@ -237,7 +237,7 @@ const ListeningItems = {
    */
   note_completion_by_filling: {
     __displayName: {
-      zh: '笔记填空题',
+      'zh-cn': '笔记填空题',
       en: 'Note Completion by Filling',
     },
     __questionContentSchema: EmptyObjectSchema,
@@ -250,7 +250,7 @@ const ListeningItems = {
    */
   note_completion_by_selection: {
     __displayName: {
-      zh: '笔记选择填空题',
+      'zh-cn': '笔记选择填空题',
       en: 'Note Completion by Selection',
     },
     __questionContentSchema: PlaceholderObjectSchema,
@@ -263,7 +263,7 @@ const ListeningItems = {
    */
   table_completion_by_filling: {
     __displayName: {
-      zh: '表格填空题',
+      'zh-cn': '表格填空题',
       en: 'Table Completion by Filling',
     },
     __questionContentSchema: EmptyObjectSchema,
@@ -276,7 +276,7 @@ const ListeningItems = {
    */
   table_completion_by_selection: {
     __displayName: {
-      zh: '表格选择填空题',
+      'zh-cn': '表格选择填空题',
       en: 'Table Completion by Selection',
     },
     __questionContentSchema: PlaceholderObjectSchema,
@@ -288,7 +288,7 @@ const ListeningItems = {
    */
   flow_chart_completion_by_filling: {
     __displayName: {
-      zh: '流程图填空题',
+      'zh-cn': '流程图填空题',
       en: 'Flow Chart Completion by Filling',
     },
     __questionContentSchema: EmptyObjectSchema,
@@ -301,7 +301,7 @@ const ListeningItems = {
    */
   flow_chart_completion_by_selection: {
     __displayName: {
-      zh: '流程图选择填空题',
+      'zh-cn': '流程图选择填空题',
       en: 'Flow Chart Completion by Selection',
     },
     __questionContentSchema: EmptyObjectSchema,
@@ -313,7 +313,7 @@ const ListeningItems = {
    */
   summary_completion_by_filling: {
     __displayName: {
-      zh: '摘要填空题',
+      'zh-cn': '摘要填空题',
       en: 'Summary Completion by Filling',
     },
     __questionContentSchema: EmptyObjectSchema,
@@ -326,7 +326,7 @@ const ListeningItems = {
    */
   summary_completion_by_selection: {
     __displayName: {
-      zh: '摘要选择填空题',
+      'zh-cn': '摘要选择填空题',
       en: 'Summary Completion by Selection',
     },
     __questionContentSchema: PlaceholderObjectSchema,
@@ -338,7 +338,7 @@ const ListeningItems = {
    * @design /design/exam/ielts-academic-20230503-practice/listening_sentence_completion.png
    */
   sentence_completion: {
-    __displayName: { zh: '句子填空题', en: 'Sentence Completion' },
+    __displayName: { 'zh-cn': '句子填空题', en: 'Sentence Completion' },
     __questionContentSchema: z.object({
       sentence: NonEmptyStringSchema.describe(
         `${NonEmptyStringSchema.description}\n The sentence to complete. The blanks should be replaced by {{verbatimSequence}}. e.g. "23. Kira says that lecturers are easier to {{1}} than those in her {{2}}", "24. Paul suggests that Kira may be more {{1}} than when she was studying before."`,
@@ -352,7 +352,7 @@ const ListeningItems = {
    * @design /design/exam/ielts-academic-20230503-practice/listening_short_answer_questions.png
    */
   short_answer_questions: {
-    __displayName: { zh: '简答题', en: 'Short-Answer Questions' },
+    __displayName: { 'zh-cn': '简答题', en: 'Short-Answer Questions' },
     __questionContentSchema: z.object({
       question: NonEmptyStringSchema.describe(
         `${NonEmptyStringSchema.description}\n The question to be answered.`,
@@ -525,7 +525,7 @@ const ReadingItems = {
    * @design /design/exam/ielts-academic-20230503-practice/reading_multiple_choice.png
    */
   multiple_choice: {
-    __displayName: { zh: '选择题', en: 'Multiple Choice' },
+    __displayName: { 'zh-cn': '选择题', en: 'Multiple Choice' },
     __questionContentSchema: z.object({
       stem: StemSchema,
       options: OptionsSchema,
@@ -539,7 +539,7 @@ const ReadingItems = {
    */
   identifying_information: {
     __displayName: {
-      zh: '事实判断题 (T/F/NG)',
+      'zh-cn': '事实判断题 (T/F/NG)',
       en: 'Identifying Information (True/False/Not Given)',
     },
     __questionContentSchema: z.object({
@@ -555,7 +555,7 @@ const ReadingItems = {
    */
   identifying_writers_views_or_claims: {
     __displayName: {
-      zh: '观点判断题 (Y/N/NG)',
+      'zh-cn': '观点判断题 (Y/N/NG)',
       en: 'Identifying Writer’s Views/Claims (Yes/No/Not Given)',
     },
     __questionContentSchema: z.object({
@@ -570,7 +570,7 @@ const ReadingItems = {
    * @design /design/exam/ielts-academic-20230503-practice/reading_matching_information.png
    */
   matching_information: {
-    __displayName: { zh: '段落信息匹配题', en: 'Matching Information' },
+    __displayName: { 'zh-cn': '段落信息匹配题', en: 'Matching Information' },
     __questionContentSchema: z.object({
       information: NonEmptyStringSchema.describe(
         `${NonEmptyStringSchema.description}\nThe information to evaluate.`,
@@ -583,7 +583,7 @@ const ReadingItems = {
    * @design /design/exam/ielts-academic-20230503-practice/reading_matching_headings.png
    */
   matching_headings: {
-    __displayName: { zh: '段落小标题匹配题', en: 'Matching Headings' },
+    __displayName: { 'zh-cn': '段落小标题匹配题', en: 'Matching Headings' },
     __questionContentSchema: z.object({
       prompt: NonEmptyMdSchema.describe(
         `${NonEmptyMdSchema.description}\n e.g. "Paragraph **C**", "Paragraph **G**" etc.`,
@@ -597,7 +597,7 @@ const ReadingItems = {
    * @design /design/exam/ielts-academic-20230503-practice/reading_matching_features.png
    */
   matching_features: {
-    __displayName: { zh: '特征/人名匹配题', en: 'Matching Features' },
+    __displayName: { 'zh-cn': '特征/人名匹配题', en: 'Matching Features' },
     __questionContentSchema: z.object({
       prompt: NonEmptyStringSchema.describe(
         `${NonEmptyStringSchema.description}\nThe prompt, e.g. "to remove trees that are diseased" etc.`,
@@ -613,7 +613,7 @@ const ReadingItems = {
    * @design /design/exam/ielts-academic-20230503-practice/reading_matching_sentence_endings.png
    */
   matching_sentence_endings: {
-    __displayName: { zh: '句尾匹配题', en: 'Matching Sentence Endings' },
+    __displayName: { 'zh-cn': '句尾匹配题', en: 'Matching Sentence Endings' },
     __questionContentSchema: z.object({
       prompt: NonEmptyStringSchema.describe(
         `${NonEmptyStringSchema.description}\nThe prompt sentence stem to be added with an ending, e.g. "At times when they were relaxed, the firefighters usually" etc.`,
@@ -627,7 +627,7 @@ const ReadingItems = {
    * @design /design/exam/ielts-academic-20230503-practice/reading_sentence_completion.png
    */
   sentence_completion: {
-    __displayName: { zh: '完成句子题', en: 'Sentence Completion' },
+    __displayName: { 'zh-cn': '完成句子题', en: 'Sentence Completion' },
     __questionContentSchema: z.object({
       sentence: NonEmptyStringSchema.describe(
         `${NonEmptyStringSchema.description}\nThe sentence to complete. Replace blank with {{verbatimSequence}} placeholder. e.g. "A project in LA has increased the number of {{1}} on the city's streets." etc.`,
@@ -642,7 +642,7 @@ const ReadingItems = {
    */
   summary_completion_by_filling: {
     __displayName: {
-      zh: '摘要填空题',
+      'zh-cn': '摘要填空题',
       en: 'Summary Completion by Filling',
     },
     __questionContentSchema: EmptyObjectSchema,
@@ -655,7 +655,7 @@ const ReadingItems = {
    */
   summary_completion_by_selection: {
     __displayName: {
-      zh: '摘要选择填空题',
+      'zh-cn': '摘要选择填空题',
       en: 'Summary Completion by Selection',
     },
     __questionContentSchema: EmptyObjectSchema,
@@ -668,7 +668,7 @@ const ReadingItems = {
    */
   note_completion_by_filling: {
     __displayName: {
-      zh: '笔记填空题',
+      'zh-cn': '笔记填空题',
       en: 'Note Completion by Filling',
     },
     __questionContentSchema: EmptyObjectSchema,
@@ -681,7 +681,7 @@ const ReadingItems = {
    */
   note_completion_by_selection: {
     __displayName: {
-      zh: '笔记选择填空题',
+      'zh-cn': '笔记选择填空题',
       en: 'Note Completion by Selection',
     },
     __questionContentSchema: PlaceholderObjectSchema,
@@ -694,7 +694,7 @@ const ReadingItems = {
    */
   table_completion_by_filling: {
     __displayName: {
-      zh: '表格填空题',
+      'zh-cn': '表格填空题',
       en: 'Table Completion by Filling',
     },
     __questionContentSchema: EmptyObjectSchema,
@@ -707,7 +707,7 @@ const ReadingItems = {
    */
   table_completion_by_selection: {
     __displayName: {
-      zh: '表格选择填空题',
+      'zh-cn': '表格选择填空题',
       en: 'Table Completion by Selection',
     },
     __questionContentSchema: PlaceholderObjectSchema,
@@ -719,7 +719,7 @@ const ReadingItems = {
    */
   flow_chart_completion_by_filling: {
     __displayName: {
-      zh: '流程图填空题',
+      'zh-cn': '流程图填空题',
       en: 'Flow-Chart Completion by Filling',
     },
     __questionContentSchema: EmptyObjectSchema,
@@ -732,7 +732,7 @@ const ReadingItems = {
    */
   flow_chart_completion_by_selection: {
     __displayName: {
-      zh: '流程图选择填空题',
+      'zh-cn': '流程图选择填空题',
       en: 'Flow-Chart Completion by Selection',
     },
     __questionContentSchema: PlaceholderObjectSchema,
@@ -743,7 +743,10 @@ const ReadingItems = {
    * @design /design/exam/ielts-academic-20230503-practice/reading_diagram_label_completion.png
    */
   diagram_label_completion: {
-    __displayName: { zh: '示意图标注填空题', en: 'Diagram Label Completion' },
+    __displayName: {
+      'zh-cn': '示意图标注填空题',
+      en: 'Diagram Label Completion',
+    },
     __questionContentSchema: EmptyObjectSchema,
     __responseContentSchema: FillingArraySchema,
   },
@@ -752,7 +755,7 @@ const ReadingItems = {
    * @design /design/exam/ielts-academic-20230503-practice/reading_short_answer_questions.png
    */
   short_answer_questions: {
-    __displayName: { zh: '简答题', en: 'Short-Answer Questions' },
+    __displayName: { 'zh-cn': '简答题', en: 'Short-Answer Questions' },
     __questionContentSchema: z.object({
       question: NonEmptyStringSchema.describe(
         `${NonEmptyStringSchema.description}\n The question to be answered.`,
@@ -766,15 +769,15 @@ export default defineExam({
   code: 'ielts_academic_20230503',
   displayName: {
     en: 'IELTS Academic, Latest Version',
-    zh: '雅思 学术类 最新版',
+    'zh-cn': '雅思 学术类 最新版',
   },
   __sections: {
     listening: {
-      __displayName: { zh: '听力', en: 'Listening' },
+      __displayName: { 'zh-cn': '听力', en: 'Listening' },
       __tasks: {
         part1: {
           __displayName: {
-            zh: 'Part 1 日常生活对话',
+            'zh-cn': 'Part 1 日常生活对话',
             en: 'Part 1 Everyday Dialogue',
           },
           __questionContentSchema: z.object({
@@ -785,7 +788,7 @@ export default defineExam({
         },
         part2: {
           __displayName: {
-            zh: 'Part 2 日常社会独白',
+            'zh-cn': 'Part 2 日常社会独白',
             en: 'Part 2 Social Monologue',
           },
           __questionContentSchema: z.object({
@@ -796,7 +799,7 @@ export default defineExam({
         },
         part3: {
           __displayName: {
-            zh: 'Part 3 学术讨论对话',
+            'zh-cn': 'Part 3 学术讨论对话',
             en: 'Part 3 Academic Discussion',
           },
           __questionContentSchema: z.object({
@@ -807,7 +810,7 @@ export default defineExam({
         },
         part4: {
           __displayName: {
-            zh: 'Part 4 学术讲座独白',
+            'zh-cn': 'Part 4 学术讲座独白',
             en: 'Part 4 Academic Lecture',
           },
           __questionContentSchema: z.object({
@@ -820,11 +823,11 @@ export default defineExam({
     },
 
     reading: {
-      __displayName: { zh: '阅读', en: 'Reading' },
+      __displayName: { 'zh-cn': '阅读', en: 'Reading' },
       __tasks: {
         passage1: {
           __displayName: {
-            zh: 'Passage 1',
+            'zh-cn': 'Passage 1',
             en: 'Passage 1',
           },
           __questionContentSchema: z.object({
@@ -835,7 +838,7 @@ export default defineExam({
         },
         passage2: {
           __displayName: {
-            zh: 'Passage 2',
+            'zh-cn': 'Passage 2',
             en: 'Passage 2',
           },
           __questionContentSchema: z.object({
@@ -846,7 +849,7 @@ export default defineExam({
         },
         passage3: {
           __displayName: {
-            zh: 'Passage 3',
+            'zh-cn': 'Passage 3',
             en: 'Passage 3',
           },
           __questionContentSchema: z.object({
@@ -859,20 +862,20 @@ export default defineExam({
     },
 
     writing: {
-      __displayName: { zh: '写作', en: 'Writing' },
+      __displayName: { 'zh-cn': '写作', en: 'Writing' },
       __tasks: {
         /**
          * @design /design/exam/ielts-academic-20230503-practice/writing_task1_default.png
          */
         task1: {
           __displayName: {
-            zh: 'Task 1（小作文）',
+            'zh-cn': 'Task 1（小作文）',
             en: 'Academic Writing Task 1',
           },
           __questionContentSchema: EmptyObjectSchema,
           __items: {
             default: {
-              __displayName: { zh: '默认题型', en: 'Default' },
+              __displayName: { 'zh-cn': '默认题型', en: 'Default' },
               __questionContentSchema: z.object({
                 instruction: NonEmptyStringSchema.describe(
                   `${NonEmptyStringSchema.description}\ne.g. "You should spend about 20 minutes on this task."`,
@@ -893,13 +896,13 @@ export default defineExam({
          */
         task2: {
           __displayName: {
-            zh: 'Task 2（大作文）',
+            'zh-cn': 'Task 2（大作文）',
             en: 'Academic Writing Task 2',
           },
           __questionContentSchema: EmptyObjectSchema,
           __items: {
             default: {
-              __displayName: { zh: '默认题型', en: 'Default' },
+              __displayName: { 'zh-cn': '默认题型', en: 'Default' },
               __questionContentSchema: z.object({
                 instructionBeforePrompt: NonEmptyMdSchema.describe(
                   `${NonEmptyMdSchema.description}\ne.g. "You should spend about 40 minutes on this task.\n\nWrite about the following topic:"`,
@@ -919,14 +922,14 @@ export default defineExam({
     },
 
     speaking: {
-      __displayName: { zh: '口语', en: 'Speaking' },
+      __displayName: { 'zh-cn': '口语', en: 'Speaking' },
       __tasks: {
         /**
          * @design /design/exam/ielts-academic-20230503-practice/speaking_part1_default.png
          */
         part1: {
           __displayName: {
-            zh: 'Part 1（自我介绍与简短问答）',
+            'zh-cn': 'Part 1（自我介绍与简短问答）',
             en: 'Part 1 (Introduction and Interview)',
           },
           __questionContentSchema: z.object({
@@ -939,7 +942,7 @@ export default defineExam({
           }),
           __items: {
             default: {
-              __displayName: { zh: '默认题型', en: 'Default' },
+              __displayName: { 'zh-cn': '默认题型', en: 'Default' },
               __questionContentSchema: z.object({
                 prompt: NonEmptyStringSchema.describe(
                   `${NonEmptyStringSchema.description}\nA single question, e.g. "How much walking do you do in your daily life?",`,
@@ -953,11 +956,14 @@ export default defineExam({
          * @design /design/exam/ielts-academic-20230503-practice/speaking_part2_default.png
          */
         part2: {
-          __displayName: { zh: 'Part 2（个人独白）', en: 'Part 2 (Long Turn)' },
+          __displayName: {
+            'zh-cn': 'Part 2（个人独白）',
+            en: 'Part 2 (Long Turn)',
+          },
           __questionContentSchema: EmptyObjectSchema,
           __items: {
             default: {
-              __displayName: { zh: '默认题型', en: 'Default' },
+              __displayName: { 'zh-cn': '默认题型', en: 'Default' },
               __questionContentSchema: z.object({
                 prompt: NonEmptyMdSchema.describe(
                   `${NonEmptyMdSchema.description}\nCue Card 话题卡。用纯黑体和分段。`,
@@ -974,7 +980,10 @@ export default defineExam({
          * @design /design/exam/ielts-academic-20230503-practice/speaking_part3_default.png
          */
         part3: {
-          __displayName: { zh: 'Part 3（双向讨论）', en: 'Part 3 Discussion' },
+          __displayName: {
+            'zh-cn': 'Part 3（双向讨论）',
+            en: 'Part 3 Discussion',
+          },
           __questionContentSchema: z.object({
             partitions: BaseParitionSchema.extend({
               topic: NonEmptyStringSchema.describe(
@@ -986,7 +995,7 @@ export default defineExam({
           }),
           __items: {
             default: {
-              __displayName: { zh: '默认题型', en: 'Default' },
+              __displayName: { 'zh-cn': '默认题型', en: 'Default' },
               __questionContentSchema: z.object({
                 prompt: NonEmptyStringSchema.describe(
                   `${NonEmptyStringSchema.description}\nA single question, e.g. "Do you think theatres need to do more to attract younger audiences?",`,
