@@ -877,11 +877,14 @@ export default defineExam({
             default: {
               __displayName: { 'zh-cn': '默认题型', en: 'Default' },
               __questionContentSchema: z.object({
-                instruction: NonEmptyStringSchema.describe(
+                instructionBeforePrompt: NonEmptyStringSchema.describe(
                   `${NonEmptyStringSchema.description}\ne.g. "You should spend about 20 minutes on this task."`,
                 ),
                 prompt: NonEmptyMdSchema.describe(
                   `${NonEmptyMdSchema.description}\n\n问题描述，通常是黑体加斜体，且有分段。e.g. "***The first table show changes in the total population of New York City from 1800 to 2000. The second and their tables show...***\n\n***Summarise the information by selecting and reporting the main features, and make comparisons where relevant.***" etc.`,
+                ),
+                instructionAfterPrompt: NonEmptyStringSchema.describe(
+                  `${NonEmptyStringSchema.description}\ne.g. "Write at least 150 words."`,
                 ),
                 image: InformativeImageSchema.describe(
                   '整张图表（包括子图、对比图等）放到一个image来盛装。',
