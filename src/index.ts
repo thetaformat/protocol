@@ -2,6 +2,9 @@ import z from 'zod';
 
 import {
   type LangCode,
+  type ResponseCode,
+  type SegmentedParagraphs,
+  type Transcript,
   type TransDict,
   FileKeySchema,
   OffsetDatetimeStrSchema,
@@ -236,6 +239,21 @@ export function getItemContentSchema<V extends ItemCode>(
   );
 }
 
+/**
+ * 封装获取，对上层业务彻底屏蔽复杂获取逻辑
+ * 查询itemCode对应的responseCode
+ */
+export function getResponseCode(itemCode: ItemCode): ResponseCode {
+  const schema = ResponseContentSchema.options.find(
+    (opt) => opt.shape.itemCode.options[0] === itemCode,
+  );
+  const responseCode = schema?.shape.responseCode.options[0];
+  if (!responseCode) {
+    throw new Error(`Unable to find responseCode for itemCode: ${itemCode}`);
+  }
+  return responseCode;
+}
+
 export function getResponseContentSchema<V extends ItemCode>(
   itemCode: V,
 ): z.ZodType<Extract<ResponseContent, { itemCode: V }>> {
@@ -263,4 +281,96 @@ export function getDisplayName(
 ): string {
   // 强类型与 Schema 约束保障：code 必定存在，且其下的 lang 必定有值
   return globalDisplayNames[code][lang];
+}
+
+/**
+ * 下面是一些业务代码中可能会用到的常用工具函数
+ */
+
+// 提取特定 ExamCode 下所有的 SectionCode
+export type GetSectionCodeUnderExam<E extends ExamCode> = Extract<
+  SectionCode,
+  `${E}_${string}`
+>;
+
+// 提取特定 ExamCode 下所有的 TaskCode
+export type GetTaskCodeUnderExam<E extends ExamCode> = Extract<
+  TaskCode,
+  `${E}_${string}`
+>;
+
+// 提取特定 ExamCode 下所有的 ItemCode
+export type GetItemCodeUnderExam<E extends ExamCode> = Extract<
+  ItemCode,
+  `${E}_${string}`
+>;
+
+// 提取特定 SectionCode 下所有的 TaskCode
+export type GetTaskCodeUnderSection<S extends SectionCode> = Extract<
+  TaskCode,
+  `${S}_${string}`
+>;
+
+// 提取特定 SectionCode 下所有的 ItemCode
+export type GetItemCodeUnderSection<S extends SectionCode> = Extract<
+  ItemCode,
+  `${S}_${string}`
+>;
+
+// 提取特定 TaskCode 下所有的 ItemCode
+export type GetItemCodeUnderTask<T extends TaskCode> = Extract<
+  ItemCode,
+  `${T}_${string}`
+>;
+
+// 提取特定 ItemCode 所属的 TaskCode
+export type GetTaskCodeAboveItem<I extends ItemCode> = {
+  [T in TaskCode]: I extends GetItemCodeUnderTask<T> ? T : never;
+}[TaskCode];
+
+/**
+ * 高阶类型推导器：给定 TaskCode K，从全局联合类型中动态选取出对应的 TaskContent 结构
+ */
+export type InferTaskContent<K extends TaskCode> = Extract<
+  TaskContent,
+  { taskCode: K }
+>;
+
+/**
+ * 高阶类型推导器：给定 ItemCode K，从全局联合类型中动态选取出对应的 ItemContent 结构
+ */
+export type InferItemContent<K extends ItemCode> = Extract<
+  ItemContent,
+  { itemCode: K }
+>;
+
+/**
+ * 高阶类型推导器：给定 ItemCode K，从全局联合类型中动态选取出对应的 ResponseContent 结构
+ */
+export type InferResponseContent<K extends ItemCode> = Extract<
+  ResponseContent,
+  { itemCode: K }
+>;
+
+/**
+ * 辅助函数：根据树状 AST 节点完全反向还原原始段落文本
+ * 验证数学公式：SentenceString = sum(token.text + token.spaceAfter)
+ */
+export function reconstructParagraphs(
+  segmentedParagraphs: SegmentedParagraphs,
+): string[] {
+  return segmentedParagraphs.map((segmentedParagraph) =>
+    segmentedParagraph.sentences
+      .map((sentence) =>
+        sentence.tokens.map((token) => token.text + token.spaceAfter).join(''),
+      )
+      .join(''),
+  );
+}
+
+/**
+ * 从transcript数组提取transcript纯text版本
+ */
+export function getTranscriptText(transcript: Transcript): string {
+  return transcript.map((t) => t.sentenceText).join(' ');
 }
