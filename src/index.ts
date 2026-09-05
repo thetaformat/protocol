@@ -107,7 +107,7 @@ export const ManifestPaperSchema = z.object({
               code: ItemCodeSchema,
               sequence: PaperWideSequenceSchema,
               content: ItemContentSchema,
-              modelResponseContent: ResponseContentSchema,
+              referenceResponseContent: ResponseContentSchema,
             })
             .array(),
         })
