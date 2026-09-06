@@ -23,7 +23,7 @@ export const ExamCodeSchema = z.enum([
 ]);
 export type ExamCode = z.infer<typeof ExamCodeSchema>;
 
-export const examDefs = {
+export const examSpecs = {
   toefl_ibt_20260121,
   ielts_academic_20230503,
 } satisfies Record<ExamCode, any>;
@@ -265,7 +265,7 @@ export function getResponseContentSchema<V extends ItemCode>(
 }
 
 // 1. 在模块加载时，一次性扁平化聚合所有静态定义的 displayNames
-const globalDisplayNames = Object.values(examDefs).reduce(
+const globalDisplayNames = Object.values(examSpecs).reduce(
   (acc, exam) => {
     return Object.assign(acc, exam.displayNames);
   },
