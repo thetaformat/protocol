@@ -385,7 +385,9 @@ export const FillingRecordSchema = z.object({
  */
 export const WritingSchema = z.object({
   responseCode: z.enum([ResponseCodeSchema.enum.writing]),
-  text: MaybeEmptyStringSchema.describe('主观长文本/作文/简答回答内容数组。'),
+  text: MaybeEmptyStringSchema.describe(
+    '主观长文本/作文/简答回答内容。如果是作文，需要分段，使用`\n\n`这种分段符',
+  ),
 });
 
 /**
