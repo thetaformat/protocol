@@ -142,16 +142,8 @@ export const SimpleAudioSchema = z.object({
   fileSizeInBytes: PosIntSchema,
 });
 
-/**
- * inputImage and inputAudio are temporary variables in AI video generation.
- * They should be deleted after video generation.
- * Or they should not be present at all if video fileKey is provided directly.
- * Not support inputText as video-gen source, as it is unlikely in real case.
- */
 export const SimpleVideoSchema = SimpleAudioSchema.extend({
   formatCode: z.enum(['simple_video']),
-  inputImage: z.object({ fileKey: FileKeySchema }).optional(),
-  inputAudio: z.object({ fileKey: FileKeySchema }).optional(),
 });
 
 export const TranscriptSchema = z
@@ -184,7 +176,6 @@ export const TranscriptedVideoSchema = SimpleVideoSchema.extend({
 
 export const SilentNoddingVideoSchema = SimpleAudioSchema.extend({
   formatCode: z.enum(['silent_nodding_video']),
-  inputImage: z.object({ fileKey: FileKeySchema }).optional(),
 });
 
 export const TitleSchema = z.object({

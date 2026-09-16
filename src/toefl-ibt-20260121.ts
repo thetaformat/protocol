@@ -32,34 +32,27 @@ export default defineExam({
       __tasks: {
         complete_the_words: {
           __displayName: { en: 'Complete the Words', 'zh-cn': '完形填空' },
-          __questionContentSchema: EmptyObjectSchema,
+          __questionContentSchema: z.object({
+            instruction: NonEmptyStringSchema,
+            text: SimplePassageSchema.describe(
+              `${SimplePassageSchema.description}` +
+                `完整段落文本。挖空处用占位符表示。站位id必须为seqId：${SeqIdSchema.description}` +
+                '例如："We might think th{{1}} preh{{2}}toric peo{{3}} concentrated on{{4}} on ba{{5}} survi{{6}}."',
+            ),
+          }),
           __items: {
             default: {
               __displayName: { en: 'Default', 'zh-cn': '默认题型' },
               __questionContentSchema: z.object({
-                instruction: NonEmptyStringSchema,
-                text: SimplePassageSchema.describe(
-                  `${SimplePassageSchema.description}` +
-                    `完整段落文本。挖空处用占位符表示。站位id必须为：${SeqIdSchema.description}` +
-                    '例如："We might think th{{1}} preh{{2}}toric peo{{3}} concentrated on{{4}} on ba{{5}} survi{{6}}."',
+                seqId: SeqIdSchema.describe(
+                  '该题占位符ID，与 textTemplate 中的占位符对应',
                 ),
-                targets: z
-                  .record(
-                    SeqIdSchema.describe(
-                      '所有占位符ID，与 textTemplate 中的占位符对应',
-                    ),
-                    z.object({
-                      fullWord: NonEmptyStringSchema.describe(
-                        '该空位对应的完整单词（例如 "prehistoric"）。',
-                      ),
-                      gapLength: PosIntSchema.describe(
-                        '该空位缺失的字符数量。极其重要：前端需要根据这个数字渲染出正确宽度（或对应数量）的灰色输入框。',
-                      ),
-                    }),
-                  )
-                  .describe(
-                    '整篇文本所有空算作一个题目（item），具体而言是testlet型item。',
-                  ),
+                fullWord: NonEmptyStringSchema.describe(
+                  '该空位对应的完整单词（例如 "prehistoric"）。',
+                ),
+                gapLength: PosIntSchema.describe(
+                  '该空位缺失的字符数量。极其重要：前端需要根据这个数字渲染出正确宽度（或对应数量）的灰色输入框。',
+                ),
               }),
               __responseContentSchema: FillingRecordSchema,
             },
@@ -137,7 +130,11 @@ export default defineExam({
                 audio: TranscriptedAudioSchema,
                 illustration: SimpleImageSchema.describe(
                   'Illustration of the item.',
-                ),
+                )
+                  .nullable()
+                  .describe(
+                    '如果显式提供了图像，则必须记录；若卷面无图像则为 null',
+                  ),
                 options: OptionsSchema,
               }),
               __responseContentSchema: SelectionArraySchema,
@@ -154,7 +151,11 @@ export default defineExam({
             audio: TranscriptedAudioSchema,
             illustration: SimpleImageSchema.describe(
               'The illustration for the conversation.',
-            ),
+            )
+              .nullable()
+              .describe(
+                '如果显式提供了图像，则必须记录；若卷面无图像则为 null',
+              ),
           }),
           __items: {
             default: {
@@ -177,7 +178,11 @@ export default defineExam({
             audio: TranscriptedAudioSchema,
             illustration: SimpleImageSchema.describe(
               'The illustration of the academic talk.',
-            ),
+            )
+              .nullable()
+              .describe(
+                '如果显式提供了图像，则必须记录；若卷面无图像则为 null',
+              ),
           }),
           __items: {
             default: {
@@ -200,7 +205,11 @@ export default defineExam({
             audio: TranscriptedAudioSchema,
             illustration: SimpleImageSchema.describe(
               'The illustration of the Announcement.',
-            ),
+            )
+              .nullable()
+              .describe(
+                '如果显式提供了图像，则必须记录；若卷面无图像则为 null',
+              ),
           }),
           __items: {
             default: {
@@ -232,17 +241,21 @@ export default defineExam({
                 speaker1: z
                   .object({
                     name: NonEmptyStringSchema.describe(
-                      '发言人 A 的名字（如 Kelly）',
+                      '发言人 A 的名字（如 Kelly），如未提供，默认 Speaker1',
                     ),
-                    avatar: SimpleImageSchema,
+                    avatar: SimpleImageSchema.nullable().describe(
+                      '如果显式提供了头像，则必须记录；若卷面无头像则为 null',
+                    ),
                   })
                   .describe('发言人 A 的元信息'),
                 speaker2: z
                   .object({
                     name: NonEmptyStringSchema.describe(
-                      '发言人 B 的名字（如 Andrew）',
+                      '发言人 B 的名字（如 Andrew），如未提供，默认 Speaker2',
                     ),
-                    avatar: SimpleImageSchema,
+                    avatar: SimpleImageSchema.nullable().describe(
+                      '如果显式提供了头像，则必须记录；若卷面无头像则为 null',
+                    ),
                   })
                   .describe('发言人 B 的元信息'),
                 options: OptionsSchema.describe(
@@ -307,7 +320,9 @@ export default defineExam({
                   name: NonEmptyStringSchema.describe(
                     '教授的名字（如 Dr. Gupta）',
                   ),
-                  avatar: SimpleImageSchema,
+                  avatar: SimpleImageSchema.nullable().describe(
+                    '如果显式提供了头像，则必须记录；若卷面无头像则为 null',
+                  ),
                   content: NonEmptyStringSchema.describe(
                     '教授发表的讨论引导语/问题',
                   ),
@@ -316,7 +331,9 @@ export default defineExam({
                   name: NonEmptyStringSchema.describe(
                     '学生甲的名字（如 Kelly）',
                   ),
-                  avatar: SimpleImageSchema,
+                  avatar: SimpleImageSchema.nullable().describe(
+                    '如果显式提供了头像，则必须记录；若卷面无头像则为 null',
+                  ),
                   content: NonEmptyStringSchema.describe(
                     '学生甲发表的观点文本',
                   ),
@@ -325,7 +342,9 @@ export default defineExam({
                   name: NonEmptyStringSchema.describe(
                     '学生乙的名字（如 Andrew）',
                   ),
-                  avatar: SimpleImageSchema,
+                  avatar: SimpleImageSchema.nullable().describe(
+                    '如果显式提供了头像，则必须记录；若卷面无头像则为 null',
+                  ),
                   content: NonEmptyStringSchema.describe(
                     '学生乙发表的观点文本',
                   ),
@@ -346,7 +365,11 @@ export default defineExam({
             instruction: NarratedInstructionSchema,
             image: SimpleImageSchema.describe(
               'Illustration without any highlighted area. (unlike later illustration for each item, which has highlighted area.)',
-            ),
+            )
+              .nullable()
+              .describe(
+                '如果显式提供了图像，则必须记录；若卷面无图像则为 null',
+              ),
           }),
           __items: {
             default: {
@@ -356,7 +379,11 @@ export default defineExam({
                 audio: TranscriptedAudioSchema,
                 image: SimpleImageSchema.describe(
                   'Illustration for the item. With highlighted area.',
-                ),
+                )
+                  .nullable()
+                  .describe(
+                    '如果显式提供了图像，则必须记录；若卷面无图像则为 null',
+                  ),
               }),
               __responseContentSchema: SpeakingSchema,
             },
@@ -365,18 +392,25 @@ export default defineExam({
         take_an_interview: {
           __displayName: { en: 'Take an Interview', 'zh-cn': '面试口语问答' },
           __questionContentSchema: z.object({
-            instruction: NarratedInstructionSchema,
-            video: SilentNoddingVideoSchema.describe(
-              'Silent video of the examiner nodding played during user responding for each item',
+            instruction: NarratedInstructionSchema.describe(
+              '面试场景总说明，对应卷面开头背景（如 "You have volunteered for a research study..."）',
+            ),
+            video: SilentNoddingVideoSchema.nullable().describe(
+              'Silent video of the examiner nodding played during user responding for each item. 原材料是纯文本时，本字段为 null',
             ),
           }),
           __items: {
             default: {
               __displayName: { en: 'Default', 'zh-cn': '默认题型' },
               __questionContentSchema: z.object({
-                instruction: NonEmptyStringSchema,
-                video: TranscriptedVideoSchema.describe(
-                  'Question prompt video',
+                instruction: NonEmptyStringSchema.describe(
+                  `答题操作指导语，如 "Please answer the interviewer's question."。若卷面未提供单独小题指令，请固定填入 "Please answer the interviewer's question."`,
+                ),
+                video: TranscriptedVideoSchema.nullable().describe(
+                  'Question prompt video. 原材料是纯文本时，本字段为 null',
+                ),
+                promptText: NonEmptyStringSchema.nullable().describe(
+                  '考官提问的具体文本（如 "Thank you for participating in this study..."）。原材料是图片/视频+文本时，本字段为 null',
                 ),
               }),
               __responseContentSchema: SpeakingSchema,
