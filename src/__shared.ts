@@ -14,12 +14,10 @@ export type SimpleVideo = z.infer<typeof SimpleVideoSchema>;
 export type Transcript = z.infer<typeof TranscriptSchema>;
 export type TranscriptedAudio = z.infer<typeof TranscriptedAudioSchema>;
 export type TranscriptedVideo = z.infer<typeof TranscriptedVideoSchema>;
-export type SilentNoddingVideo = z.infer<typeof SilentNoddingVideoSchema>;
 export type Token = z.infer<typeof TokenSchema>;
 export type SegmentedSentence = z.infer<typeof SegmentedSentenceSchema>;
 export type SegmentedParagraphs = z.infer<typeof SegmentedParagraphsSchema>;
 export type SegmentedPassage = z.infer<typeof SegmentedPassageSchema>;
-export type NarratedInstruction = z.infer<typeof NarratedInstructionSchema>;
 export type ResponseCode = z.infer<typeof ResponseCodeSchema>;
 
 /**
@@ -174,10 +172,6 @@ export const TranscriptedVideoSchema = SimpleVideoSchema.extend({
   transcript: TranscriptSchema,
 });
 
-export const SilentNoddingVideoSchema = SimpleAudioSchema.extend({
-  formatCode: z.enum(['silent_nodding_video']),
-});
-
 export const TitleSchema = z.object({
   title: NonEmptyStringSchema.optional().describe(
     'Title is optional unless explicitly provided.',
@@ -229,14 +223,6 @@ export const SegmentedParagraphsSchema = z
 
 export const SegmentedPassageSchema = TitleSchema.extend({
   paragraphs: SegmentedParagraphsSchema,
-});
-
-export const NarratedInstructionSchema = z.object({
-  formatCode: z.enum(['narrated_instruction']),
-  text: NonEmptyMdSchema,
-  audio: z
-    .object({ fileKey: FileKeySchema })
-    .describe('Audio narration of the text. Generated from AI TTS.'),
 });
 
 export const StemSchema = NonEmptyMdSchema.describe(

@@ -5,7 +5,6 @@ import {
   EmptyObjectSchema,
   FillingRecordSchema,
   InformativeImageSchema,
-  NarratedInstructionSchema,
   NonEmptyMdSchema,
   NonEmptyStringSchema,
   OptionsSchema,
@@ -13,7 +12,7 @@ import {
   SelectionArraySchema,
   SelectionRecordSchema,
   SeqIdSchema,
-  SilentNoddingVideoSchema,
+  SimpleAudioSchema,
   SimpleImageSchema,
   SimplePassageSchema,
   SpeakingSchema,
@@ -147,7 +146,10 @@ export default defineExam({
             'zh-cn': '对话听力',
           },
           __questionContentSchema: z.object({
-            instruction: NarratedInstructionSchema,
+            instruction: NonEmptyMdSchema,
+            instructionAudio: SimpleAudioSchema.nullable().describe(
+              '如果显式提供了音频，则必须记录；若未提供则为 null',
+            ),
             audio: TranscriptedAudioSchema,
             illustration: SimpleImageSchema.describe(
               'The illustration for the conversation.',
@@ -174,7 +176,10 @@ export default defineExam({
             'zh-cn': '学术听力',
           },
           __questionContentSchema: z.object({
-            instruction: NarratedInstructionSchema,
+            instruction: NonEmptyStringSchema,
+            instructionAudio: SimpleAudioSchema.nullable().describe(
+              '如果显式提供了音频，则必须记录；若未提供则为 null',
+            ),
             audio: TranscriptedAudioSchema,
             illustration: SimpleImageSchema.describe(
               'The illustration of the academic talk.',
@@ -201,7 +206,10 @@ export default defineExam({
             'zh-cn': '公告听力',
           },
           __questionContentSchema: z.object({
-            instruction: NarratedInstructionSchema,
+            instruction: NonEmptyStringSchema,
+            instructionAudio: SimpleAudioSchema.nullable().describe(
+              '如果显式提供了音频，则必须记录；若未提供则为 null',
+            ),
             audio: TranscriptedAudioSchema,
             illustration: SimpleImageSchema.describe(
               'The illustration of the Announcement.',
@@ -362,7 +370,10 @@ export default defineExam({
         listen_and_repeat: {
           __displayName: { en: 'Listen and Repeat', 'zh-cn': '听句子复述' },
           __questionContentSchema: z.object({
-            instruction: NarratedInstructionSchema,
+            instruction: NonEmptyStringSchema,
+            instructionAudio: SimpleAudioSchema.nullable().describe(
+              '如果显式提供了音频，则必须记录；若未提供则为 null',
+            ),
             image: SimpleImageSchema.describe(
               'Illustration without any highlighted area. (unlike later illustration for each item, which has highlighted area.)',
             )
@@ -392,11 +403,14 @@ export default defineExam({
         take_an_interview: {
           __displayName: { en: 'Take an Interview', 'zh-cn': '面试口语问答' },
           __questionContentSchema: z.object({
-            instruction: NarratedInstructionSchema.describe(
+            instruction: NonEmptyStringSchema.describe(
               '面试场景总说明，对应卷面开头背景（如 "You have volunteered for a research study..."）',
             ),
-            video: SilentNoddingVideoSchema.nullable().describe(
-              'Silent video of the examiner nodding played during user responding for each item. 原材料是纯文本时，本字段为 null',
+            instructionAudio: SimpleAudioSchema.nullable().describe(
+              '如果显式提供了音频，则必须记录；若未提供则为 null',
+            ),
+            image: SimpleImageSchema.nullable().describe(
+              '如果卷面上提供了面试官静态图片，则必须记录，否则为 null',
             ),
           }),
           __items: {
@@ -404,13 +418,17 @@ export default defineExam({
               __displayName: { en: 'Default', 'zh-cn': '默认题型' },
               __questionContentSchema: z.object({
                 instruction: NonEmptyStringSchema.describe(
-                  `答题操作指导语，如 "Please answer the interviewer's question."。若卷面未提供单独小题指令，请固定填入 "Please answer the interviewer's question."`,
+                  `答题操作指导语，如 "Please answer the interviewer's question."`,
+                ),
+                text: NonEmptyStringSchema.describe('Question prompt text.'),
+                image: SimpleImageSchema.nullable().describe(
+                  '如果卷面上提供了面试官静态图片，则必须记录，否则为 null',
+                ),
+                audio: TranscriptedAudioSchema.nullable().describe(
+                  'Question prompt audio. 如果显式提供了音频，则必须记录；若未提供则为 null',
                 ),
                 video: TranscriptedVideoSchema.nullable().describe(
-                  'Question prompt video. 原材料是纯文本时，本字段为 null',
-                ),
-                promptText: NonEmptyStringSchema.nullable().describe(
-                  '考官提问的具体文本（如 "Thank you for participating in this study..."）。原材料是图片/视频+文本时，本字段为 null',
+                  'Question prompt video. 如果显式提供了视频，则必须记录；若未提供则为 null',
                 ),
               }),
               __responseContentSchema: SpeakingSchema,
