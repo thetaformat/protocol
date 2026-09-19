@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { defineExam } from './__definer';
 import {
   EmptyObjectSchema,
-  FillingRecordSchema,
+  FillingArraySchema,
   InformativeImageSchema,
   NonEmptyMdSchema,
   NonEmptyStringSchema,
@@ -53,7 +53,7 @@ export default defineExam({
                   '该空位缺失的字符数量。极其重要：前端需要根据这个数字渲染出正确宽度（或对应数量）的灰色输入框。',
                 ),
               }),
-              __responseContentSchema: FillingRecordSchema,
+              __responseContentSchema: FillingArraySchema,
             },
           },
         },
@@ -64,7 +64,7 @@ export default defineExam({
           },
           __questionContentSchema: z.object({
             passage: SimplePassageSchema.describe(
-              "高亮规范：如果段落内有需要配合题目高亮的单词或句子，必须使用包裹型标签，例如：'This is a <mark id='id'>highlighted word</mark>.'",
+              "高亮规范：如果段落内有需要配合题目高亮的单词或句子，必须使用包裹型标签，例如：'This is a <mark id='seqId'>highlighted word</mark>.'",
             ),
           }),
           __items: {

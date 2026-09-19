@@ -182,7 +182,7 @@ export const TitleSchema = z.object({
 });
 
 export const SimpleParagraphsSchema = z
-  .object({ id: LabelIdSchema, text: NonEmptyStringSchema })
+  .object({ id: LabelIdSchema, text: NonEmptyMdSchema })
   .array()
   .describe('The full text paragraph by paragraph.');
 
