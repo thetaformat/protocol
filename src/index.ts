@@ -323,6 +323,78 @@ export type GetItemCodeUnderTask<T extends TaskCode> = Extract<
   `${T}_${string}`
 >;
 
+/**
+ * 提取特定 ExamCode 下所有的 SectionCode
+ */
+export function getSectionCodesUnderExam<E extends ExamCode>(
+  examCode: E,
+): GetSectionCodeUnderExam<E>[] {
+  const prefix = `${examCode}_`;
+  return SectionCodeSchema.options.filter(
+    (code): code is GetSectionCodeUnderExam<E> => code.startsWith(prefix),
+  );
+}
+
+/**
+ * 提取特定 ExamCode 下所有的 TaskCode
+ */
+export function getTaskCodesUnderExam<E extends ExamCode>(
+  examCode: E,
+): GetTaskCodeUnderExam<E>[] {
+  const prefix = `${examCode}_`;
+  return TaskCodeSchema.options.filter(
+    (code): code is GetTaskCodeUnderExam<E> => code.startsWith(prefix),
+  );
+}
+
+/**
+ * 提取特定 ExamCode 下所有的 ItemCode
+ */
+export function getItemCodesUnderExam<E extends ExamCode>(
+  examCode: E,
+): GetItemCodeUnderExam<E>[] {
+  const prefix = `${examCode}_`;
+  return ItemCodeSchema.options.filter(
+    (code): code is GetItemCodeUnderExam<E> => code.startsWith(prefix),
+  );
+}
+
+/**
+ * 提取特定 SectionCode 下所有的 TaskCode
+ */
+export function getTaskCodesUnderSection<S extends SectionCode>(
+  sectionCode: S,
+): GetTaskCodeUnderSection<S>[] {
+  const prefix = `${sectionCode}_`;
+  return TaskCodeSchema.options.filter(
+    (code): code is GetTaskCodeUnderSection<S> => code.startsWith(prefix),
+  );
+}
+
+/**
+ * 提取特定 SectionCode 下所有的 ItemCode
+ */
+export function getItemCodesUnderSection<S extends SectionCode>(
+  sectionCode: S,
+): GetItemCodeUnderSection<S>[] {
+  const prefix = `${sectionCode}_`;
+  return ItemCodeSchema.options.filter(
+    (code): code is GetItemCodeUnderSection<S> => code.startsWith(prefix),
+  );
+}
+
+/**
+ * 提取特定 TaskCode 下所有的 ItemCode
+ */
+export function getItemCodesUnderTask<T extends TaskCode>(
+  taskCode: T,
+): GetItemCodeUnderTask<T>[] {
+  const prefix = `${taskCode}_`;
+  return ItemCodeSchema.options.filter(
+    (code): code is GetItemCodeUnderTask<T> => code.startsWith(prefix),
+  );
+}
+
 // 提取特定 ItemCode 所属的 TaskCode
 export type GetTaskCodeAboveItem<I extends ItemCode> = {
   [T in TaskCode]: I extends GetItemCodeUnderTask<T> ? T : never;
