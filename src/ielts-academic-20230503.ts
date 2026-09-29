@@ -777,8 +777,8 @@ export default defineExam({
       __tasks: {
         part1: {
           __displayName: {
-            'zh-cn': 'Part 1 日常生活对话',
-            en: 'Part 1 Everyday Dialogue',
+            'zh-cn': 'Part 1',
+            en: 'Part 1',
           },
           __questionContentSchema: z.object({
             partitions: ListeningParitionsSchema,
@@ -788,8 +788,8 @@ export default defineExam({
         },
         part2: {
           __displayName: {
-            'zh-cn': 'Part 2 日常社会独白',
-            en: 'Part 2 Social Monologue',
+            'zh-cn': 'Part 2',
+            en: 'Part 2',
           },
           __questionContentSchema: z.object({
             partitions: ListeningParitionsSchema,
@@ -799,8 +799,8 @@ export default defineExam({
         },
         part3: {
           __displayName: {
-            'zh-cn': 'Part 3 学术讨论对话',
-            en: 'Part 3 Academic Discussion',
+            'zh-cn': 'Part 3',
+            en: 'Part 3',
           },
           __questionContentSchema: z.object({
             partitions: ListeningParitionsSchema,
@@ -810,8 +810,8 @@ export default defineExam({
         },
         part4: {
           __displayName: {
-            'zh-cn': 'Part 4 学术讲座独白',
-            en: 'Part 4 Academic Lecture',
+            'zh-cn': 'Part 4',
+            en: 'Part 4',
           },
           __questionContentSchema: z.object({
             partitions: ListeningParitionsSchema,
@@ -869,8 +869,8 @@ export default defineExam({
          */
         task1: {
           __displayName: {
-            'zh-cn': 'Task 1（小作文）',
-            en: 'Academic Writing Task 1',
+            'zh-cn': 'Task 1',
+            en: 'Task 1',
           },
           __questionContentSchema: EmptyObjectSchema,
           __items: {
@@ -899,8 +899,8 @@ export default defineExam({
          */
         task2: {
           __displayName: {
-            'zh-cn': 'Task 2（大作文）',
-            en: 'Academic Writing Task 2',
+            'zh-cn': 'Task 2',
+            en: 'Task 2',
           },
           __questionContentSchema: EmptyObjectSchema,
           __items: {
@@ -932,8 +932,8 @@ export default defineExam({
          */
         part1: {
           __displayName: {
-            'zh-cn': 'Part 1（自我介绍与简短问答）',
-            en: 'Part 1 (Introduction and Interview)',
+            'zh-cn': 'Part 1',
+            en: 'Part 1',
           },
           __questionContentSchema: z.object({
             instruction: NonEmptyStringSchema.describe(
@@ -960,8 +960,8 @@ export default defineExam({
          */
         part2: {
           __displayName: {
-            'zh-cn': 'Part 2（个人独白）',
-            en: 'Part 2 (Long Turn)',
+            'zh-cn': 'Part 2',
+            en: 'Part 2',
           },
           __questionContentSchema: EmptyObjectSchema,
           __items: {
@@ -984,8 +984,8 @@ export default defineExam({
          */
         part3: {
           __displayName: {
-            'zh-cn': 'Part 3（双向讨论）',
-            en: 'Part 3 Discussion',
+            'zh-cn': 'Part 3',
+            en: 'Part 3',
           },
           __questionContentSchema: z.object({
             partitions: BaseParitionSchema.extend({
