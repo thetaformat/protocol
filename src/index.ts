@@ -16,6 +16,7 @@ import ielts_academic_20230503 from './ielts-academic-20230503';
 import toefl_ibt_20260121 from './toefl-ibt-20260121';
 
 export * from './__shared';
+export * from './traits';
 
 export const ExamCodeSchema = z.enum([
   ...toefl_ibt_20260121.ExamCodeSchema.options,
