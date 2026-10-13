@@ -1,7 +1,7 @@
 import {
   getItemCodesUnderTask,
-  ItemCodeSchema,
   getResponseCode,
+  ItemCodeSchema,
   TaskCodeSchema,
   type ItemCode,
   type ResponseCode,
@@ -13,7 +13,12 @@ import {
 // ==========================================================
 
 /** 维度 1: 学科/考查领域 (Domain) */
-export type ItemDomain = 'reading' | 'listening' | 'writing' | 'speaking' | 'general';
+export type ItemDomain =
+  | 'reading'
+  | 'listening'
+  | 'writing'
+  | 'speaking'
+  | 'general';
 
 /** 维度 2: 判分裁决范式 (Scoring Paradigm) */
 export type ItemScoringParadigm = 'objective' | 'subjective';
@@ -27,9 +32,9 @@ export type InputDevice = 'pointer' | 'keyboard' | 'microphone' | 'camera';
  */
 export type ItemCapability =
   | 'requires_audio_playback' // 题干是否包含音频听力播放
-  | 'requires_recording'      // 作答是否需要录制音频/视频
-  | 'supports_ai_rubric'      // 是否支持/需要大模型 Rubric 深度评分
-  | 'supports_auto_cloze';    // 是否为完形/占位符挖空交互
+  | 'requires_recording' // 作答是否需要录制音频/视频
+  | 'supports_ai_rubric' // 是否支持/需要大模型 Rubric 深度评分
+  | 'supports_auto_cloze'; // 是否为完形/占位符挖空交互
 
 // ==========================================================
 // 2. 特征契约 (Traits Contracts)
@@ -232,21 +237,29 @@ export function getTaskTraits(taskCode: TaskCode): TaskTraits {
 }
 
 // Item 语义断言
-export const isSubjectiveItem = (code: ItemCode) => getItemTraits(code).isSubjective;
-export const isObjectiveItem = (code: ItemCode) => getItemTraits(code).isObjective;
-export const isSpeakingItem = (code: ItemCode) => getItemTraits(code).isSpeaking;
+export const isSubjectiveItem = (code: ItemCode) =>
+  getItemTraits(code).isSubjective;
+export const isObjectiveItem = (code: ItemCode) =>
+  getItemTraits(code).isObjective;
+export const isSpeakingItem = (code: ItemCode) =>
+  getItemTraits(code).isSpeaking;
 export const isWritingItem = (code: ItemCode) => getItemTraits(code).isWriting;
 export const hasItemCapability = (code: ItemCode, cap: ItemCapability) =>
   getItemTraits(code).capabilities.has(cap);
 
 // Task 语义断言
-export const isSubjectiveTask = (code: TaskCode) => getTaskTraits(code).isSubjective;
-export const isPureObjectiveTask = (code: TaskCode) => getTaskTraits(code).isPureObjective;
-export const isSpeakingTask = (code: TaskCode) => getTaskTraits(code).isSpeaking;
+export const isSubjectiveTask = (code: TaskCode) =>
+  getTaskTraits(code).isSubjective;
+export const isPureObjectiveTask = (code: TaskCode) =>
+  getTaskTraits(code).isPureObjective;
+export const isSpeakingTask = (code: TaskCode) =>
+  getTaskTraits(code).isSpeaking;
 export const isWritingTask = (code: TaskCode) => getTaskTraits(code).isWriting;
 export const hasTaskCapability = (code: TaskCode, cap: ItemCapability) =>
   getTaskTraits(code).capabilities.has(cap);
 
 // 核心大盘集合
-export const getSubjectiveItemCodes = () => ItemCodeSchema.options.filter(isSubjectiveItem);
-export const getSubjectiveTaskCodes = () => TaskCodeSchema.options.filter(isSubjectiveTask);
+export const getSubjectiveItemCodes = () =>
+  ItemCodeSchema.options.filter(isSubjectiveItem);
+export const getSubjectiveTaskCodes = () =>
+  TaskCodeSchema.options.filter(isSubjectiveTask);
