@@ -1,225 +1,252 @@
 import {
+  getItemCodesUnderTask,
   ItemCodeSchema,
   getResponseCode,
+  TaskCodeSchema,
   type ItemCode,
   type ResponseCode,
+  type TaskCode,
 } from './index';
 
 // ==========================================================
-// 1. 类型定义
+// 1. 正交原子维度定义 (Orthogonal Dimensions)
 // ==========================================================
 
-/**
- * 考查的核心模态
- */
-export type ItemModality = 'speaking' | 'writing' | 'filming' | 'objective';
+/** 维度 1: 学科/考查领域 (Domain) */
+export type ItemDomain = 'reading' | 'listening' | 'writing' | 'speaking' | 'general';
+
+/** 维度 2: 判分裁决范式 (Scoring Paradigm) */
+export type ItemScoringParadigm = 'objective' | 'subjective';
+
+/** 维度 3: 硬件输入设备要求 (Device Requirement) */
+export type InputDevice = 'pointer' | 'keyboard' | 'microphone' | 'camera';
 
 /**
- * 全量枚举标签体系
- * 供 hasItemTag() 或按 tag 筛选时统一使用
+ * 维度 4: 针对“未来意想不到判定”的开放能力集 (Capabilities)
+ * 未来只要在此追加字面量，便可无缝支持任意业务判定！
  */
-export type ItemTag =
-  | 'speaking' // 口语录音
-  | 'writing' // 写作文本
-  | 'filming' // 视频录像
-  | 'subjective' // 主观题 (无唯一标准答案，需大模型或人工评阅)
-  | 'objective' // 客观题 (有严格标答，系统可自动对错判分)
-  | 'audio_input' // 需音频录制输入
-  | 'video_input' // 需视频拍摄输入
-  | 'text_input' // 需打字/自由文本输入 (写作、自由填空等)
-  | 'selection_input' // 需点选/拖拽类交互 (单选、多选、匹配、排序)
-  | 'ai_rubric_grading'; // 需大模型基于多维度评分量规 (Rubric) 进行深度诊断
+export type ItemCapability =
+  | 'requires_audio_playback' // 题干是否包含音频听力播放
+  | 'requires_recording'      // 作答是否需要录制音频/视频
+  | 'supports_ai_rubric'      // 是否支持/需要大模型 Rubric 深度评分
+  | 'supports_auto_cloze';    // 是否为完形/占位符挖空交互
 
-/**
- * 题目特征完整元数据契约 (Single Source of Truth)
- */
+// ==========================================================
+// 2. 特征契约 (Traits Contracts)
+// ==========================================================
+
 export interface ItemTraits {
-  /** 题目唯一代码 */
   readonly itemCode: ItemCode;
-  /** 对应的底层作答类型 */
   readonly responseCode: ResponseCode;
-  /** 考查模态 (口语 / 写作 / 视频 / 客观题) */
-  readonly modality: ItemModality;
 
-  /** 是否为主观题 (口语、写作、视频等) */
+  // 正交核心维度
+  readonly domain: ItemDomain;
+  readonly scoring: ItemScoringParadigm;
+  readonly requiredDevices: ReadonlySet<InputDevice>;
+  readonly capabilities: ReadonlySet<ItemCapability>;
+
+  // 极速访问语法糖 (Getters / Helper Booleans)
   readonly isSubjective: boolean;
-  /** 是否为客观题 (单选、多选、判断、填空、配对等) */
   readonly isObjective: boolean;
+  readonly isSpeaking: boolean;
+  readonly isWriting: boolean;
+}
 
-  /** 是否需要麦克风收音 */
-  readonly requiresMicrophone: boolean;
-  /** 是否需要摄像头拍摄 */
-  readonly requiresCamera: boolean;
-  /** 是否需要打字/文本输入 */
-  readonly requiresTyping: boolean;
-  /** 是否为点选/卡片拖拽类选择输入 */
-  readonly isSelectionBased: boolean;
-  /** 是否适用大模型基于评分准则 (Rubric) 进行评阅打分 */
-  readonly supportsAiRubricGrading: boolean;
+export interface TaskTraits {
+  readonly taskCode: TaskCode;
+  readonly itemCodes: readonly ItemCode[];
+  readonly domain: ItemDomain;
+  readonly scoring: ItemScoringParadigm | 'hybrid';
 
-  /**
-   * 对应题目的全量特征标签集合 (只读 Set，支持 O(1) 极速查询)
-   */
-  readonly tags: ReadonlySet<ItemTag>;
+  readonly isSubjective: boolean;
+  readonly isPureObjective: boolean;
+  readonly isSpeaking: boolean;
+  readonly isWriting: boolean;
+
+  readonly requiredDevices: ReadonlySet<InputDevice>;
+  readonly capabilities: ReadonlySet<ItemCapability>;
 }
 
 // ==========================================================
-// 2. 特征自动推导内核 (Derived Computation)
+// 3. 确定性正交推导引擎 (Deterministic Derivation)
 // ==========================================================
+
+/**
+ * 从编码规则中提取考查领域（独立于作答方式）
+ * 命名规范契约：{examCode}_{section}_{task}_{item}
+ */
+function resolveItemDomain(itemCode: string): ItemDomain {
+  const lower = itemCode.toLowerCase();
+  if (lower.includes('_speaking_')) return 'speaking';
+  if (lower.includes('_writing_')) return 'writing';
+  if (lower.includes('_listening_')) return 'listening';
+  if (lower.includes('_reading_')) return 'reading';
+  return 'general';
+}
 
 function computeItemTraits(itemCode: ItemCode): ItemTraits {
   const responseCode = getResponseCode(itemCode);
+  const domain = resolveItemDomain(itemCode);
 
-  const isSpeaking = responseCode === 'speaking';
-  const isWriting = responseCode === 'writing';
-  const isFilming = responseCode === 'filming';
+  // 1. 判分范式正交判定
+  const scoring: ItemScoringParadigm = [
+    'writing',
+    'speaking',
+    'filming',
+  ].includes(responseCode)
+    ? 'subjective'
+    : 'objective';
 
-  const isSubjective = isSpeaking || isWriting || isFilming;
-  const isObjective = !isSubjective;
-
-  const requiresMicrophone = isSpeaking || isFilming;
-  const requiresCamera = isFilming;
-  const requiresTyping =
-    isWriting ||
+  // 2. 所需交互设备判定
+  const devices = new Set<InputDevice>();
+  if (responseCode === 'speaking') {
+    devices.add('microphone');
+  } else if (responseCode === 'filming') {
+    devices.add('microphone');
+    devices.add('camera');
+  } else if (
+    responseCode === 'writing' ||
     responseCode === 'filling_array' ||
-    responseCode === 'filling_record';
-  const isSelectionBased =
-    responseCode === 'selection_array' || responseCode === 'selection_record';
+    responseCode === 'filling_record'
+  ) {
+    devices.add('keyboard');
+  } else {
+    devices.add('pointer');
+  }
 
-  const supportsAiRubricGrading = isSubjective;
+  // 3. 特性能力集判定（未来新增意想不到的特性在此声明）
+  const capabilities = new Set<ItemCapability>();
+  if (scoring === 'subjective') {
+    capabilities.add('supports_ai_rubric');
+  }
+  if (devices.has('microphone') || devices.has('camera')) {
+    capabilities.add('requires_recording');
+  }
+  if (
+    responseCode === 'filling_record' ||
+    responseCode === 'selection_record'
+  ) {
+    capabilities.add('supports_auto_cloze');
+  }
+  if (domain === 'listening') {
+    capabilities.add('requires_audio_playback');
+  }
 
-  let modality: ItemModality = 'objective';
-  if (isSpeaking) modality = 'speaking';
-  else if (isWriting) modality = 'writing';
-  else if (isFilming) modality = 'filming';
-
-  const tags = new Set<ItemTag>();
-  if (isSubjective) tags.add('subjective');
-  if (isObjective) tags.add('objective');
-  if (isSpeaking) tags.add('speaking');
-  if (isWriting) tags.add('writing');
-  if (isFilming) tags.add('filming');
-  if (requiresMicrophone) tags.add('audio_input');
-  if (requiresCamera) tags.add('video_input');
-  if (requiresTyping) tags.add('text_input');
-  if (isSelectionBased) tags.add('selection_input');
-  if (supportsAiRubricGrading) tags.add('ai_rubric_grading');
+  const isSubjective = scoring === 'subjective';
 
   return {
     itemCode,
     responseCode,
-    modality,
+    domain,
+    scoring,
+    requiredDevices: devices,
+    capabilities,
     isSubjective,
-    isObjective,
-    requiresMicrophone,
-    requiresCamera,
-    requiresTyping,
-    isSelectionBased,
-    supportsAiRubricGrading,
-    tags,
+    isObjective: !isSubjective,
+    isSpeaking: domain === 'speaking' || devices.has('microphone'),
+    isWriting: domain === 'writing',
+  };
+}
+
+function computeTaskTraits(taskCode: TaskCode): TaskTraits {
+  const itemCodes = getItemCodesUnderTask(taskCode);
+  const childTraits = itemCodes.map((code) => getItemTraits(code));
+
+  // 聚合学科领域
+  const domain = childTraits[0]?.domain || resolveItemDomain(taskCode);
+
+  // 聚合判分方式
+  const hasSubjective = childTraits.some((t) => t.isSubjective);
+  const hasObjective = childTraits.some((t) => t.isObjective);
+  const scoring =
+    hasSubjective && hasObjective
+      ? 'hybrid'
+      : hasSubjective
+        ? 'subjective'
+        : 'objective';
+
+  // 聚合设备需求与能力集
+  const requiredDevices = new Set<InputDevice>();
+  const capabilities = new Set<ItemCapability>();
+
+  childTraits.forEach((t) => {
+    t.requiredDevices.forEach((d) => requiredDevices.add(d));
+    t.capabilities.forEach((c) => capabilities.add(c));
+  });
+
+  return {
+    taskCode,
+    itemCodes,
+    domain,
+    scoring,
+    isSubjective: hasSubjective,
+    isPureObjective: !hasSubjective && childTraits.length > 0,
+    isSpeaking: domain === 'speaking' || requiredDevices.has('microphone'),
+    isWriting: domain === 'writing',
+    requiredDevices,
+    capabilities,
   };
 }
 
 // ==========================================================
-// 3. 延迟初始化单例缓存 (防止模块循环导入时的时序问题)
+// 4. 延迟初始化单例缓存
 // ==========================================================
 
-let traitsCache: Map<ItemCode, ItemTraits> | null = null;
+let itemTraitsCache: Map<ItemCode, ItemTraits> | null = null;
+let taskTraitsCache: Map<TaskCode, TaskTraits> | null = null;
 
-function getTraitsCache(): Map<ItemCode, ItemTraits> {
-  if (!traitsCache) {
-    traitsCache = new Map();
+function getItemTraitsCache(): Map<ItemCode, ItemTraits> {
+  if (!itemTraitsCache) {
+    itemTraitsCache = new Map();
     for (const code of ItemCodeSchema.options) {
-      traitsCache.set(code, computeItemTraits(code));
+      itemTraitsCache.set(code, computeItemTraits(code));
     }
   }
-  return traitsCache;
+  return itemTraitsCache;
+}
+
+function getTaskTraitsCache(): Map<TaskCode, TaskTraits> {
+  if (!taskTraitsCache) {
+    taskTraitsCache = new Map();
+    for (const code of TaskCodeSchema.options) {
+      taskTraitsCache.set(code, computeTaskTraits(code));
+    }
+  }
+  return taskTraitsCache;
 }
 
 // ==========================================================
-// 4. 对外导出的核心查询与判定函数 (API)
+// 5. 对外高阶语义 API (Predicates & Capabilities)
 // ==========================================================
 
-/**
- * 获取指定 itemCode 的完整特征属性对象
- */
 export function getItemTraits(itemCode: ItemCode): ItemTraits {
-  const cache = getTraitsCache();
-  const traits = cache.get(itemCode);
-  if (!traits) {
-    throw new Error(
-      `[getItemTraits] 未找到该 itemCode 的特征属性: ${itemCode}`,
-    );
-  }
+  const traits = getItemTraitsCache().get(itemCode);
+  if (!traits) throw new Error(`[getItemTraits] 未知 itemCode: ${itemCode}`);
   return traits;
 }
 
-/**
- * 判定题目是否为主观题 (口语、写作、面试视频)
- */
-export function isSubjectiveItem(itemCode: ItemCode): boolean {
-  return getItemTraits(itemCode).isSubjective;
+export function getTaskTraits(taskCode: TaskCode): TaskTraits {
+  const traits = getTaskTraitsCache().get(taskCode);
+  if (!traits) throw new Error(`[getTaskTraits] 未知 taskCode: ${taskCode}`);
+  return traits;
 }
 
-/**
- * 判定题目是否为客观题 (选择、填空、判断、配对等)
- */
-export function isObjectiveItem(itemCode: ItemCode): boolean {
-  return getItemTraits(itemCode).isObjective;
-}
+// Item 语义断言
+export const isSubjectiveItem = (code: ItemCode) => getItemTraits(code).isSubjective;
+export const isObjectiveItem = (code: ItemCode) => getItemTraits(code).isObjective;
+export const isSpeakingItem = (code: ItemCode) => getItemTraits(code).isSpeaking;
+export const isWritingItem = (code: ItemCode) => getItemTraits(code).isWriting;
+export const hasItemCapability = (code: ItemCode, cap: ItemCapability) =>
+  getItemTraits(code).capabilities.has(cap);
 
-/**
- * 判定题目是否为口语题
- */
-export function isSpeakingItem(itemCode: ItemCode): boolean {
-  return getItemTraits(itemCode).modality === 'speaking';
-}
+// Task 语义断言
+export const isSubjectiveTask = (code: TaskCode) => getTaskTraits(code).isSubjective;
+export const isPureObjectiveTask = (code: TaskCode) => getTaskTraits(code).isPureObjective;
+export const isSpeakingTask = (code: TaskCode) => getTaskTraits(code).isSpeaking;
+export const isWritingTask = (code: TaskCode) => getTaskTraits(code).isWriting;
+export const hasTaskCapability = (code: TaskCode, cap: ItemCapability) =>
+  getTaskTraits(code).capabilities.has(cap);
 
-/**
- * 判定题目是否为写作题
- */
-export function isWritingItem(itemCode: ItemCode): boolean {
-  return getItemTraits(itemCode).modality === 'writing';
-}
-
-/**
- * 判定题目是否具备某个特定的标签属性
- */
-export function hasItemTag(itemCode: ItemCode, tag: ItemTag): boolean {
-  return getItemTraits(itemCode).tags.has(tag);
-}
-
-/**
- * 获取全量题目的特征映射 Map (只读)
- */
-export function getItemTraitsMap(): ReadonlyMap<ItemCode, ItemTraits> {
-  return getTraitsCache();
-}
-
-/**
- * 获取全量主观题 itemCode 列表
- */
-export function getSubjectiveItemCodes(): ItemCode[] {
-  return ItemCodeSchema.options.filter((code) => isSubjectiveItem(code));
-}
-
-/**
- * 获取全量客观题 itemCode 列表
- */
-export function getObjectiveItemCodes(): ItemCode[] {
-  return ItemCodeSchema.options.filter((code) => isObjectiveItem(code));
-}
-
-/**
- * 获取全量口语题 itemCode 列表
- */
-export function getSpeakingItemCodes(): ItemCode[] {
-  return ItemCodeSchema.options.filter((code) => isSpeakingItem(code));
-}
-
-/**
- * 获取全量写作题 itemCode 列表
- */
-export function getWritingItemCodes(): ItemCode[] {
-  return ItemCodeSchema.options.filter((code) => isWritingItem(code));
-}
+// 核心大盘集合
+export const getSubjectiveItemCodes = () => ItemCodeSchema.options.filter(isSubjectiveItem);
+export const getSubjectiveTaskCodes = () => TaskCodeSchema.options.filter(isSubjectiveTask);
