@@ -10,6 +10,7 @@ import {
   OffsetDatetimeStrSchema,
   PaperWideSequenceSchema,
   PosIntSchema,
+  SimpleImageSchema,
   TransDictSchema,
 } from './__shared';
 import ielts_academic_20230503 from './ielts-academic-20230503';
@@ -84,13 +85,14 @@ export const ResponseContentSchema = z.discriminatedUnion('itemCode', [
 };
 
 export const ManifestPaperSchema = z.object({
-  id: z.uuid().describe('Canonical Paper ID'), // 🌟 试卷根节点纯 UUID
+  id: z.uuid().describe('Canonical Paper ID'),
   createdAt: OffsetDatetimeStrSchema,
   examCode: ExamCodeSchema,
   collectionName: TransDictSchema,
   paperName: TransDictSchema,
   releaseNotes: TransDictSchema,
   issuedAt: OffsetDatetimeStrSchema,
+  cover: SimpleImageSchema.optional().describe('试卷封面图片（保存在包内 media/ 目录下）'),
   sections: z
     .object({
       id: z.uuid().describe('Canonical Section ID'),
@@ -118,9 +120,6 @@ export const ManifestPaperSchema = z.object({
 });
 export type ManifestPaper = z.infer<typeof ManifestPaperSchema>;
 
-/**
- * manifest.json schema
- */
 export const ManifestSchema = z.object({
   meta: z.object({
     magic: z.literal('theta'),
@@ -137,16 +136,15 @@ export const CatalogPaperSchema = ManifestPaperSchema.pick({
   paperName: true,
   releaseNotes: true,
   issuedAt: true,
+  cover: true,
 }).extend({
   fileKey: FileKeySchema,
   downloadUrl: z.url(),
   fileSizeInBytes: PosIntSchema,
+  coverUrl: z.url().optional().describe('公网 CDN 封面快速预览图链接'),
 });
 export type CatalogPaper = z.infer<typeof CatalogPaperSchema>;
 
-/**
- * catalog.json schema
- */
 export const CatalogSchema = z.object({
   createdAt: OffsetDatetimeStrSchema,
   updatedAt: OffsetDatetimeStrSchema,
@@ -166,13 +164,12 @@ export function extractDiscriminatedUnionMember<
   D extends keyof T & string,
   V extends T[D] & string,
 >(
-  unionSchema: z.ZodType<T>, // 接收原有的 ZodType<Union>
-  _discriminatorKey: D, // 显式传入识别字段 key (在 optionsMap 匹配失败时兜底使用)
-  discriminatorValue: V, // 显式传入识别字段 value
+  unionSchema: z.ZodType<T>,
+  _discriminatorKey: D,
+  discriminatorValue: V,
 ): z.ZodType<Extract<T, Record<D, V>>> {
   const union = unionSchema as any;
 
-  // 1. 优先使用 Zod 内置的高性能 optionsMap，直接获取 O(1) 匹配结果（同时兼容 v3 和 v4）
   if (union.optionsMap instanceof Map) {
     const memberSchema = union.optionsMap.get(discriminatorValue);
     if (memberSchema) {
@@ -180,7 +177,6 @@ export function extractDiscriminatedUnionMember<
     }
   }
 
-  // 2. 兜底方案：如果 optionsMap 不存在，安全遍历 options 数组
   if (!union.options || !Array.isArray(union.options)) {
     throw new Error(
       `[extractDiscriminatedUnionMember] The provided schema does not appear to be a valid union or discriminated union schema.`,
@@ -191,11 +187,9 @@ export function extractDiscriminatedUnionMember<
     const field = option.shape?.[_discriminatorKey];
     if (!field) return false;
 
-    // z.enum
     if ('options' in field && Array.isArray(field.options)) {
       return field.options.includes(discriminatorValue);
     }
-    // 极端情况下的 Zod 内部 _def 属性判定兜底
     if (field._def) {
       if (field._def.value === discriminatorValue) {
         return true;
@@ -265,7 +259,7 @@ export function getResponseContentSchema<V extends ItemCode>(
   );
 }
 
-// 1. 在模块加载时，一次性扁平化聚合所有静态定义的 displayNames
+// 在模块加载时，一次性扁平化聚合所有静态定义的 displayNames
 const globalDisplayNames = Object.values(examSpecs).reduce(
   (acc, exam) => {
     return Object.assign(acc, exam.displayNames);
@@ -274,7 +268,7 @@ const globalDisplayNames = Object.values(examSpecs).reduce(
 );
 
 /**
- * 🌟 全局、强类型安全的多语言 displayName 解析函数
+ * 全局、强类型安全的多语言 displayName 解析函数
  */
 export function getDisplayName(
   code: ExamCode | SectionCode | TaskCode | ItemCode,
@@ -287,46 +281,36 @@ export function getDisplayName(
 /**
  * 下面是一些业务代码中可能会用到的常用工具函数
  */
-
-// 提取特定 ExamCode 下所有的 SectionCode
 export type GetSectionCodeUnderExam<E extends ExamCode> = Extract<
   SectionCode,
   `${E}_${string}`
 >;
 
-// 提取特定 ExamCode 下所有的 TaskCode
 export type GetTaskCodeUnderExam<E extends ExamCode> = Extract<
   TaskCode,
   `${E}_${string}`
 >;
 
-// 提取特定 ExamCode 下所有的 ItemCode
 export type GetItemCodeUnderExam<E extends ExamCode> = Extract<
   ItemCode,
   `${E}_${string}`
 >;
 
-// 提取特定 SectionCode 下所有的 TaskCode
 export type GetTaskCodeUnderSection<S extends SectionCode> = Extract<
   TaskCode,
   `${S}_${string}`
 >;
 
-// 提取特定 SectionCode 下所有的 ItemCode
 export type GetItemCodeUnderSection<S extends SectionCode> = Extract<
   ItemCode,
   `${S}_${string}`
 >;
 
-// 提取特定 TaskCode 下所有的 ItemCode
 export type GetItemCodeUnderTask<T extends TaskCode> = Extract<
   ItemCode,
   `${T}_${string}`
 >;
 
-/**
- * 提取特定 ExamCode 下所有的 SectionCode
- */
 export function getSectionCodesUnderExam<E extends ExamCode>(
   examCode: E,
 ): GetSectionCodeUnderExam<E>[] {
@@ -336,9 +320,6 @@ export function getSectionCodesUnderExam<E extends ExamCode>(
   );
 }
 
-/**
- * 提取特定 ExamCode 下所有的 TaskCode
- */
 export function getTaskCodesUnderExam<E extends ExamCode>(
   examCode: E,
 ): GetTaskCodeUnderExam<E>[] {
@@ -348,9 +329,6 @@ export function getTaskCodesUnderExam<E extends ExamCode>(
   );
 }
 
-/**
- * 提取特定 ExamCode 下所有的 ItemCode
- */
 export function getItemCodesUnderExam<E extends ExamCode>(
   examCode: E,
 ): GetItemCodeUnderExam<E>[] {
@@ -360,9 +338,6 @@ export function getItemCodesUnderExam<E extends ExamCode>(
   );
 }
 
-/**
- * 提取特定 SectionCode 下所有的 TaskCode
- */
 export function getTaskCodesUnderSection<S extends SectionCode>(
   sectionCode: S,
 ): GetTaskCodeUnderSection<S>[] {
@@ -372,9 +347,6 @@ export function getTaskCodesUnderSection<S extends SectionCode>(
   );
 }
 
-/**
- * 提取特定 SectionCode 下所有的 ItemCode
- */
 export function getItemCodesUnderSection<S extends SectionCode>(
   sectionCode: S,
 ): GetItemCodeUnderSection<S>[] {
@@ -384,9 +356,6 @@ export function getItemCodesUnderSection<S extends SectionCode>(
   );
 }
 
-/**
- * 提取特定 TaskCode 下所有的 ItemCode
- */
 export function getItemCodesUnderTask<T extends TaskCode>(
   taskCode: T,
 ): GetItemCodeUnderTask<T>[] {
@@ -396,30 +365,20 @@ export function getItemCodesUnderTask<T extends TaskCode>(
   );
 }
 
-// 提取特定 ItemCode 所属的 TaskCode
 export type GetTaskCodeAboveItem<I extends ItemCode> = {
   [T in TaskCode]: I extends GetItemCodeUnderTask<T> ? T : never;
 }[TaskCode];
 
-/**
- * 高阶类型推导器：给定 TaskCode K，从全局联合类型中动态选取出对应的 TaskContent 结构
- */
 export type InferTaskContent<K extends TaskCode> = Extract<
   TaskContent,
   { taskCode: K }
 >;
 
-/**
- * 高阶类型推导器：给定 ItemCode K，从全局联合类型中动态选取出对应的 ItemContent 结构
- */
 export type InferItemContent<K extends ItemCode> = Extract<
   ItemContent,
   { itemCode: K }
 >;
 
-/**
- * 高阶类型推导器：给定 ItemCode K，从全局联合类型中动态选取出对应的 ResponseContent 结构
- */
 export type InferResponseContent<K extends ItemCode> = Extract<
   ResponseContent,
   { itemCode: K }
