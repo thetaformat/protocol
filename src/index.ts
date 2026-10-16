@@ -92,9 +92,9 @@ export const ManifestPaperSchema = z.object({
   paperName: TransDictSchema,
   releaseNotes: TransDictSchema,
   issuedAt: OffsetDatetimeStrSchema,
-  cover: SimpleImageSchema.optional().describe(
-    '试卷封面图片（保存在包内 media/ 目录下）',
-  ),
+  cover: SimpleImageSchema.nullable()
+    .optional()
+    .describe('试卷封面图片（保存在包内 media/ 目录下）'),
   sections: z
     .object({
       id: z.uuid().describe('Canonical Section ID'),
@@ -143,7 +143,11 @@ export const CatalogPaperSchema = ManifestPaperSchema.pick({
   fileKey: FileKeySchema,
   downloadUrl: z.url(),
   fileSizeInBytes: PosIntSchema,
-  coverUrl: z.url().optional().describe('公网 CDN 封面快速预览图链接'),
+  coverUrl: z
+    .url()
+    .nullable()
+    .optional()
+    .describe('公网 CDN 封面快速预览图链接'),
 });
 export type CatalogPaper = z.infer<typeof CatalogPaperSchema>;
 
