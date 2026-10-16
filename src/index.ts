@@ -92,7 +92,9 @@ export const ManifestPaperSchema = z.object({
   paperName: TransDictSchema,
   releaseNotes: TransDictSchema,
   issuedAt: OffsetDatetimeStrSchema,
-  cover: SimpleImageSchema.optional().describe('试卷封面图片（保存在包内 media/ 目录下）'),
+  cover: SimpleImageSchema.optional().describe(
+    '试卷封面图片（保存在包内 media/ 目录下）',
+  ),
   sections: z
     .object({
       id: z.uuid().describe('Canonical Section ID'),
