@@ -120,7 +120,7 @@ const ListeningParitionsSchema = BaseParitionSchema.extend({
       instruction: NonEmptyMdSchema.describe(
         `${NonEmptyMdSchema.description}Instruction for the partition. e.g. "Complete the flow chart below\n\nChoose ***FIVE*** answers from the box and write the correct letter, ***A-H***, next to Questions 26-30."`,
       ),
-      flowChartTitle: NonEmptyStringSchema.optional().describe(
+      flowChartTitle: NonEmptyStringSchema.nullable().describe(
         `${NonEmptyStringSchema.description}\nThe title of the flow chart, if exists.`,
       ),
       flowChartContent: NonEmptyMdSchema.describe(

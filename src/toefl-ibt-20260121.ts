@@ -33,8 +33,8 @@ export default defineExam({
           __displayName: { en: 'Complete the Words', 'zh-cn': '完形填空' },
           __questionContentSchema: z.object({
             instruction: NonEmptyStringSchema,
-            title: NonEmptyStringSchema.optional().describe(
-              'Ignored unless explicitly provided in the PDF',
+            title: NonEmptyStringSchema.nullable().describe(
+              'Null unless explicitly provided in the PDF',
             ),
             text: SimplePassageSchema.describe(
               `${SimplePassageSchema.description}` +
@@ -77,12 +77,12 @@ export default defineExam({
                 stem: StemSchema,
                 options: OptionsSchema,
                 paragraphReference: SeqIdSchema.array()
-                  .optional()
+                  .nullable()
                   .describe(
                     '有明确的出题段则也需要记录。数组元素对应 SimpleParagraphsSchema 中的段落 id。',
                   ),
                 relatedHighlightId: SeqIdSchema.array()
-                  .optional()
+                  .nullable()
                   .describe(
                     '题目有明确的原文引用，则需要记录。指向阅读文章中的高亮标签 ID（对应文章中的 <mark id="..."> 标签）。前端据此在文章中自动滚动并激活对应区域的 CSS 高亮状态。支持多个ID。',
                   ),
@@ -179,9 +179,14 @@ export default defineExam({
             'zh-cn': '学术听力',
           },
           __questionContentSchema: z.object({
-            instruction: NonEmptyStringSchema,
             instructionAudio: SimpleAudioSchema.nullable().describe(
               '如果显式提供了音频，则必须记录；若未提供则为 null',
+            ),
+            instruction: NonEmptyStringSchema.nullable().describe(
+              'Must present unless missing in the PDF',
+            ),
+            title: NonEmptyStringSchema.nullable().describe(
+              'Null unless explicitly provided in the PDF',
             ),
             audio: TranscriptedAudioSchema,
             illustration: SimpleImageSchema.describe(
@@ -209,7 +214,12 @@ export default defineExam({
             'zh-cn': '公告听力',
           },
           __questionContentSchema: z.object({
-            instruction: NonEmptyStringSchema,
+            instruction: NonEmptyStringSchema.nullable().describe(
+              'Must present unless missing in the PDF',
+            ),
+            title: NonEmptyStringSchema.nullable().describe(
+              'Null unless explicitly provided in the PDF',
+            ),
             instructionAudio: SimpleAudioSchema.nullable().describe(
               '如果显式提供了音频，则必须记录；若未提供则为 null',
             ),
@@ -299,7 +309,11 @@ export default defineExam({
         },
         write_an_email: {
           __displayName: { en: 'Write an Email', 'zh-cn': '撰写电子邮件' },
-          __questionContentSchema: EmptyObjectSchema,
+          __questionContentSchema: z.object({
+            title: NonEmptyStringSchema.nullable().describe(
+              'Null unless explicitly provided in the PDF',
+            ),
+          }),
           __items: {
             default: {
               __displayName: { en: 'Default', 'zh-cn': '默认题型' },
@@ -319,7 +333,11 @@ export default defineExam({
             en: 'Write for an Academic Discussion',
             'zh-cn': '学术讨论写作',
           },
-          __questionContentSchema: EmptyObjectSchema,
+          __questionContentSchema: z.object({
+            title: NonEmptyStringSchema.nullable().describe(
+              'Null unless explicitly provided in the PDF',
+            ),
+          }),
           __items: {
             default: {
               __displayName: { en: 'Default', 'zh-cn': '默认题型' },
@@ -373,6 +391,9 @@ export default defineExam({
         listen_and_repeat: {
           __displayName: { en: 'Listen and Repeat', 'zh-cn': '听句子复述' },
           __questionContentSchema: z.object({
+            title: NonEmptyStringSchema.nullable().describe(
+              'Null unless explicitly provided in the PDF',
+            ),
             instruction: NonEmptyStringSchema,
             instructionAudio: SimpleAudioSchema.nullable().describe(
               '如果显式提供了音频，则必须记录；若未提供则为 null',
@@ -406,6 +427,9 @@ export default defineExam({
         take_an_interview: {
           __displayName: { en: 'Take an Interview', 'zh-cn': '面试口语问答' },
           __questionContentSchema: z.object({
+            title: NonEmptyStringSchema.nullable().describe(
+              'Null unless explicitly provided in the PDF',
+            ),
             instruction: NonEmptyStringSchema.describe(
               '面试场景总说明，对应卷面开头背景（如 "You have volunteered for a research study..."）',
             ),
