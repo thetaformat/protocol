@@ -33,6 +33,9 @@ export default defineExam({
           __displayName: { en: 'Complete the Words', 'zh-cn': '完形填空' },
           __questionContentSchema: z.object({
             instruction: NonEmptyStringSchema,
+            title: NonEmptyStringSchema.optional().describe(
+              'Ignored unless explicitly provided in the PDF',
+            ),
             text: SimplePassageSchema.describe(
               `${SimplePassageSchema.description}` +
                 `完整段落文本。挖空处用占位符表示。站位id必须为seqId：${SeqIdSchema.description}` +
