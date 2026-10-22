@@ -85,7 +85,7 @@ export const ResponseContentSchema = z.discriminatedUnion('itemCode', [
 };
 
 export const ManifestPaperSchema = z.object({
-  id: z.uuid().describe('Canonical Paper ID'),
+  id: z.uuid().describe('Theta Paper ID'),
   createdAt: OffsetDatetimeStrSchema,
   examCode: ExamCodeSchema,
   collectionName: TransDictSchema,
@@ -97,18 +97,18 @@ export const ManifestPaperSchema = z.object({
     .describe('试卷封面图片（保存在包内 media/ 目录下）'),
   sections: z
     .object({
-      id: z.uuid().describe('Canonical Section ID'),
+      id: z.uuid().describe('Theta Section ID'),
       code: SectionCodeSchema,
       sequence: PaperWideSequenceSchema,
       tasks: z
         .object({
-          id: z.uuid().describe('Canonical Task ID'),
+          id: z.uuid().describe('Theta Task ID'),
           code: TaskCodeSchema,
           sequence: PaperWideSequenceSchema,
           content: TaskContentSchema,
           items: z
             .object({
-              id: z.uuid().describe('Canonical Item ID'),
+              id: z.uuid().describe('Theta Item ID'),
               code: ItemCodeSchema,
               sequence: PaperWideSequenceSchema,
               content: ItemContentSchema,
