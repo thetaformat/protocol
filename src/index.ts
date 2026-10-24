@@ -150,6 +150,11 @@ export const CatalogPaperSchema = ManifestPaperSchema.pick({
     .nullable()
     .optional()
     .describe('公网 CDN 封面快速预览图链接'),
+  underMaintenance: z
+    .boolean()
+    .default(false)
+    .optional()
+    .describe('是否处于维护状态（若为 true 则禁止租户端导入）'),
 });
 export type CatalogPaper = z.infer<typeof CatalogPaperSchema>;
 
